@@ -1,0 +1,40 @@
+package me.konyaco.keeptally.service
+
+import java.time.Instant
+
+interface KeepTally {
+}
+
+interface RecordManager {
+    fun record(money: Int, billType: BillType?)
+    fun getRecords()
+    fun find(scope: FindScope.() -> Unit): List<BillRecord>
+
+    interface FindScope {
+        fun setStartDate(instant: Instant)
+        fun setEndDate(instant: Instant)
+        fun findByTypes(types: List<BillType>)
+        fun findByLabel()
+        fun limit(count: Int)
+    }
+
+    fun findRecordByTypes()
+    fun findRecordByLabel()
+}
+
+interface BillRecord {
+
+}
+
+interface BillType {
+    val label: String
+}
+
+interface BillTypeManager {
+    fun addType(label: String)
+    fun getTypes(): List<BillType>
+}
+
+interface Statistics {
+
+}
