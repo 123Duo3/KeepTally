@@ -117,7 +117,6 @@ class MainViewModel @Inject constructor(
     private val hhmFormatter = DateTimeFormatter.ofPattern("HH:mm")
     private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
 
-
     private suspend fun refreshRecords() = withContext(Dispatchers.IO) {
         val range = dateRange.value
         val start = range.start.zonedEpoch()
@@ -126,35 +125,41 @@ class MainViewModel @Inject constructor(
         var expenditure = 0
         var income = 0
 
-        val now = ZonedDateTime.now()
         val result = recordDao.loadAllByDateDesc(start, end).map {
-            val instant = Instant.ofEpochSecond(it.timestamp)
-            val zoned = instant.atZone(localZoneId)
-            val time = hhmFormatter.format(zoned)
-
-            val date = Date(
-                it.timestamp,
-                dateFormatter.format(zoned),
-                Duration.between(zoned, now).toDays().toInt()
-            )
-            val label = recordTypeDao.loadAllByIds(it.typeId).first().mapToRecordType()
-
-            if (it.money < 0) {
-                expenditure += abs(it.money)
-            } else {
-                income += it.money
+            it.mapToRecord().also {
+                if (it.money < 0) {
+                    expenditure += abs(it.money)
+                } else {
+                    income += it.money
+                }
             }
-
-            Record(
-                money = it.money,
-                date = date,
-                time = time,
-                type = label
-            )
         }
         statistics.emit(Statistics(expenditure, income, 0)) // TODO: Budget
         val dailyRecords = separateToDays(result)
         records.emit(dailyRecords)
+    }
+
+    private suspend fun EntityRecord.mapToRecord(): Record {
+        val instant = Instant.ofEpochSecond(this.timestamp)
+        val zoned = instant.atZone(localZoneId)
+        val time = hhmFormatter.format(zoned)
+        val date = Date(this.timestamp, dateFormatter.format(zoned), calculateDayOffset(zoned))
+        val label = recordTypeDao.loadAllByIds(this.typeId).first().mapToRecordType()
+
+        return Record(
+            money = this.money,
+            date = date,
+            time = time,
+            type = label
+        )
+    }
+
+    private fun calculateDayOffset(date: ZonedDateTime): Int {
+        val today = with(ZonedDateTime.now()) {
+            ZonedDateTime.of(year, monthValue, dayOfMonth, 23, 59, 59, 999_999_999, zone)
+        }
+        val offsetDay = Duration.between(date, today).toDays().toInt()
+        return offsetDay
     }
 
     private suspend fun refreshLabels() = withContext(Dispatchers.IO) {
