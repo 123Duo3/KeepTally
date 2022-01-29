@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
-    id("com.google.devtools.ksp") version "1.6.0-1.0.2"
+    id("com.google.devtools.ksp") version "1.6.10-1.0.2"
     id("dagger.hilt.android.plugin")
 }
 
@@ -79,11 +79,11 @@ dependencies {
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
-    implementation("androidx.compose.material3:material3:1.0.0-alpha03")
+    implementation("androidx.compose.material3:material3:1.0.0-alpha04")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
 
-    val accompanistVersion = "0.22.0-rc"
+    val accompanistVersion = "0.22.1-rc"
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
 
