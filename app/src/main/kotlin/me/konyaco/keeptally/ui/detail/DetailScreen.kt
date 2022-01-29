@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -60,7 +61,7 @@ fun DetailScreen(
                     itemsIndexed(records) { index, item ->
                         DailyRecord(
                             Modifier.fillParentMaxWidth(),
-                            item.date,
+                            item.date.parseAsString(),
                             item.expenditure,
                             item.income,
                             item.records
@@ -79,6 +80,17 @@ fun DetailScreen(
             text = { Text("添加记录") },
             onClick = onAddClick
         )
+    }
+}
+
+@Stable
+@Composable
+private fun MainViewModel.Date.parseAsString(): String {
+    return when (daysOffset) {
+        0 -> "今天"
+        1 -> "昨天"
+        2 -> "前天"
+        else -> dateString
     }
 }
 

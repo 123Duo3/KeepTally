@@ -25,7 +25,7 @@ class MainViewModel @Inject constructor(
     private val localZoneId = ZoneId.systemDefault()
 
     data class DailyRecord(
-        val date: String,
+        val date: Date,
         val expenditure: Int,
         val income: Int,
         val records: List<Record>
@@ -33,9 +33,15 @@ class MainViewModel @Inject constructor(
 
     data class Record(
         val money: Int,
-        val date: String,
+        val date: Date,
         val time: String,
         val type: RecordType
+    )
+
+    data class Date(
+        val timestamp: Long,
+        val dateString: String,
+        val daysOffset: Int
     )
 
     data class RecordType(
@@ -120,11 +126,17 @@ class MainViewModel @Inject constructor(
         var expenditure = 0
         var income = 0
 
+        val now = ZonedDateTime.now()
         val result = recordDao.loadAllByDateDesc(start, end).map {
             val instant = Instant.ofEpochSecond(it.timestamp)
             val zoned = instant.atZone(localZoneId)
             val time = hhmFormatter.format(zoned)
-            val date = dateFormatter.format(zoned)
+
+            val date = Date(
+                it.timestamp,
+                dateFormatter.format(zoned),
+                Duration.between(zoned, now).toDays().toInt()
+            )
             val label = recordTypeDao.loadAllByIds(it.typeId).first().mapToRecordType()
 
             if (it.money < 0) {
@@ -271,5 +283,3 @@ class MainViewModel @Inject constructor(
         ).toEpochSecond()
     }
 }
-
-private fun moneyToString(money: Int): String = "${money / 100}.${money % 100}"
