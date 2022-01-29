@@ -31,22 +31,7 @@ fun DailyRecord(
     records: List<MainViewModel.Record>
 ) {
     Column(modifier) {
-        CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleSmall) {
-            Row(Modifier.fillMaxWidth()) {
-                Text(text = date, modifier = Modifier.weight(1f))
-                Text(
-                    text = moneyToString(expenditure, false),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontFamily = FontFamily.RobotoSlab
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    text = moneyToString(income, true),
-                    color = MaterialTheme.colorScheme.primary,
-                    fontFamily = FontFamily.RobotoSlab
-                )
-            }
-        }
+        Total(date, expenditure, income)
         Spacer(Modifier.height(8.dp))
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             records.forEach { record ->
@@ -57,31 +42,6 @@ fun DailyRecord(
                     time = record.time,
                     category = record.type.parent ?: "",
                     money = record.money
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun DailyRecord(
-    modifier: Modifier = Modifier,
-    date: String,
-    expenditure: Int,
-    income: Int
-) {
-    Column(modifier) {
-        Total(date, expenditure, income)
-        Spacer(Modifier.height(8.dp))
-        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            repeat(6) {
-                RecordItem(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.primary,
-                    title = "标题",
-                    time = "12:30",
-                    category = "分类",
-                    money = -1100
                 )
             }
         }
@@ -128,7 +88,15 @@ private fun DailyRecordPreview() {
                 .padding(16.dp),
             "今天",
             6000,
-            0
+            0,
+            listOf(
+                MainViewModel.Record(
+                    time = "12:30",
+                    type = MainViewModel.RecordType("父分类", "分类", false),
+                    money = -1100,
+                    date = MainViewModel.Date(0, "12-20", 0)
+                )
+            )
         )
     }
 }
