@@ -71,22 +71,7 @@ fun DailyRecord(
     income: Int
 ) {
     Column(modifier) {
-        CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleSmall) {
-            Row(Modifier.fillMaxWidth()) {
-                Text(text = date, modifier = Modifier.weight(1f))
-                Text(
-                    text = moneyToString(expenditure, false),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontFamily = FontFamily.RobotoSlab
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    text = moneyToString(income, true),
-                    color = MaterialTheme.colorScheme.primary,
-                    fontFamily = FontFamily.RobotoSlab
-                )
-            }
-        }
+        Total(date, expenditure, income)
         Spacer(Modifier.height(8.dp))
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             repeat(6) {
@@ -99,6 +84,30 @@ fun DailyRecord(
                     money = -1100
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun Total(
+    date: String,
+    expenditure: Int,
+    income: Int
+) {
+    CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleSmall) {
+        Row(Modifier.fillMaxWidth()) {
+            Text(text = date, modifier = Modifier.weight(1f))
+            Text(
+                text = moneyToString(expenditure, false),
+                color = MaterialTheme.colorScheme.primary,
+                fontFamily = FontFamily.RobotoSlab
+            )
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = moneyToString(income, true),
+                color = MaterialTheme.colorScheme.tertiary,
+                fontFamily = FontFamily.RobotoSlab
+            )
         }
     }
 }

@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.component
+package me.konyaco.keeptally.ui.detail
 
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.OutlinedTextField

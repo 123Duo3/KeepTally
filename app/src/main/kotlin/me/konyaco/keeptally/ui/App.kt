@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import kotlinx.coroutines.launch
 import me.konyaco.keeptally.component.MainViewModel
-import me.konyaco.keeptally.ui.component.AddRecord
 import me.konyaco.keeptally.ui.component.HomeTopBar
+import me.konyaco.keeptally.ui.detail.AddRecord
 import me.konyaco.keeptally.ui.detail.DetailScreen
 import me.konyaco.keeptally.ui.theme.AndroidKeepTallyTheme
 

@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.component
+package me.konyaco.keeptally.ui.detail
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
