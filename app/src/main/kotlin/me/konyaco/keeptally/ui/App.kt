@@ -1,27 +1,29 @@
 package me.konyaco.keeptally.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import me.konyaco.keeptally.component.MainViewModel
 import me.konyaco.keeptally.ui.component.HomeTopBar
+import me.konyaco.keeptally.ui.component.HomeTopBarState
 import me.konyaco.keeptally.ui.detail.AddRecord
 import me.konyaco.keeptally.ui.detail.DetailScreen
 import me.konyaco.keeptally.ui.theme.AndroidKeepTallyTheme
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalPagerApi::class)
 @Composable
 fun App(viewModel: MainViewModel) {
     AndroidKeepTallyTheme {
@@ -46,16 +48,49 @@ fun App(viewModel: MainViewModel) {
                 sheetShape = RectangleShape
             ) {
                 Column(Modifier.fillMaxSize()) {
-                    HomeTopBar(Modifier.fillMaxWidth())
-                    DetailScreen(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        onAddClick = { scope.launch { sheet.show() } },
-                        viewModel = viewModel
-                    )
+                    val homeTopBarState = remember {
+                        HomeTopBarState { year, month ->
+                            viewModel.setDateRange(MainViewModel.DateRange.Month(year, month))
+                        }
+                    }
+                    val pagerState = rememberPagerState()
+
+                    LaunchedEffect(homeTopBarState.selectedTab.value) {
+                        val index = HomeTopBarState.TabItem.values()
+                            .indexOf(homeTopBarState.selectedTab.value)
+                        pagerState.animateScrollToPage(index)
+                    }
+
+                    LaunchedEffect(pagerState.currentPage) {
+                        val tab = HomeTopBarState.TabItem.values()[pagerState.currentPage]
+                        homeTopBarState.selectTab(tab)
+                    }
+
+                    HomeTopBar(Modifier.fillMaxWidth(), homeTopBarState)
+                    HorizontalPager(
+                        count = remember { HomeTopBarState.TabItem.values().size },
+                        state = pagerState
+                    ) {
+                        when (it) {
+                            0 -> DetailScreen(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                onAddClick = { scope.launch { sheet.show() } },
+                                viewModel = viewModel
+                            )
+                            1, 2, 3 -> TodoScreen()
+                        }
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TodoScreen() {
+    Box(Modifier.fillMaxSize(), Alignment.Center) {
+        Text("TODO")
     }
 }

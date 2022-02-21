@@ -39,7 +39,6 @@ class MainViewModel @Inject constructor(
     )
 
     data class Date(
-        val timestamp: Long,
         val dateString: String,
         val daysOffset: Int
     )
@@ -135,7 +134,7 @@ class MainViewModel @Inject constructor(
             }
         }
         statistics.emit(Statistics(expenditure, income, 0)) // TODO: Budget
-        val dailyRecords = separateToDays(result)
+        val dailyRecords = groupToDailyRecord(result)
         records.emit(dailyRecords)
     }
 
@@ -143,7 +142,7 @@ class MainViewModel @Inject constructor(
         val instant = Instant.ofEpochSecond(this.timestamp)
         val zoned = instant.atZone(localZoneId)
         val time = hhmFormatter.format(zoned)
-        val date = Date(this.timestamp, dateFormatter.format(zoned), calculateDayOffset(zoned))
+        val date = Date(dateFormatter.format(zoned), calculateDayOffset(zoned))
         val label = recordTypeDao.loadAllByIds(this.typeId).first().mapToRecordType()
 
         return Record(
@@ -253,9 +252,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun separateToDays(records: List<Record>): List<DailyRecord> {
+    private fun groupToDailyRecord(records: List<Record>): List<DailyRecord> {
         return records.groupBy {
-            it.date
+            it.date.dateString
         }.map { (date, records) ->
             var expenditure = 0
             var income = 0
@@ -266,7 +265,7 @@ class MainViewModel @Inject constructor(
                     income += it.money
                 }
             }
-            DailyRecord(date = date, expenditure = expenditure, income = income, records = records)
+            DailyRecord(date = records.first().date, expenditure = expenditure, income = income, records = records)
         }
     }
 

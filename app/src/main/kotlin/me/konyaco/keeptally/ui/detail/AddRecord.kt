@@ -4,6 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -369,7 +370,12 @@ private fun LabelContainer(
 ) {
     val borderWidth by animateDpAsState(if (selected) 0.dp else 1.dp)
     Surface(
-        modifier = modifier.defaultMinSize(minWidth = 48.dp),
+        modifier = modifier.defaultMinSize(minWidth = 48.dp)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = { onSelectChange(!selected) },
+            ),
         color = animateColorAsState(
             if (selected) activeColor
             else MaterialTheme.colorScheme.surface
@@ -378,7 +384,6 @@ private fun LabelContainer(
             borderWidth,
             Color(0xFF757876) /* TODO */
         ),
-        onClick = { onSelectChange(!selected) },
         shape = RoundedCornerShape(8.dp),
         interactionSource = interactionSource
     ) {

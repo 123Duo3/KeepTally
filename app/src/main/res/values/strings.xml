@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Keep Tally</string>
+    <string name="detail">明细</string>
+    <string name="filter">筛查</string>
+    <string name="statistics">统计</string>
+    <string name="other">杂项</string>
 </resources>

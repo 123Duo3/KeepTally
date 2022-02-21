@@ -94,7 +94,7 @@ private fun DailyRecordPreview() {
                     time = "12:30",
                     type = MainViewModel.RecordType("父分类", "分类", false),
                     money = -1100,
-                    date = MainViewModel.Date(0, "12-20", 0)
+                    date = MainViewModel.Date("12-20", 0)
                 )
             )
         )

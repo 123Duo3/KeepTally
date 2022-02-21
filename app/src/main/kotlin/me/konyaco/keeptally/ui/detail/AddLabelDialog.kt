@@ -1,10 +1,9 @@
 package me.konyaco.keeptally.ui.detail
 
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material.*
 import androidx.compose.runtime.*
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.sync.Mutex
 
 @Composable
 fun AddLabelDialog(onDismissRequest: () -> Unit, onConfirm: (String) -> Unit) {
@@ -28,4 +27,20 @@ fun AddLabelDialog(onDismissRequest: () -> Unit, onConfirm: (String) -> Unit) {
             }
         }
     )
+}
+
+@Composable
+fun AddLabelDialog(state: AddLabelDialogState) {
+
+}
+
+class AddLabelDialogState {
+    private var continuation: CancellableContinuation<String>? = null
+    private val mutex = Mutex()
+
+    interface AddLabelDialogData
+
+    suspend fun showAndGetResult(parentLabel: String): String {
+        TODO()
+    }
 }

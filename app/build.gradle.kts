@@ -56,6 +56,7 @@ kapt {
 }
 
 dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
     val hiltVersion = "2.40.5"
@@ -68,7 +69,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.7.0")
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
 
     implementation("androidx.activity:activity-compose:1.4.0")
 
@@ -79,11 +80,11 @@ dependencies {
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
-    implementation("androidx.compose.material3:material3:1.0.0-alpha04")
+    implementation("androidx.compose.material3:material3:1.0.0-alpha05")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
 
-    val accompanistVersion = "0.22.1-rc"
+    val accompanistVersion = "0.23.0"
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
 
