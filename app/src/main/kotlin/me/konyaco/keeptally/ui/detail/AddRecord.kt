@@ -29,6 +29,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import me.konyaco.keeptally.component.MainViewModel
 import me.konyaco.keeptally.ui.RecordSign
 import me.konyaco.keeptally.ui.parseMoneyToCent
@@ -50,7 +52,7 @@ data class AddDialogState(
 @Composable
 fun AddRecord(
     modifier: Modifier,
-    viewModel: MainViewModel,
+    viewModel: MainViewModel = viewModel(),
     onCloseRequest: () -> Unit
 ) {
     var showDialog by remember { mutableStateOf<AddDialogState?>(null) }
@@ -194,6 +196,7 @@ fun AddRecord(
                 colors = ButtonDefaults.buttonColors(buttonColor)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
+                Spacer(Modifier.width(12.dp))
                 Text("记录")
             }
             Spacer(Modifier.height(58.dp))
@@ -231,8 +234,9 @@ private fun EditArea(
             value = field,
             onValueChange = {
                 if (validateNumberString(it.text)) {
-                    field = it
-                    onMoneyStrChange(it.text)
+                    val text = normalizeNumberString(it)
+                    field = text
+                    onMoneyStrChange(text.text)
                 }
             },
             textStyle = MaterialTheme.typography.displaySmall.copy(
@@ -342,6 +346,30 @@ private fun validateNumberString(str: String): Boolean {
     return true
 }
 
+/**
+ * Trim '0'
+ * 0043.1
+ * 43.1
+ */
+private fun normalizeNumberString(value: TextFieldValue): TextFieldValue {
+    val text = value.text
+    return if (text == "0") {
+        value
+    } else if (text.getOrNull(text.indexOf('.') - 1) == '0') {
+        value
+    } else {
+        var zeros = 0
+        for (c in text) {
+            if (c == '0') zeros++
+            else break
+        }
+        value.copy(
+            text = text.substring(zeros until text.length),
+            selection = TextRange(value.selection.start - zeros, value.selection.end - zeros)
+        )
+    }
+}
+
 @Composable
 @Preview
 private fun PreviewLabelList() {
@@ -370,7 +398,8 @@ private fun LabelContainer(
 ) {
     val borderWidth by animateDpAsState(if (selected) 0.dp else 1.dp)
     Surface(
-        modifier = modifier.defaultMinSize(minWidth = 48.dp)
+        modifier = modifier
+            .defaultMinSize(minWidth = 48.dp)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -384,8 +413,7 @@ private fun LabelContainer(
             borderWidth,
             Color(0xFF757876) /* TODO */
         ),
-        shape = RoundedCornerShape(8.dp),
-        interactionSource = interactionSource
+        shape = RoundedCornerShape(8.dp)
     ) {
         CompositionLocalProvider(
             LocalContentColor provides animateColorAsState(

@@ -2,17 +2,17 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
-    id("com.google.devtools.ksp") version "1.6.10-1.0.2"
+    id("com.google.devtools.ksp") version "1.6.21-1.0.6"
     id("dagger.hilt.android.plugin")
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 32
 
     defaultConfig {
         applicationId = "me.konyaco.keeptally"
         minSdk = 21
-        targetSdk = 31
+        targetSdk = 32
         versionCode = 1
         versionName = "1.0"
 
@@ -32,11 +32,11 @@ android {
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -56,22 +56,22 @@ kapt {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.0")
 
-    val hiltVersion = "2.40.5"
+    val hiltVersion = "2.43.1"
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-compiler:$hiltVersion")
-    androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
-    kaptAndroidTest("com.google.dagger:hilt-compiler:$hiltVersion")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+
     testImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
     kaptTest("com.google.dagger:hilt-compiler:$hiltVersion")
+    kaptAndroidTest("com.google.dagger:hilt-compiler:$hiltVersion")
 
-    implementation("androidx.core:core-ktx:1.7.0")
-
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
-
-    implementation("androidx.activity:activity-compose:1.4.0")
+    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.activity:activity-compose:1.5.1")
 
     val composeVersion = rootProject.extra["compose_version"]!!.toString()
     implementation("androidx.compose.ui:ui:$composeVersion")
@@ -80,18 +80,20 @@ dependencies {
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
-    implementation("androidx.compose.material3:material3:1.0.0-alpha05")
+    implementation("androidx.compose.material3:material3:1.0.0-alpha15")
+
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
+
+    implementation("androidx.navigation:navigation-compose:2.5.1")
 
     val accompanistVersion = "0.23.0"
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
 
-    // Realm
-//    implementation("io.realm.kotlin:library-base:0.8.0")
-
-    val roomVersion = "2.4.1"
+    val roomVersion = "2.4.3"
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")

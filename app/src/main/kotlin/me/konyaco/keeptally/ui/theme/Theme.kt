@@ -120,14 +120,6 @@ fun KeepTallyTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
 @Composable
 fun AndroidKeepTallyTheme(content: @Composable () -> Unit) {
     KeepTallyTheme {
-        val uiController = rememberSystemUiController()
-        val colorScheme = MaterialTheme.colorScheme
-
-        LaunchedEffect(colorScheme) {
-            uiController.setStatusBarColor(colorScheme.inverseOnSurface)
-            uiController.setNavigationBarColor(colorScheme.inverseOnSurface)
-        }
-
         content()
     }
 }

@@ -2,6 +2,8 @@
 <resources>
 
     <style name="Theme.KeepTally" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#00FFFFFF</item>
+        <item name="android:navigationBarColor">#00FFFFFF</item>
         <!--        <item name="android:windowTranslucentStatus">true</item>-->
         <!--        <item name="android:windowTranslucentNavigation">true</item>-->
     </style>

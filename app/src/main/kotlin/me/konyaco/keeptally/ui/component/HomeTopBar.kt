@@ -5,6 +5,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.*
@@ -126,17 +128,20 @@ private fun DateChooser(state: DateChooserState) {
             Icon(Icons.Sharp.ArrowDropDown, contentDescription = "Dropdown")
         }
         DropdownMenu(
-            expanded = state.showDateChooser, onDismissRequest = { state.showDateChooser = false },
+            expanded = state.showDateChooser,
+            onDismissRequest = { state.showDateChooser = false },
             offset = DpOffset(16.dp, 0.dp)
         ) {
-            state.availableDate.forEach { (year, month, str) ->
-                DropdownMenuItem(
-                    text = { Text(str) },
-                    onClick = {
-                        state.selectDate(year, month)
-                        state.showDateChooser = false
-                    }
-                )
+            LazyColumn(Modifier.height(300.dp).width(140.dp)) {
+                itemsIndexed(state.availableDate) { index, (year, month, str)->
+                    DropdownMenuItem(
+                        text = { Text(str) },
+                        onClick = {
+                            state.selectDate(year, month)
+                            state.showDateChooser = false
+                        }
+                    )
+                }
             }
         }
     }

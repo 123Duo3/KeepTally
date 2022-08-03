@@ -1,5 +1,7 @@
 package me.konyaco.keeptally.ui.detail
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -14,20 +16,26 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import me.konyaco.keeptally.component.DetailViewModel
 import me.konyaco.keeptally.component.MainViewModel
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DetailScreen(
-    viewModel: MainViewModel,
+    viewModel: MainViewModel = viewModel(),
     modifier: Modifier = Modifier,
     onAddClick: () -> Unit
 ) {
-    val records by viewModel.records.collectAsState()
     val statistics by viewModel.statistics.collectAsState()
+    val records by viewModel.records.collectAsState()
 
     Box(modifier) {
         Column(
@@ -50,36 +58,94 @@ fun DetailScreen(
                 income = statistics.income
             )
             Spacer(Modifier.height(12.dp))
-            LineChart(Modifier.fillMaxWidth())
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                color = MaterialTheme.colorScheme.surface
-            ) {
-                LazyColumn(contentPadding = PaddingValues(16.dp)) {
-                    itemsIndexed(records) { index, item ->
-                        DailyRecord(
-                            Modifier.fillParentMaxWidth(),
-                            item.date.parseAsString(),
-                            item.expenditure,
-                            item.income,
-                            item.records
-                        )
-                        if (index < records.size - 1) Divider(Modifier.padding(vertical = 8.dp))
+
+            if (records.isEmpty()) {
+                EmptyContent(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+            } else {
+                Content(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    records,
+                    {
+                        viewModel.deleteRecord(it.id)
                     }
-                }
+                )
             }
         }
 
         ExtendedFloatingActionButton(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp),
+                .padding(
+                    end = 16.dp,
+                    bottom = 16.dp + WindowInsets.navigationBars
+                        .asPaddingValues()
+                        .calculateBottomPadding()
+                ),
             icon = { Icon(Icons.Sharp.Add, "Add Record") },
             text = { Text("添加记录") },
             onClick = onAddClick
         )
+    }
+}
+
+@Composable
+private fun EmptyContent(modifier: Modifier) {
+    Column(modifier) {
+        Box(
+            Modifier
+                .height(4.dp)
+                .background(MaterialTheme.colorScheme.primary)
+        )
+        Image(
+            modifier = Modifier.weight(1f),
+            painter = ColorPainter(Color.Gray), // TODO
+            contentDescription = "Empty",
+            contentScale = ContentScale.Crop
+        )
+        Text(text = "点击「添加记录」来创建第一笔记账")
+    }
+}
+
+@Composable
+private fun Content(
+    modifier: Modifier,
+    records: List<MainViewModel.DailyRecord>,
+    onDelete: (MainViewModel.Record) -> Unit
+) {
+    Column(modifier) {
+        LineChart(Modifier.fillMaxWidth())
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            LazyColumn(
+                contentPadding = PaddingValues(
+                    top = 16.dp,
+                    bottom = 16.dp + WindowInsets.navigationBars.asPaddingValues()
+                        .calculateBottomPadding()
+                )
+            ) {
+                itemsIndexed(records) { index, item ->
+                    DailyRecord(
+                        Modifier.fillParentMaxWidth(),
+                        item.date.parseAsString(),
+                        item.expenditure,
+                        item.income,
+                        item.records,
+                        onDelete
+                    )
+                    if (index < records.size - 1) Divider(Modifier.padding(vertical = 8.dp))
+                }
+            }
+        }
     }
 }
 

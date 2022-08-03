@@ -2,6 +2,7 @@ package me.konyaco.keeptally.component
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -10,12 +11,11 @@ import me.konyaco.keeptally.database.AppDatabase
 import java.time.*
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.math.abs
 import me.konyaco.keeptally.entity.Record as EntityRecord
 import me.konyaco.keeptally.entity.RecordType as EntityRecordType
 
-@Singleton
+@HiltViewModel
 class MainViewModel @Inject constructor(
     private val appDatabase: AppDatabase
 ) : ViewModel() {
@@ -32,6 +32,7 @@ class MainViewModel @Inject constructor(
     )
 
     data class Record(
+        val id: Int,
         val money: Int,
         val date: Date,
         val time: String,
@@ -149,7 +150,8 @@ class MainViewModel @Inject constructor(
             money = this.money,
             date = date,
             time = time,
-            type = label
+            type = label,
+            id = this.id
         )
     }
 
@@ -181,7 +183,7 @@ class MainViewModel @Inject constructor(
 
     fun setDateRange(dateRange: DateRange) {
         this.dateRange.value = dateRange
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Default) {
             refreshRecords()
         }
     }
@@ -265,7 +267,12 @@ class MainViewModel @Inject constructor(
                     income += it.money
                 }
             }
-            DailyRecord(date = records.first().date, expenditure = expenditure, income = income, records = records)
+            DailyRecord(
+                date = records.first().date,
+                expenditure = expenditure,
+                income = income,
+                records = records
+            )
         }
     }
 
@@ -285,5 +292,12 @@ class MainViewModel @Inject constructor(
             0,
             localZoneId
         ).toEpochSecond()
+    }
+
+    fun deleteRecord(id: Int) {
+        viewModelScope.launch(Dispatchers.Default) {
+            recordDao.delete(me.konyaco.keeptally.entity.Record(id = id, 0, 0, 0, null))
+            refreshRecords()
+        }
     }
 }
