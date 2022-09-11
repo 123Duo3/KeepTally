@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.statistic
+package me.konyaco.keeptally.ui.statistic.component
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -11,13 +11,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import me.konyaco.keeptally.ui.RecordSign
+import me.konyaco.keeptally.ui.formatMoneyCentToString
 import me.konyaco.keeptally.ui.theme.RobotoSlab
 
 @Composable
 fun Graph(
     modifier: Modifier,
     label: String,
-    money: String,
+    money: Int,
     caption: String,
     color: Color,
     data: List<DataItem>
@@ -47,7 +48,8 @@ fun Graph(
             Row(Modifier.constrainAs(moneyRef) { centerTo(parent) }) {
                 Text(
                     modifier = Modifier.alignByBaseline(),
-                    text = money,
+                    text = (if (money >= 0) RecordSign.POSITIVE else RecordSign.NEGATIVE)
+                            + formatMoneyCentToString(money),
                     color = color,
                     style = MaterialTheme.typography.displaySmall
                 )

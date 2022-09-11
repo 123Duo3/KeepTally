@@ -1,6 +1,5 @@
 package me.konyaco.keeptally.ui
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
@@ -8,36 +7,34 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
-import me.konyaco.keeptally.component.MainViewModel
 import me.konyaco.keeptally.ui.component.HomeTopBar
 import me.konyaco.keeptally.ui.component.HomeTopBarState
-import me.konyaco.keeptally.ui.detail.AddRecord
 import me.konyaco.keeptally.ui.detail.DetailScreen
+import me.konyaco.keeptally.ui.detail.component.AddRecord
 import me.konyaco.keeptally.ui.filter.FilterScreen
 import me.konyaco.keeptally.ui.other.OtherScreen
 import me.konyaco.keeptally.ui.statistic.StatisticScreen
 import me.konyaco.keeptally.ui.theme.AndroidKeepTallyTheme
+import me.konyaco.keeptally.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalPagerApi::class)
 @Composable
-fun App(viewModel: MainViewModel = viewModel()) {
+fun App(viewModel: MainViewModel = hiltViewModel()) {
     val scope = rememberCoroutineScope()
     AndroidKeepTallyTheme {
         val systemUiController = rememberSystemUiController()

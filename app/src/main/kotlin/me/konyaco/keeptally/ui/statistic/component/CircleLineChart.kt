@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.statistic
+package me.konyaco.keeptally.ui.statistic.component
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box

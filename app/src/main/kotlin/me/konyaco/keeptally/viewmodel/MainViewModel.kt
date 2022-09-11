@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.component
+package me.konyaco.keeptally.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,17 +7,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.konyaco.keeptally.database.AppDatabase
+import me.konyaco.keeptally.storage.database.AppDatabase
+import zonedEpoch
 import java.time.*
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import kotlin.math.abs
-import me.konyaco.keeptally.entity.Record as EntityRecord
-import me.konyaco.keeptally.entity.RecordType as EntityRecordType
+import me.konyaco.keeptally.storage.entity.Record as EntityRecord
+import me.konyaco.keeptally.storage.entity.RecordType as EntityRecordType
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val appDatabase: AppDatabase
+    private val appDatabase: AppDatabase,
+    private val sharedViewModel: SharedViewModel
 ) : ViewModel() {
     private val recordDao = appDatabase.recordDao()
     private val recordTypeDao = appDatabase.recordTypeDao()
@@ -58,7 +60,7 @@ class MainViewModel @Inject constructor(
     val expenditureLabels = MutableStateFlow<Map<RecordType, List<RecordType>>>(emptyMap())
     val incomeLabels = MutableStateFlow<Map<RecordType, List<RecordType>>>(emptyMap())
 
-    val dateRange = MutableStateFlow<DateRange>(DateRange.Month.now())
+    val dateRange = sharedViewModel.dateRange
 
     val statistics = MutableStateFlow<Statistics>(Statistics(0, 0, 0))
 
@@ -281,22 +283,9 @@ class MainViewModel @Inject constructor(
         return RecordType(label, parent?.label, isIncome)
     }
 
-    private fun LocalDate.zonedEpoch(): Long {
-        return ZonedDateTime.of(
-            year,
-            monthValue,
-            dayOfMonth,
-            0,
-            0,
-            0,
-            0,
-            localZoneId
-        ).toEpochSecond()
-    }
-
     fun deleteRecord(id: Int) {
         viewModelScope.launch(Dispatchers.Default) {
-            recordDao.delete(me.konyaco.keeptally.entity.Record(id = id, 0, 0, 0, null))
+            recordDao.delete(me.konyaco.keeptally.storage.entity.Record(id = id, 0, 0, 0, null))
             refreshRecords()
         }
     }

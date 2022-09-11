@@ -1,4 +1,4 @@
-package me.konyaco.keeptally
+package me.konyaco.keeptally.ui
 
 import androidx.compose.runtime.compositionLocalOf
 import androidx.navigation.NavHostController

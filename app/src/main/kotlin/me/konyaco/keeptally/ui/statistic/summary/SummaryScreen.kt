@@ -12,9 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import me.konyaco.keeptally.ui.RecordSign
-import me.konyaco.keeptally.ui.statistic.DataItem
-import me.konyaco.keeptally.ui.statistic.Graph
+import me.konyaco.keeptally.ui.statistic.component.DataItem
+import me.konyaco.keeptally.ui.statistic.component.Graph
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 
 private val testData = listOf(
@@ -24,19 +23,19 @@ private val testData = listOf(
 )
 
 @Composable
-fun TotalScreen() {
+fun SummaryScreen(expenditure: Int, income: Int, balance: Int) {
     Column(Modifier.fillMaxSize()) {
         Spacer(Modifier.height(32.dp))
         Graph(
             Modifier.align(Alignment.CenterHorizontally),
             "结余",
-            RecordSign.NEGATIVE + "2,333",
+            balance,
             "",
             MaterialTheme.colorScheme.primary,
             testData
         )
         Spacer(Modifier.height(32.dp))
-        DetailCard(Modifier.fillMaxSize())
+        DetailCard(Modifier.fillMaxSize(), expenditure, income, balance)
     }
 }
 
@@ -45,7 +44,7 @@ fun TotalScreen() {
 private fun TotalScreenPreview() {
     KeepTallyTheme {
         Surface(color = MaterialTheme.colorScheme.inverseOnSurface) {
-            TotalScreen()
+            SummaryScreen(2333, 11, 11)
         }
     }
 }

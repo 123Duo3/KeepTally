@@ -9,17 +9,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import me.konyaco.keeptally.database.AppDatabase
+import me.konyaco.keeptally.storage.database.AppDatabase
 import javax.inject.Inject
 
 @HiltAndroidApp
 class KeepTallyApplication : Application() {
     @Inject
     lateinit var database: AppDatabase
-
-    override fun onCreate() {
-        super.onCreate()
-    }
 }
 
 @Module

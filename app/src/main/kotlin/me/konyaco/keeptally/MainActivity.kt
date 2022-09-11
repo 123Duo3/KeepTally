@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import me.konyaco.keeptally.ui.App
+import me.konyaco.keeptally.ui.LocalNavController
 
 private const val TAG = "MainActivity"
 
@@ -29,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     startDestination = "home",
                     builder = {
                         composable("home") {
-                            App(hiltViewModel())
+                            App()
                         }
                         composable("abvc") {
 

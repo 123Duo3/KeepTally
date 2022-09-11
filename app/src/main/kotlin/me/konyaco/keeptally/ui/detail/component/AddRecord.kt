@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.detail
+package me.konyaco.keeptally.ui.detail.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -37,12 +37,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import me.konyaco.keeptally.component.MainViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import me.konyaco.keeptally.ui.RecordSign
 import me.konyaco.keeptally.ui.parseMoneyToCent
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.ui.theme.RobotoSlab
+import me.konyaco.keeptally.viewmodel.MainViewModel
 
 data class AddDialogState(
     val isIncomeLabel: Boolean,
@@ -52,7 +52,7 @@ data class AddDialogState(
 @Composable
 fun AddRecord(
     modifier: Modifier,
-    viewModel: MainViewModel = viewModel(),
+    viewModel: MainViewModel = hiltViewModel(),
     onCloseRequest: () -> Unit
 ) {
     var showDialog by remember { mutableStateOf<AddDialogState?>(null) }

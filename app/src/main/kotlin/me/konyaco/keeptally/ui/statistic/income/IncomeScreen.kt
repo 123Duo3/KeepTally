@@ -12,10 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import me.konyaco.keeptally.ui.RecordSign
-import me.konyaco.keeptally.ui.statistic.DataItem
-import me.konyaco.keeptally.ui.statistic.Graph
-import me.konyaco.keeptally.ui.statistic.RecordList
+import me.konyaco.keeptally.ui.statistic.component.DataItem
+import me.konyaco.keeptally.ui.statistic.component.Graph
+import me.konyaco.keeptally.ui.statistic.component.RecordList
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 
 private val testData = listOf(
@@ -31,7 +30,7 @@ fun IncomeScreen() {
         Graph(
             Modifier.align(Alignment.CenterHorizontally),
             "收入",
-            RecordSign.POSITIVE + "2,333",
+            2333,
             "",
             MaterialTheme.colorScheme.tertiary,
             testData

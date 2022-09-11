@@ -7,10 +7,11 @@ import java.text.DecimalFormat
 @Stable
 fun formatMoneyCent(money: Int): Pair<String, String> {
     val integer = money / 100
+    val decimal = money % 100
     val integerStr = DecimalFormat.getInstance().apply {
         isGroupingUsed = true
     }.format(integer)
-    val decimalStr = "%02d".format(money % 100)
+    val decimalStr = "%02d".format(decimal)
     return integerStr to decimalStr
 }
 

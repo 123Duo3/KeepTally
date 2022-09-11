@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.entity
+package me.konyaco.keeptally.storage.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

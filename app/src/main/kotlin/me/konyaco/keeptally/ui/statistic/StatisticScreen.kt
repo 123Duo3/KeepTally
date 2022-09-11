@@ -2,40 +2,28 @@ package me.konyaco.keeptally.ui.statistic
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.lifecycle.viewmodel.compose.viewModel
-import me.konyaco.keeptally.component.MainViewModel
-import me.konyaco.keeptally.ui.RecordSign
+import androidx.hilt.navigation.compose.hiltViewModel
+import me.konyaco.keeptally.ui.statistic.component.Tab
+import me.konyaco.keeptally.ui.statistic.component.TabItem
 import me.konyaco.keeptally.ui.statistic.expenditure.ExpenditureScreen
 import me.konyaco.keeptally.ui.statistic.income.IncomeScreen
-import me.konyaco.keeptally.ui.statistic.summary.TotalScreen
+import me.konyaco.keeptally.ui.statistic.summary.SummaryScreen
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
-
-@Composable
-fun StatisticScreen(viewModel: MainViewModel = viewModel()) {
-    StatisticScreen()
-}
+import me.konyaco.keeptally.viewmodel.StatisticViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun StatisticScreen() {
+fun StatisticScreen(viewModel: StatisticViewModel = hiltViewModel()) {
     Column(Modifier
         .fillMaxSize()
         .nestedScroll(
@@ -50,7 +38,10 @@ fun StatisticScreen() {
 
         AnimatedContent(targetState = page) {
             when (it) {
-                TabItem.TOTAL -> TotalScreen()
+                TabItem.TOTAL -> {
+                    val summary by viewModel.summary.collectAsState()
+                    SummaryScreen(summary.expenditure, summary.income, summary.balance)
+                }
                 TabItem.EXPENDITURE -> ExpenditureScreen()
                 TabItem.INCOME -> IncomeScreen()
             }

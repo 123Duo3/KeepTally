@@ -1,10 +1,10 @@
-package me.konyaco.keeptally.dao
+package me.konyaco.keeptally.storage.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import me.konyaco.keeptally.entity.Record
+import me.konyaco.keeptally.storage.entity.Record
 
 @Dao
 interface RecordDao {

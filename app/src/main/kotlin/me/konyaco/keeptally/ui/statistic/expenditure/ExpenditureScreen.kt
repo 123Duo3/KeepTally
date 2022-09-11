@@ -12,14 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
-import me.konyaco.keeptally.component.MainViewModel
-import me.konyaco.keeptally.ui.RecordSign
-import me.konyaco.keeptally.ui.statistic.DataItem
-import me.konyaco.keeptally.ui.statistic.Graph
-import me.konyaco.keeptally.ui.statistic.RecordList
+import androidx.hilt.navigation.compose.hiltViewModel
+import me.konyaco.keeptally.ui.formatMoneyCent
+import me.konyaco.keeptally.ui.statistic.component.DataItem
+import me.konyaco.keeptally.ui.statistic.component.Graph
+import me.konyaco.keeptally.ui.statistic.component.RecordList
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
+import me.konyaco.keeptally.viewmodel.StatisticViewModel
 
 private val testData = listOf(
     DataItem(Color(0xFF5EDBBC), 1500),
@@ -29,20 +28,23 @@ private val testData = listOf(
 
 @Composable
 fun ExpenditureScreen(
-    expenditureViewModel: ExpenditureViewModel = viewModel()
+    viewModel: StatisticViewModel = hiltViewModel()
 ) {
-    ExpenditureScreen()
+    ExpenditureScreen(100, 100)
 }
 
 @Composable
-fun ExpenditureScreen() {
+fun ExpenditureScreen(
+    money: Int,
+    budget: Int
+) {
     Column(Modifier.fillMaxSize()) {
         Spacer(Modifier.height(32.dp))
         Graph(
             Modifier.align(Alignment.CenterHorizontally),
             "支出",
-            RecordSign.NEGATIVE + "2,333",
-            "/2000",
+            money,
+            "/${formatMoneyCent(budget)}",
             MaterialTheme.colorScheme.primary,
             testData
         )

@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.other
+package me.konyaco.keeptally.ui.other.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*

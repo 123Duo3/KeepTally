@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import me.konyaco.keeptally.component.MainViewModel
+import me.konyaco.keeptally.viewmodel.MainViewModel
 import me.konyaco.keeptally.ui.RecordSign
 import me.konyaco.keeptally.ui.component.RecordItem
 import me.konyaco.keeptally.ui.formatMoneyCent

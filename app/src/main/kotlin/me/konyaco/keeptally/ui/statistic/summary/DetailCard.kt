@@ -14,36 +14,39 @@ import androidx.compose.ui.unit.dp
 import me.konyaco.keeptally.ui.component.MoneyString
 
 @Composable
-fun DetailCard(modifier: Modifier) {
+fun DetailCard(modifier: Modifier, expenditure: Int, income: Int, balance: Int) {
     Surface(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .padding(horizontal = 16.dp),
         color = MaterialTheme.colorScheme.surface
     ) {
         Column(
             Modifier
-                .fillMaxWidth()) {
+                .fillMaxWidth()
+        ) {
             RecordItem(
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.primary,
                 title = "支出",
-                money = -1100,
+                money = expenditure,
                 onClick = {}
             )
             RecordItem(
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.tertiary,
                 title = "收入",
-                money = -1100,
+                money = income,
                 onClick = {}
             )
-            Divider(Modifier.padding(vertical = 8.dp, horizontal = 16.dp), color = MaterialTheme.colorScheme.onSurface.copy(0.12f))
+            Divider(
+                Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                color = MaterialTheme.colorScheme.onSurface.copy(0.12f)
+            )
             RecordItem(
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.onSurface,
                 title = "结余",
-                money = -1100,
+                money = balance,
                 onClick = {}
             )
         }
