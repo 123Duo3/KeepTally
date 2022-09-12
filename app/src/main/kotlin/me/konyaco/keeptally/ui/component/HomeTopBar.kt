@@ -2,6 +2,10 @@ package me.konyaco.keeptally.ui.component
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -26,7 +30,7 @@ import me.konyaco.keeptally.R
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import java.time.LocalDate
 
-class HomeTopBarState(val onDateChosen: (year: Int, month: Int) -> Unit) {
+class HomeTopBarState(onDateChosen: (year: Int, month: Int) -> Unit) {
     val dateChooser = DateChooserState(onDateChosen)
     val selectedTab = mutableStateOf<TabItem>(TabItem.Detail)
 
@@ -132,8 +136,12 @@ private fun DateChooser(state: DateChooserState) {
             onDismissRequest = { state.showDateChooser = false },
             offset = DpOffset(16.dp, 0.dp)
         ) {
-            LazyColumn(Modifier.height(300.dp).width(140.dp)) {
-                itemsIndexed(state.availableDate) { index, (year, month, str)->
+            LazyColumn(
+                Modifier
+                    .height(300.dp)
+                    .width(140.dp)
+            ) {
+                itemsIndexed(state.availableDate) { index, (year, month, str) ->
                     DropdownMenuItem(
                         text = { Text(str) },
                         onClick = {
@@ -166,7 +174,11 @@ private fun CustomTab(selected: Boolean, text: String, icon: ImageVector, onClic
         horizontalArrangement = Arrangement.Center
     ) {
         Icon(icon, text, tint = contentColor)
-        AnimatedVisibility(visible = selected) {
+        AnimatedVisibility(
+            visible = selected,
+            enter = expandHorizontally(tween(easing = LinearEasing)),
+            exit = shrinkHorizontally(tween(easing = LinearEasing))
+        ) {
             Text(
                 modifier = Modifier.padding(start = 24.dp),
                 text = text,

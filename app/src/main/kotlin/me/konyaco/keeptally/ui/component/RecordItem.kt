@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.konyaco.keeptally.ui.RecordSign
 import me.konyaco.keeptally.ui.formatMoneyCent
+import me.konyaco.keeptally.ui.statistic.component.MoneyIndicator
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.ui.theme.RobotoSlab
 import kotlin.math.abs
@@ -40,11 +41,7 @@ fun RecordItem(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            Modifier
-                .size(4.dp, 32.dp)
-                .background(color)
-        )
+        MoneyIndicator(money = money, budget = 0, fillColor = color)
         Spacer(Modifier.width(16.dp))
         Column(Modifier.weight(1f)) {
             Text(text = title, style = MaterialTheme.typography.titleMedium)

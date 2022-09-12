@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import me.konyaco.keeptally.ui.RecordSign
+import me.konyaco.keeptally.ui.formatMoneyCent
 import me.konyaco.keeptally.ui.formatMoneyCentToString
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.ui.theme.RobotoSlab
@@ -20,6 +21,7 @@ import kotlin.math.abs
 @Composable
 fun MoneyString(
     money: Int,
+    budget: Int? = null,
     positiveColor: Color = MaterialTheme.colorScheme.tertiary,
     negativeColor: Color = MaterialTheme.colorScheme.primary
 ) {
@@ -44,6 +46,14 @@ fun MoneyString(
                 style = MaterialTheme.typography.titleLarge,
                 fontFamily = FontFamily.RobotoSlab
             )
+            budget?.let {
+                Text(
+                    modifier = Modifier.alignByBaseline(),
+                    text = "/" + formatMoneyCent(it).first,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontFamily = FontFamily.RobotoSlab
+                )
+            }
         }
     }
 }

@@ -11,6 +11,12 @@ interface RecordTypeDao {
     @Query("SELECT * FROM recordtype")
     suspend fun getAll(): List<RecordType>
 
+    @Query("SELECT * FROM recordtype WHERE isIncome = 1")
+    suspend fun getAllIncome(): List<RecordType>
+
+    @Query("SELECT * FROM recordtype WHERE isIncome = 0")
+    suspend fun getAllExpenditure(): List<RecordType>
+
     @Query("SELECT * FROM recordtype WHERE id IN (:id)")
     suspend fun loadAllByIds(vararg id: Int): List<RecordType>
 

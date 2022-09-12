@@ -1,6 +1,5 @@
 package me.konyaco.keeptally.ui.detail
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -14,12 +13,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import me.konyaco.keeptally.ui.detail.component.DailyRecord
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.viewmodel.MainViewModel
 
@@ -58,7 +55,8 @@ fun DetailScreen(
                 EmptyContent(
                     Modifier
                         .fillMaxWidth()
-                        .weight(1f))
+                        .weight(1f)
+                )
             } else {
                 Content(
                     Modifier
@@ -90,15 +88,20 @@ fun DetailScreen(
 
 @Composable
 private fun EmptyContent(modifier: Modifier) {
-    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier) {
         LineChart(Modifier.fillMaxWidth())
-        Image(
-            modifier = Modifier.weight(1f),
-            painter = ColorPainter(Color.Gray), // TODO
-            contentDescription = "Empty",
-            contentScale = ContentScale.Crop
-        )
-        Text(text = "点击「添加记录」来创建第一笔记账")
+        Box(Modifier.fillMaxSize(), Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                /*Image(
+                    modifier = Modifier.size(280.dp, 300.dp),
+                    painter = ColorPainter(Color.Gray), // TODO
+                    contentDescription = "Empty",
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(Modifier.height(8.dp))*/
+                Text(text = "点击「添加记录」来创建第一笔记账", color = MaterialTheme.colorScheme.primary)
+            }
+        }
     }
 }
 

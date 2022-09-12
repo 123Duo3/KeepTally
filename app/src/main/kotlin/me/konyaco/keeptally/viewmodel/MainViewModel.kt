@@ -8,8 +8,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.konyaco.keeptally.storage.database.AppDatabase
+import me.konyaco.keeptally.viewmodel.model.DateRange
 import zonedEpoch
-import java.time.*
+import java.time.Duration
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import kotlin.math.abs
@@ -52,7 +56,8 @@ class MainViewModel @Inject constructor(
         /**
          * Income label or expenditure label
          */
-        val income: Boolean
+        val income: Boolean,
+        val colorIndex: Int
     )
 
     val records = MutableStateFlow<List<DailyRecord>>(emptyList())
@@ -72,47 +77,9 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
+            sharedViewModel.load()
             refreshLabels()
             refreshRecords()
-        }
-    }
-
-    sealed class DateRange(val start: LocalDate, val end: LocalDate) {
-        data class Month(val year: Int, val month: Int) :
-            DateRange(
-                LocalDate.of(year, month, 1),
-                LocalDate.of(year, month, 1).plusMonths(1)
-            ) {
-            companion object {
-                fun now(): Month {
-                    val dateTime = LocalDateTime.now()
-                    return Month(dateTime.year, dateTime.monthValue)
-                }
-            }
-        }
-
-        data class Day(val year: Int, val month: Int, val day: Int) : DateRange(
-            LocalDate.of(year, month, day),
-            LocalDate.of(year, month, day).plusDays(1)
-        ) {
-            companion object {
-                fun now(): Day {
-                    val dateTime = LocalDateTime.now()
-                    return Day(dateTime.year, dateTime.monthValue, dateTime.dayOfMonth)
-                }
-            }
-        }
-
-        class Custom(start: LocalDate, end: LocalDate) : DateRange(start, end)
-
-        override fun equals(other: Any?): Boolean {
-            return other is DateRange && other.start == start && other.end == end
-        }
-
-        override fun hashCode(): Int {
-            var result = start.hashCode()
-            result = 31 * result + end.hashCode()
-            return result
         }
     }
 
@@ -195,6 +162,7 @@ class MainViewModel @Inject constructor(
             // Check existence
             if (recordTypeDao.getRootByLabel(name) == null) {
                 recordTypeDao.insertAll(EntityRecordType(0, name, null, isIncomeLabel))
+                sharedViewModel.load()
                 refreshLabels()
             } else {
                 // TODO: Show error message to user
@@ -280,7 +248,12 @@ class MainViewModel @Inject constructor(
 
     private suspend fun EntityRecordType.mapToRecordType(): RecordType {
         val parent = parentId?.let { recordTypeDao.loadAllByIds(it).firstOrNull() }
-        return RecordType(label, parent?.label, isIncome)
+        return RecordType(
+            label,
+            parent?.label,
+            isIncome,
+            sharedViewModel.colors.value[parentId ?: id]!!
+        )
     }
 
     fun deleteRecord(id: Int) {

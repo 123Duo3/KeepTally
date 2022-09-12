@@ -7,10 +7,7 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -31,6 +28,7 @@ import me.konyaco.keeptally.ui.other.OtherScreen
 import me.konyaco.keeptally.ui.statistic.StatisticScreen
 import me.konyaco.keeptally.ui.theme.AndroidKeepTallyTheme
 import me.konyaco.keeptally.viewmodel.MainViewModel
+import me.konyaco.keeptally.viewmodel.model.DateRange
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalPagerApi::class)
 @Composable
@@ -85,20 +83,26 @@ fun App(viewModel: MainViewModel = hiltViewModel()) {
                 ) {
                     val homeTopBarState = remember {
                         HomeTopBarState { year, month ->
-                            viewModel.setDateRange(MainViewModel.DateRange.Month(year, month))
+                            viewModel.setDateRange(DateRange.Month(year, month))
                         }
                     }
                     val pagerState = rememberPagerState()
 
+                    var isScrolling by remember { mutableStateOf(false) }
+
                     LaunchedEffect(homeTopBarState.selectedTab.value) {
                         val index = HomeTopBarState.TabItem.values()
                             .indexOf(homeTopBarState.selectedTab.value)
+                        isScrolling = true
                         pagerState.animateScrollToPage(index)
+                        isScrolling = false
                     }
 
-                    LaunchedEffect(pagerState.currentPage) {
-                        val tab = HomeTopBarState.TabItem.values()[pagerState.currentPage]
-                        homeTopBarState.selectTab(tab)
+                    LaunchedEffect(pagerState.currentPage, isScrolling) {
+                        if (!isScrolling) {
+                            val tab = HomeTopBarState.TabItem.values()[pagerState.currentPage]
+                            homeTopBarState.selectTab(tab)
+                        }
                     }
 
                     HomeTopBar(Modifier.fillMaxWidth(), homeTopBarState)

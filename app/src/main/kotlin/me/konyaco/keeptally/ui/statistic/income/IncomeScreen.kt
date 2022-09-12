@@ -1,5 +1,6 @@
 package me.konyaco.keeptally.ui.statistic.income
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,15 +8,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import me.konyaco.keeptally.ui.getRecordColor
 import me.konyaco.keeptally.ui.statistic.component.DataItem
 import me.konyaco.keeptally.ui.statistic.component.Graph
-import me.konyaco.keeptally.ui.statistic.component.RecordList
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
+import me.konyaco.keeptally.viewmodel.StatisticViewModel
+import me.konyaco.keeptally.viewmodel.model.Colors
 
 private val testData = listOf(
     DataItem(Color(0xFF5EDBBC), 1500),
@@ -24,19 +31,30 @@ private val testData = listOf(
 )
 
 @Composable
-fun IncomeScreen() {
+fun IncomeScreen(viewModel: StatisticViewModel = hiltViewModel()) {
+    val summary by viewModel.summary.collectAsState()
+    val incomes by viewModel.incomes.collectAsState()
+    val isDark = isSystemInDarkTheme()
+
     Column(Modifier.fillMaxSize()) {
         Spacer(Modifier.height(32.dp))
         Graph(
             Modifier.align(Alignment.CenterHorizontally),
             "收入",
-            2333,
+            summary.income,
             "",
             MaterialTheme.colorScheme.tertiary,
-            testData
+            remember(incomes) {
+                incomes.map {
+                    val color = getRecordColor(it.color, true, isDark)
+                    DataItem(color, it.money)
+                }
+            }
         )
         Spacer(Modifier.height(32.dp))
-        RecordList(Modifier.fillMaxSize())
+        RecordList(Modifier.fillMaxSize(), incomes, onClick = {
+            // TODO:
+        })
     }
 }
 

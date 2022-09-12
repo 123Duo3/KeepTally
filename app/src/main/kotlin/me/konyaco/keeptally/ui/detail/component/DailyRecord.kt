@@ -1,5 +1,6 @@
-package me.konyaco.keeptally.ui.detail
+package me.konyaco.keeptally.ui.detail.component
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -11,6 +12,7 @@ import me.konyaco.keeptally.viewmodel.MainViewModel
 import me.konyaco.keeptally.ui.RecordSign
 import me.konyaco.keeptally.ui.component.RecordItem
 import me.konyaco.keeptally.ui.formatMoneyCent
+import me.konyaco.keeptally.ui.getRecordColor
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.ui.theme.RobotoSlab
 
@@ -43,9 +45,10 @@ fun DailyRecord(
         }
         Column(Modifier.fillMaxWidth()) {
             records.forEach { record ->
+                val color = getRecordColor(record.type.colorIndex, record.type.income, isSystemInDarkTheme())
                 RecordItem(
                     modifier = Modifier.fillMaxWidth(),
-                    color = if (record.money >= 0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
+                    color = color,
                     title = record.type.label,
                     time = record.time,
                     category = record.type.parent ?: "",
@@ -101,14 +104,14 @@ private fun DailyRecordPreview() {
             records = listOf(
                 MainViewModel.Record(
                     time = "12:30",
-                    type = MainViewModel.RecordType("父分类", "分类", false),
+                    type = MainViewModel.RecordType("父分类", "分类", false, 0),
                     money = -1100,
                     date = MainViewModel.Date("12-20", 0),
                     id = 0
                 ),
                 MainViewModel.Record(
                     time = "12:30",
-                    type = MainViewModel.RecordType("父分类", "分类", false),
+                    type = MainViewModel.RecordType("父分类", "分类", false, 0),
                     money = -1100,
                     date = MainViewModel.Date("12-20", 0),
                     id = 1
