@@ -27,18 +27,6 @@ object Colors {
     )
 
 
-    val indigo = longArrayOf(
-        0xFFE8EAF6,
-        0xFFC5CAE9,
-        0xFF9FA8DA,
-        0xFF7986CB,
-        0xFF5C6BC0,
-        0xFF3F51B5,
-        0xFF3949AB,
-        0xFF303F9F,
-        0xFF283593,
-        0xFF1A237E
-    )
     val blue = longArrayOf(
         0xFFE3F2FD,
         0xFFBBDEFB,
