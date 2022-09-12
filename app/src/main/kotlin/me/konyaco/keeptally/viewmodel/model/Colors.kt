@@ -95,12 +95,12 @@ object Colors {
     val expColorSet = arrayOf(deepPurple, cyan, blue)
     val incomeColorSet = arrayOf(green, lightGreen, lime)
 
-    val expLightColors: List<Long> = expColorSet.flatMap { it.slice(3..9) }
-    val expDarkColors: List<Long> = expColorSet.flatMap { it.slice(0..6).reversed() }
+    val expLightColors: List<Long> = expColorSet.flatMap { it.slice(setOf(1, 3, 5, 7, 9)) }
+    val expDarkColors: List<Long> = expColorSet.flatMap { it.slice(setOf(0, 2, 4, 6, 8)).reversed() }
 
 
-    val incomeLightColors: List<Long> = incomeColorSet.flatMap { it.slice(3..9) }
-    val incomeDarkColors: List<Long> = incomeColorSet.flatMap { it.slice(0..6).reversed() }
+    val incomeLightColors: List<Long> = incomeColorSet.flatMap { it.slice(setOf(1, 3, 5, 7, 9)) }
+    val incomeDarkColors: List<Long> = incomeColorSet.flatMap { it.slice(setOf(0, 2, 4, 6, 8)).reversed() }
 
     val expColors: List<Pair<Long, Long>> = expLightColors.zip(expDarkColors).shuffled()
     val incomeColors: List<Pair<Long, Long>> = incomeLightColors.zip(incomeDarkColors).shuffled()
