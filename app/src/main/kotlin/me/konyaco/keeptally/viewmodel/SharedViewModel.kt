@@ -2,6 +2,7 @@ package me.konyaco.keeptally.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -18,11 +19,12 @@ class SharedViewModel @Inject constructor(
     val dateRange = MutableStateFlow<DateRange>(DateRange.Month.now())
     val colors: MutableStateFlow<Map<Int, Int>> = MutableStateFlow(emptyMap())
 
+    private val lock = Mutex()
+
     init {
-        viewModelScope.launch { load() }
+        viewModelScope.launch(Dispatchers.IO) { load() }
     }
 
-    private val lock = Mutex()
     suspend fun load() = lock.withLock {
         val map = mutableMapOf<Int, Int>()
         var incomeI = 0
