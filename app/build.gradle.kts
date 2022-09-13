@@ -63,7 +63,7 @@ kapt {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
 
     val hiltVersion = "2.43.1"
     implementation("com.google.dagger:hilt-android:$hiltVersion")
@@ -76,7 +76,7 @@ dependencies {
     kaptTest("com.google.dagger:hilt-compiler:$hiltVersion")
     kaptAndroidTest("com.google.dagger:hilt-compiler:$hiltVersion")
 
-    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation("androidx.activity:activity-compose:1.5.1")
 
@@ -87,16 +87,16 @@ dependencies {
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
-    implementation("androidx.compose.material3:material3:1.0.0-alpha15")
+    implementation("androidx.compose.material3:material3:1.0.0-beta02")
 
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
 
-    implementation("androidx.navigation:navigation-compose:2.5.1")
+    implementation("androidx.navigation:navigation-compose:2.5.2")
 
-    val accompanistVersion = "0.23.0"
+    val accompanistVersion = "0.25.1"
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
 
