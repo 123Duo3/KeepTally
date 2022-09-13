@@ -16,6 +16,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.mapSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,9 +33,12 @@ import me.konyaco.keeptally.R
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import java.time.LocalDate
 
-class HomeTopBarState(onDateChosen: (year: Int, month: Int) -> Unit) {
-    val dateChooser = DateChooserState(onDateChosen)
-    val selectedTab = mutableStateOf<TabItem>(TabItem.Detail)
+class HomeTopBarState(
+    initSelectedTab: TabItem,
+) {
+    val dateChooser by mutableStateOf(DateChooserState())
+    var selectedTab by mutableStateOf(initSelectedTab)
+        private set
 
     enum class TabItem(@StringRes val labelRes: Int, val icon: ImageVector) {
         Detail(R.string.detail, Icons.Sharp.Article),
@@ -42,20 +48,49 @@ class HomeTopBarState(onDateChosen: (year: Int, month: Int) -> Unit) {
 
         val label: String
             @Composable get() = stringResource(id = labelRes)
+
+        companion object {
+            val values = TabItem.values()
+        }
     }
 
     fun selectTab(tabItem: TabItem) {
-        selectedTab.value = tabItem
+        if (selectedTab != tabItem) selectedTab = tabItem
+    }
+
+    companion object {
+        val Saver: Saver<HomeTopBarState, *> = mapSaver(
+            save = {
+                val map = mutableMapOf<String, TabItem>()
+                map["selected"] = it.selectedTab
+                map
+            },
+            restore = {
+                HomeTopBarState(initSelectedTab = it["selected"] as? TabItem ?: TabItem.Detail)
+            }
+        )
     }
 }
 
 @Composable
-fun HomeTopBar(modifier: Modifier = Modifier, state: HomeTopBarState) {
+fun rememberHomeTopBarState(initSelectedTab: HomeTopBarState.TabItem = HomeTopBarState.TabItem.Detail): HomeTopBarState {
+    return rememberSaveable(saver = HomeTopBarState.Saver) {
+        HomeTopBarState(initSelectedTab)
+    }
+}
+
+@Composable
+fun HomeTopBar(
+    modifier: Modifier = Modifier,
+    state: HomeTopBarState,
+    onDateChosen: (year: Int, month: Int) -> Unit,
+    onTabSelect: (HomeTopBarState.TabItem) -> Unit
+) {
     Row(
         modifier = modifier.height(64.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        DateChooser(state.dateChooser)
+        DateChooser(state.dateChooser, onDateChosen)
         Divider(Modifier.size(1.dp, 36.dp))
         Row(
             modifier = Modifier
@@ -65,19 +100,19 @@ fun HomeTopBar(modifier: Modifier = Modifier, state: HomeTopBarState) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            HomeTopBarState.TabItem.values().forEach {
+            HomeTopBarState.TabItem.values.forEach {
                 CustomTab(
-                    selected = state.selectedTab.value == it,
+                    selected = state.selectedTab == it,
                     text = it.label,
                     icon = it.icon,
-                    onClick = { state.selectTab(it) }
+                    onClick = { if (state.selectedTab != it) onTabSelect(it) }
                 )
             }
         }
     }
 }
 
-class DateChooserState(val onChosen: (year: Int, month: Int) -> Unit) {
+class DateChooserState {
     private val now = LocalDate.now()
     private fun calcAvailableDate(): List<Triple<Int, Int, String>> {
         val availableDate = mutableListOf<Triple<Int, Int, String>>()
@@ -99,6 +134,7 @@ class DateChooserState(val onChosen: (year: Int, month: Int) -> Unit) {
     }
 
     var showDateChooser by mutableStateOf(false)
+        private set
     var currentDate by mutableStateOf<Triple<Int, Int, String>>(
         Triple(
             now.year,
@@ -106,50 +142,60 @@ class DateChooserState(val onChosen: (year: Int, month: Int) -> Unit) {
             buildDateString(now.year, now.monthValue)
         )
     )
+        private set
 
     var availableDate = calcAvailableDate()
 
     fun selectDate(year: Int, month: Int) {
         currentDate = Triple(year, month, buildDateString(year, month))
-        onChosen(year, month)
+    }
+
+    fun showDateChooser() {
+        showDateChooser = true
+    }
+
+    fun closeDateChooser() {
+        showDateChooser = false
     }
 }
 
 @Composable
-private fun DateChooser(state: DateChooserState) {
-    Box {
-        Row(
+private fun DateChooser(
+    state: DateChooserState,
+    onDateChosen: (year: Int, month: Int) -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxHeight()
+            .clickable(remember { MutableInteractionSource() }, null) {
+                state.showDateChooser()
+            }
+            .padding(start = 16.dp, end = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = state.currentDate.third, style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.width(4.dp))
+        Icon(Icons.Sharp.ArrowDropDown, contentDescription = "Dropdown")
+    }
+    DropdownMenu(
+        expanded = state.showDateChooser,
+        onDismissRequest = { state.closeDateChooser() },
+        offset = DpOffset(16.dp, 0.dp)
+    ) {
+        LazyColumn(
             Modifier
-                .fillMaxHeight()
-                .clickable(remember { MutableInteractionSource() }, null) {
-                    state.showDateChooser = true
-                }
-                .padding(start = 16.dp, end = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .height(300.dp)
+                .width(140.dp)
         ) {
-            Text(text = state.currentDate.third, style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.width(4.dp))
-            Icon(Icons.Sharp.ArrowDropDown, contentDescription = "Dropdown")
-        }
-        DropdownMenu(
-            expanded = state.showDateChooser,
-            onDismissRequest = { state.showDateChooser = false },
-            offset = DpOffset(16.dp, 0.dp)
-        ) {
-            LazyColumn(
-                Modifier
-                    .height(300.dp)
-                    .width(140.dp)
-            ) {
-                itemsIndexed(state.availableDate) { index, (year, month, str) ->
-                    DropdownMenuItem(
-                        text = { Text(str) },
-                        onClick = {
-                            state.selectDate(year, month)
-                            state.showDateChooser = false
-                        }
-                    )
-                }
+            itemsIndexed(state.availableDate) { index, (year, month, str) ->
+                DropdownMenuItem(
+                    text = { Text(str) },
+                    onClick = {
+                        state.selectDate(year, month)
+                        state.closeDateChooser()
+                        onDateChosen(year, month)
+                    }
+                )
             }
         }
     }
@@ -174,11 +220,7 @@ private fun CustomTab(selected: Boolean, text: String, icon: ImageVector, onClic
         horizontalArrangement = Arrangement.Center
     ) {
         Icon(icon, text, tint = contentColor)
-        AnimatedVisibility(
-            visible = selected,
-            enter = expandHorizontally(tween(easing = LinearEasing)),
-            exit = shrinkHorizontally(tween(easing = LinearEasing))
-        ) {
+        AnimatedVisibility(visible = selected) {
             Text(
                 modifier = Modifier.padding(start = 24.dp),
                 text = text,
@@ -205,6 +247,11 @@ private fun CustomTabPreview() {
 @Composable
 private fun HomeTopBarPreview() {
     KeepTallyTheme {
-        HomeTopBar(Modifier.fillMaxWidth(), remember { HomeTopBarState { _, _ -> } })
+        Surface(color = MaterialTheme.colorScheme.inverseOnSurface) {
+            val state = rememberHomeTopBarState()
+            HomeTopBar(Modifier.fillMaxWidth(), state, { _, _ -> }, {
+                state.selectTab(it)
+            })
+        }
     }
 }

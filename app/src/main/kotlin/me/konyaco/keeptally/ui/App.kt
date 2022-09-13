@@ -21,6 +21,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 import me.konyaco.keeptally.ui.component.HomeTopBar
 import me.konyaco.keeptally.ui.component.HomeTopBarState
+import me.konyaco.keeptally.ui.component.rememberHomeTopBarState
 import me.konyaco.keeptally.ui.detail.DetailScreen
 import me.konyaco.keeptally.ui.detail.component.AddRecord
 import me.konyaco.keeptally.ui.filter.FilterScreen
@@ -81,22 +82,11 @@ fun App(viewModel: MainViewModel = hiltViewModel()) {
                         .fillMaxSize()
                         .statusBarsPadding()
                 ) {
-                    val homeTopBarState = remember {
-                        HomeTopBarState { year, month ->
-                            viewModel.setDateRange(DateRange.Month(year, month))
-                        }
-                    }
+                    val homeTopBarState = rememberHomeTopBarState()
                     val pagerState = rememberPagerState()
 
                     var isScrolling by remember { mutableStateOf(false) }
 
-                    LaunchedEffect(homeTopBarState.selectedTab.value) {
-                        val index = HomeTopBarState.TabItem.values()
-                            .indexOf(homeTopBarState.selectedTab.value)
-                        isScrolling = true
-                        pagerState.animateScrollToPage(index)
-                        isScrolling = false
-                    }
 
                     LaunchedEffect(pagerState.currentPage, isScrolling) {
                         if (!isScrolling) {
@@ -105,9 +95,43 @@ fun App(viewModel: MainViewModel = hiltViewModel()) {
                         }
                     }
 
-                    HomeTopBar(Modifier.fillMaxWidth(), homeTopBarState)
+                    // New mechanism
+                    /*LaunchedEffect(pagerState.currentPageOffset, pagerState.currentPage, isScrolling) {
+                        if (!isScrolling) {
+                            val offset = pagerState.currentPageOffset
+                            val current = pagerState.currentPage
+                            val index = if (offset > 0.38f) {
+                                current + 1
+                            } else if (offset < -0.38f) {
+                                current - 1
+                            } else {
+                                current
+                            }
+                            val tab = HomeTopBarState.TabItem.values()[index]
+                            homeTopBarState.selectTab(tab)
+                        }
+                    }*/
+
+                    HomeTopBar(
+                        Modifier.fillMaxWidth(),
+                        homeTopBarState,
+                        onDateChosen = { year, month ->
+                            viewModel.setDateRange(DateRange.Month(year, month))
+                        },
+                        onTabSelect = {
+                            scope.launch {
+                                homeTopBarState.selectTab(it)
+                                val index = HomeTopBarState.TabItem.values
+                                    .indexOf(homeTopBarState.selectedTab)
+                                isScrolling = true
+                                pagerState.animateScrollToPage(index)
+                                isScrolling = false
+                            }
+                        }
+                    )
+
                     HorizontalPager(
-                        count = remember { HomeTopBarState.TabItem.values().size },
+                        count = remember { HomeTopBarState.TabItem.values.size },
                         state = pagerState
                     ) {
                         when (it) {
