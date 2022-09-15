@@ -2,10 +2,6 @@ package me.konyaco.keeptally.ui.component
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -26,6 +22,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -92,10 +89,22 @@ fun HomeTopBar(
     ) {
         DateChooser(state.dateChooser, onDateChosen)
         Divider(Modifier.size(1.dp, 36.dp))
+        Tabs(Modifier.weight(1f), state, onTabSelect)
+    }
+}
+
+@Composable
+private fun Tabs(
+    modifier: Modifier,
+    state: HomeTopBarState,
+    onTabSelect: (HomeTopBarState.TabItem) -> Unit
+) {
+    BoxWithConstraints(modifier) {
+        val displayText = maxWidth > 260.dp
         Row(
             modifier = Modifier
+                .fillMaxWidth()
                 .clip(RectangleShape)
-                .weight(1f)
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -103,9 +112,10 @@ fun HomeTopBar(
             HomeTopBarState.TabItem.values.forEach {
                 CustomTab(
                     selected = state.selectedTab == it,
-                    text = it.label,
                     icon = it.icon,
-                    onClick = { if (state.selectedTab != it) onTabSelect(it) }
+                    text = it.label,
+                    displayText = displayText,
+                    onClick = { if (state.selectedTab != it) onTabSelect(it) },
                 )
             }
         }
@@ -114,40 +124,40 @@ fun HomeTopBar(
 
 class DateChooserState {
     private val now = LocalDate.now()
-    private fun calcAvailableDate(): List<Triple<Int, Int, String>> {
-        val availableDate = mutableListOf<Triple<Int, Int, String>>()
+
+    data class DateRange(
+        val year: Int,
+        val month: Int,
+        val isCurrentYear: Boolean,
+        val isCurrentMonth: Boolean,
+    )
+
+    private fun newDateRange(y: Int, m: Int): DateRange {
+        return DateRange(y, m, y == now.year, y == now.year && m == now.monthValue)
+    }
+
+    private fun calcAvailableDateRange(): List<DateRange> {
+        val availableDate = mutableListOf<DateRange>()
 
         for (y in now.year downTo now.year - 2) {
             val maxMonth = if (y == now.year) now.monthValue else 12
             for (m in maxMonth downTo 1) {
-                availableDate.add(Triple(y, m, buildDateString(y, m)))
+                availableDate.add(newDateRange(y, m))
             }
         }
 
         return availableDate
     }
 
-    private fun buildDateString(year: Int, month: Int): String = when {
-        year == now.year && month == now.monthValue -> "本月"
-        year == now.year -> "$month 月"
-        else -> "$year 年 $month 月"
-    }
-
     var showDateChooser by mutableStateOf(false)
         private set
-    var currentDate by mutableStateOf<Triple<Int, Int, String>>(
-        Triple(
-            now.year,
-            now.monthValue,
-            buildDateString(now.year, now.monthValue)
-        )
-    )
-        private set
 
-    var availableDate = calcAvailableDate()
+    var currentRange by mutableStateOf(newDateRange(now.year, now.monthValue))
+
+    val avaDateRange = calcAvailableDateRange()
 
     fun selectDate(year: Int, month: Int) {
-        currentDate = Triple(year, month, buildDateString(year, month))
+        currentRange = newDateRange(year, month)
     }
 
     fun showDateChooser() {
@@ -159,6 +169,24 @@ class DateChooserState {
     }
 }
 
+@Stable
+private fun DateChooserState.DateRange.toString1(): String {
+    return when {
+        isCurrentMonth && isCurrentYear -> "本月"
+        isCurrentYear -> "$month 月"
+        else -> "$year 年\n$month 月"
+    }
+}
+
+@Stable
+private fun DateChooserState.DateRange.toString2(): String {
+    return when {
+        isCurrentMonth && isCurrentYear -> "本月"
+        isCurrentYear -> "$month 月"
+        else -> "$year 年 $month 月"
+    }
+}
+
 @Composable
 private fun DateChooser(
     state: DateChooserState,
@@ -167,13 +195,17 @@ private fun DateChooser(
     Row(
         Modifier
             .fillMaxHeight()
+            .width(110.dp)
             .clickable(remember { MutableInteractionSource() }, null) {
                 state.showDateChooser()
             }
             .padding(start = 16.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = state.currentDate.third, style = MaterialTheme.typography.titleLarge)
+        RangeText(
+            modifier = Modifier.weight(1f),
+            range = state.currentRange
+        )
         Spacer(Modifier.width(4.dp))
         Icon(Icons.Sharp.ArrowDropDown, contentDescription = "Dropdown")
     }
@@ -187,13 +219,13 @@ private fun DateChooser(
                 .height(300.dp)
                 .width(140.dp)
         ) {
-            itemsIndexed(state.availableDate) { index, (year, month, str) ->
+            itemsIndexed(state.avaDateRange) { index, range ->
                 DropdownMenuItem(
-                    text = { Text(str) },
+                    text = { Text(range.toString2()) },
                     onClick = {
-                        state.selectDate(year, month)
+                        state.selectDate(range.year, range.month)
                         state.closeDateChooser()
-                        onDateChosen(year, month)
+                        onDateChosen(range.year, range.month)
                     }
                 )
             }
@@ -202,7 +234,50 @@ private fun DateChooser(
 }
 
 @Composable
-private fun CustomTab(selected: Boolean, text: String, icon: ImageVector, onClick: () -> Unit) {
+private fun RangeText(
+    range: DateChooserState.DateRange,
+    modifier: Modifier = Modifier
+) {
+    when {
+        range.isCurrentYear -> {
+            Text(
+                modifier = modifier,
+                text = range.toString1(),
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+        }
+        else -> {
+            Text(
+                modifier = modifier,
+                text = range.toString1(),
+                style = MaterialTheme.typography.titleSmall,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun RangeTextPreview() {
+    KeepTallyTheme {
+        Column {
+            RangeText(remember { DateChooserState.DateRange(2022, 9, true, true) })
+            RangeText(remember { DateChooserState.DateRange(2022, 1, true, false) })
+            RangeText(remember { DateChooserState.DateRange(2019, 1, false, false) })
+        }
+    }
+}
+
+@Composable
+private fun CustomTab(
+    selected: Boolean,
+    icon: ImageVector,
+    text: String,
+    displayText: Boolean,
+    onClick: () -> Unit
+) {
     val contentAlpha = if (selected) 1f else 0.7f
     val contentColor = MaterialTheme.colorScheme.onBackground.copy(contentAlpha)
     Row(
@@ -220,7 +295,7 @@ private fun CustomTab(selected: Boolean, text: String, icon: ImageVector, onClic
         horizontalArrangement = Arrangement.Center
     ) {
         Icon(icon, text, tint = contentColor)
-        AnimatedVisibility(visible = selected) {
+        AnimatedVisibility(visible = selected && displayText) {
             Text(
                 modifier = Modifier.padding(start = 24.dp),
                 text = text,
@@ -239,7 +314,8 @@ private fun CustomTabPreview() {
         selected = selected,
         text = "详细",
         icon = Icons.Sharp.Article,
-        onClick = { selected = !selected }
+        onClick = { selected = !selected },
+        displayText = true
     )
 }
 
