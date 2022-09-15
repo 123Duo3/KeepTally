@@ -1,5 +1,6 @@
 package me.konyaco.keeptally.ui.detail
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -13,9 +14,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import me.konyaco.keeptally.R
 import me.konyaco.keeptally.ui.detail.component.DailyRecord
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.viewmodel.MainViewModel
@@ -92,13 +97,17 @@ private fun EmptyContent(modifier: Modifier) {
         LineChart(Modifier.fillMaxWidth())
         Box(Modifier.fillMaxSize(), Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                /*Image(
-                    modifier = Modifier.size(280.dp, 300.dp),
-                    painter = ColorPainter(Color.Gray), // TODO
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .sizeIn(maxWidth = 500.dp, maxHeight = 500.dp),
+                    painter = painterResource(id = R.drawable.woman_and_pen),
                     contentDescription = "Empty",
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Fit,
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
-                Spacer(Modifier.height(8.dp))*/
+                Spacer(Modifier.height(8.dp))
                 Text(text = "点击「添加记录」来创建第一笔记账", color = MaterialTheme.colorScheme.primary)
             }
         }
