@@ -105,10 +105,10 @@ private fun EmptyContent(modifier: Modifier) {
                     painter = painterResource(id = R.drawable.woman_and_pen),
                     contentDescription = "Empty",
                     contentScale = ContentScale.Fit,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer)
                 )
                 Spacer(Modifier.height(8.dp))
-                Text(text = "点击「添加记录」来创建第一笔记账", color = MaterialTheme.colorScheme.primary)
+                Text(text = "点击「添加记录」来创建第一笔记账", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
