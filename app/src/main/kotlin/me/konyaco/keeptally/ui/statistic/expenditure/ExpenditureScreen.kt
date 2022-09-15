@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import me.konyaco.keeptally.ui.formatMoneyCentToString
 import me.konyaco.keeptally.ui.getRecordColor
 import me.konyaco.keeptally.ui.statistic.component.DataItem
+import me.konyaco.keeptally.ui.statistic.component.EmptyScreen
 import me.konyaco.keeptally.ui.statistic.component.Graph
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.viewmodel.StatisticViewModel
@@ -33,7 +34,9 @@ fun ExpenditureScreen(
     val summary by viewModel.summary.collectAsState()
     val isDark = isSystemInDarkTheme()
 
-    Column(
+    if (exp.isEmpty())
+        EmptyScreen()
+    else Column(
         Modifier
             .fillMaxSize()
             .verticalScroll(state = rememberScrollState())

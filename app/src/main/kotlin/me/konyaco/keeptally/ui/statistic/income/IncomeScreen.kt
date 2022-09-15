@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import me.konyaco.keeptally.ui.getRecordColor
 import me.konyaco.keeptally.ui.statistic.component.DataItem
+import me.konyaco.keeptally.ui.statistic.component.EmptyScreen
 import me.konyaco.keeptally.ui.statistic.component.Graph
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.viewmodel.StatisticViewModel
@@ -39,7 +40,9 @@ fun IncomeScreen(viewModel: StatisticViewModel = hiltViewModel()) {
     val incomes by viewModel.incomes.collectAsState()
     val isDark = isSystemInDarkTheme()
 
-    Column(
+    if (incomes.isEmpty())
+        EmptyScreen()
+    else Column(
         Modifier
             .fillMaxSize()
             .verticalScroll(state = rememberScrollState())
