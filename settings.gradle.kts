@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Keep Tally"
-include ':app'
+include(":app")

@@ -1,5 +1,5 @@
 buildscript {
-    extra["compose_version"] = "1.2.1"
+    extra["compose_version"] = "1.2.0-rc02"
     dependencies {
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.40.5")
     }
