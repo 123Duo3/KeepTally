@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -13,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,7 +24,6 @@ import me.konyaco.keeptally.ui.statistic.component.DataItem
 import me.konyaco.keeptally.ui.statistic.component.Graph
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.viewmodel.StatisticViewModel
-import me.konyaco.keeptally.viewmodel.model.Colors
 
 @Composable
 fun ExpenditureScreen(
@@ -33,7 +33,11 @@ fun ExpenditureScreen(
     val summary by viewModel.summary.collectAsState()
     val isDark = isSystemInDarkTheme()
 
-    Column(Modifier.fillMaxSize()) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(state = rememberScrollState())
+    ) {
         Spacer(Modifier.height(32.dp))
         Graph(
             Modifier.align(Alignment.CenterHorizontally),

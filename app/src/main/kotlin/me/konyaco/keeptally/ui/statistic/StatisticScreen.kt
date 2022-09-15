@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -38,10 +41,7 @@ fun StatisticScreen(viewModel: StatisticViewModel = hiltViewModel()) {
 
         AnimatedContent(targetState = page) {
             when (it) {
-                TabItem.TOTAL -> {
-                    val summary by viewModel.summary.collectAsState()
-                    SummaryScreen(summary.expenditure, summary.income, summary.balance)
-                }
+                TabItem.TOTAL -> SummaryScreen()
                 TabItem.EXPENDITURE -> ExpenditureScreen()
                 TabItem.INCOME -> IncomeScreen()
             }
