@@ -26,7 +26,6 @@ object Colors {
         0xFF006064
     )
 
-
     val blue = longArrayOf(
         0xFFE3F2FD,
         0xFFBBDEFB,
