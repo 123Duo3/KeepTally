@@ -1,23 +1,17 @@
 package me.konyaco.keeptally.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 import me.konyaco.keeptally.ui.component.HomeTopBar
 import me.konyaco.keeptally.ui.component.HomeTopBarState
@@ -31,122 +25,125 @@ import me.konyaco.keeptally.ui.theme.AndroidKeepTallyTheme
 import me.konyaco.keeptally.viewmodel.MainViewModel
 import me.konyaco.keeptally.viewmodel.model.DateRange
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalPagerApi::class)
 @Composable
 fun App(viewModel: MainViewModel = hiltViewModel()) {
-    val scope = rememberCoroutineScope()
     AndroidKeepTallyTheme {
-        val systemUiController = rememberSystemUiController()
-
-        val localFocus = LocalFocusManager.current
-        val sheet = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden,
-            confirmStateChange = {
-                if (it == ModalBottomSheetValue.Hidden)
-                    localFocus.clearFocus()
-                true
-            }
-        )
-        val surfaceColor = MaterialTheme.colorScheme.surface
-
-        LaunchedEffect(systemUiController) {
-            systemUiController.setSystemBarsColor(
-                Color.Transparent,
-                surfaceColor.luminance() > 0.5f
-            )
-        }
-
         Surface(
             modifier = Modifier
                 .fillMaxSize(),
             color = MaterialTheme.colorScheme.inverseOnSurface,
             contentColor = MaterialTheme.colorScheme.onBackground
         ) {
-            ModalBottomSheetLayout(
-                sheetState = sheet,
-                sheetContent = {
-                    AddRecord(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .imePadding(),
-                        onCloseRequest = {
-                            localFocus.clearFocus()
-                            scope.launch { sheet.hide() }
-                        }
-                    )
-                },
-                sheetShape = RectangleShape
-            ) {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .statusBarsPadding()
-                ) {
-                    val homeTopBarState = rememberHomeTopBarState()
-                    val pagerState = rememberPagerState()
+            Main(viewModel)
+        }
+    }
+}
 
-                    var isScrolling by remember { mutableStateOf(false) }
-
-
-                    LaunchedEffect(pagerState.currentPage, isScrolling) {
-                        if (!isScrolling) {
-                            val tab = HomeTopBarState.TabItem.values()[pagerState.currentPage]
-                            homeTopBarState.selectTab(tab)
-                        }
-                    }
-
-                    // New mechanism
-                    /*LaunchedEffect(pagerState.currentPageOffset, pagerState.currentPage, isScrolling) {
-                        if (!isScrolling) {
-                            val offset = pagerState.currentPageOffset
-                            val current = pagerState.currentPage
-                            val index = if (offset > 0.38f) {
-                                current + 1
-                            } else if (offset < -0.38f) {
-                                current - 1
-                            } else {
-                                current
-                            }
-                            val tab = HomeTopBarState.TabItem.values()[index]
-                            homeTopBarState.selectTab(tab)
-                        }
-                    }*/
-
-                    HomeTopBar(
-                        Modifier.fillMaxWidth(),
-                        homeTopBarState,
-                        onDateChosen = { year, month ->
-                            viewModel.setDateRange(DateRange.Month(year, month))
-                        },
-                        onTabSelect = {
-                            scope.launch {
-                                homeTopBarState.selectTab(it)
-                                val index = HomeTopBarState.TabItem.values
-                                    .indexOf(homeTopBarState.selectedTab)
-                                isScrolling = true
-                                pagerState.animateScrollToPage(index)
-                                isScrolling = false
-                            }
-                        }
-                    )
-
-                    HorizontalPager(
-                        count = remember { HomeTopBarState.TabItem.values.size },
-                        state = pagerState
-                    ) {
-                        when (it) {
-                            0 -> DetailScreen(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f),
-                                onAddClick = { scope.launch { sheet.show() } }
-                            )
-                            1 -> FilterScreen()
-                            2 -> StatisticScreen()
-                            3 -> OtherScreen()
-                        }
-                    }
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun Main(viewModel: MainViewModel) {
+    val localFocus = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
+    val sheet = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden,
+        confirmStateChange = {
+            if (it == ModalBottomSheetValue.Hidden)
+                localFocus.clearFocus()
+            true
+        }
+    )
+    ModalBottomSheetLayout(
+        sheetState = sheet,
+        sheetContent = {
+            AddRecord(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .imePadding(),
+                onCloseRequest = {
+                    localFocus.clearFocus()
+                    scope.launch { sheet.hide() }
                 }
+            )
+        },
+        sheetShape = RectangleShape
+    ) {
+        Content(viewModel, sheet)
+    }
+
+}
+
+@Composable
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
+private fun Content(
+    viewModel: MainViewModel,
+    sheet: ModalBottomSheetState
+) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+    ) {
+        val scope = rememberCoroutineScope()
+        val homeTopBarState = rememberHomeTopBarState()
+        val pagerState = rememberPagerState()
+
+        var isScrolling by remember { mutableStateOf(false) }
+
+
+        /*LaunchedEffect(pagerState.currentPage, isScrolling) {
+            if (!isScrolling) {
+                val tab = HomeTopBarState.TabItem.values()[pagerState.currentPage]
+                homeTopBarState.selectTab(tab)
+            }
+        }*/
+
+        // Change tab state according to user scrolling.
+        LaunchedEffect(pagerState.currentPageOffset, pagerState.currentPage, isScrolling) {
+            if (!isScrolling) {
+                val offset = pagerState.currentPageOffset
+                val current = pagerState.currentPage
+                val index = if (offset > 0.38f) {
+                    current + 1
+                } else if (offset < -0.38f) {
+                    current - 1
+                } else {
+                    current
+                }
+                val tab = HomeTopBarState.TabItem.values()[index]
+                homeTopBarState.selectTab(tab)
+            }
+        }
+
+        HomeTopBar(
+            Modifier.fillMaxWidth(),
+            homeTopBarState,
+            onDateChosen = { year, month ->
+                viewModel.setDateRange(DateRange.Month(year, month))
+            },
+            onTabSelect = {
+                scope.launch {
+                    homeTopBarState.selectTab(it)
+                    val index = HomeTopBarState.TabItem.values
+                        .indexOf(homeTopBarState.selectedTab)
+                    isScrolling = true
+                    pagerState.animateScrollToPage(index)
+                    isScrolling = false
+                }
+            }
+        )
+
+        HorizontalPager(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            count = remember { HomeTopBarState.TabItem.values.size },
+            state = pagerState
+        ) {
+            when (it) {
+                0 -> DetailScreen(onAddClick = { scope.launch { sheet.show() } }) // FIXME(2022/9/17): This will cause frequent recomposition
+                1 -> FilterScreen()
+                2 -> StatisticScreen()
+                3 -> OtherScreen()
             }
         }
     }

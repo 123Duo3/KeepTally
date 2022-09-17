@@ -8,10 +8,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -28,13 +25,12 @@ import me.konyaco.keeptally.viewmodel.MainViewModel
 @Composable
 fun DetailScreen(
     viewModel: MainViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier,
     onAddClick: () -> Unit
 ) {
     val statistics by viewModel.statistics.collectAsState()
     val records by viewModel.records.collectAsState()
 
-    Box(modifier) {
+    Box(Modifier.fillMaxSize()) {
         Column(
             Modifier
                 .fillMaxSize()
@@ -56,7 +52,7 @@ fun DetailScreen(
             )
             Spacer(Modifier.height(12.dp))
 
-            if (records.isEmpty()) {
+            if (remember(records) { records.isEmpty() }) {
                 EmptyContent(
                     Modifier
                         .fillMaxWidth()
@@ -64,31 +60,32 @@ fun DetailScreen(
                 )
             } else {
                 Content(
-                    Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    records,
-                    {
-                        viewModel.deleteRecord(it.id)
-                    }
+                    records = records,
+                    onDelete = { viewModel.deleteRecord(it.id) }
                 )
             }
         }
-
-        ExtendedFloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(
-                    end = 16.dp,
-                    bottom = 16.dp + WindowInsets.navigationBars
-                        .asPaddingValues()
-                        .calculateBottomPadding()
-                ),
-            icon = { Icon(Icons.Sharp.Add, "Add Record") },
-            text = { Text("添加记录") },
-            onClick = onAddClick
-        )
+        AddRecordButton(Modifier.align(Alignment.BottomEnd), onAddClick)
     }
+}
+
+@Composable
+private fun AddRecordButton(modifier: Modifier, onAddClick: () -> Unit) {
+    val insetPaddings = WindowInsets.navigationBars.asPaddingValues()
+    val paddingBottom = remember(insetPaddings) { insetPaddings.calculateBottomPadding() }
+
+    ExtendedFloatingActionButton(
+        modifier = modifier.padding(
+            end = 16.dp,
+            bottom = 16.dp + paddingBottom
+        ),
+        icon = { Icon(Icons.Sharp.Add, "Add Record") },
+        text = { Text("添加记录") },
+        onClick = onAddClick
+    )
 }
 
 @Composable

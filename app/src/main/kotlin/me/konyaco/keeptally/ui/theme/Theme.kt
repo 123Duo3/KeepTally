@@ -7,6 +7,8 @@ import androidx.compose.material.Typography
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -119,7 +121,15 @@ fun KeepTallyTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
 
 @Composable
 fun AndroidKeepTallyTheme(content: @Composable () -> Unit) {
+    val systemUiController = rememberSystemUiController()
     KeepTallyTheme {
+        val surfaceColor = MaterialTheme.colorScheme.surfaceVariant
+        LaunchedEffect(systemUiController) {
+            systemUiController.setSystemBarsColor(
+                Color.Transparent,
+                surfaceColor.luminance() > 0.5f
+            )
+        }
         content()
     }
 }
