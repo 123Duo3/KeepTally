@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.detail.component
+package me.konyaco.keeptally.ui.detail.component.addrecord
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -8,12 +8,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -29,7 +28,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -63,14 +61,20 @@ fun AddRecord(
 
     val labels = if (isIncome) incomeLabels else expenditureLabels
     val primaryLabels = remember(labels) { labels.keys.map { it.label } }
-    var selectedPrimaryLabel by remember(isIncome) { mutableStateOf<MainViewModel.RecordType?>(null) }
+    var selectedPrimaryLabel by remember(isIncome, primaryLabels) { mutableStateOf(0) }
+
     val secondaryLabels = remember(labels, selectedPrimaryLabel) {
-        selectedPrimaryLabel?.let {
-            labels[it]?.map { it.label }
-        } ?: emptyList()
+        labels.keys.elementAtOrNull(selectedPrimaryLabel)
+            ?.let { primary ->
+                labels[primary]?.map { secondary ->
+                    secondary.label
+                }
+            }
+            ?: emptyList()
     }
-    var selectedSecondaryLabel by remember(selectedPrimaryLabel) {
-        mutableStateOf<MainViewModel.RecordType?>(null)
+
+    var selectedSecondaryLabel by remember(isIncome, selectedPrimaryLabel) {
+        mutableStateOf<Int?>(null)
     }
 
     AddRecord(
@@ -80,29 +84,27 @@ fun AddRecord(
         onIncomeChange = { isIncome = !isIncome },
         primaryLabels = primaryLabels,
         secondaryLabels = secondaryLabels,
-        enabledPrimaryLabel = selectedPrimaryLabel?.label,
-        onPrimaryLabelSelect = { label ->
-            selectedPrimaryLabel = labels.keys.find { it.label == label }
+        checkedPrimaryLabel = selectedPrimaryLabel,
+        onPrimaryLabelSelect = {
+            selectedPrimaryLabel = it
         },
-        enabledSecondaryLabel = selectedSecondaryLabel?.label,
-        onSecondaryLabelSelect = { label ->
-            selectedSecondaryLabel = labels[selectedPrimaryLabel!!]!!.find { it.label == label }
+        checkedSecondaryLabel = selectedSecondaryLabel,
+        onSecondaryLabelSelect = {
+            selectedSecondaryLabel = it
         },
         onAddLabelClick = { isIncomeLabel, parentLabel ->
+            val parentLabel = parentLabel?.let {
+                labels.keys.elementAtOrNull(it)?.label
+            }
             showDialog = AddDialogState(isIncomeLabel, parentLabel)
         },
         onAddRecordClick = { income, money ->
-            selectedPrimaryLabel?.let { primaryLabel ->
-                viewModel.addRecord(
-                    income,
-                    money,
-                    primaryLabel.label,
-                    selectedSecondaryLabel?.label,
-                    null
-                )
-            }
+            val primaryLabel = primaryLabels[selectedPrimaryLabel]
+            val secondaryLabel = selectedSecondaryLabel?.let { secondaryLabels[it] }
+
+            viewModel.addRecord(income, money, primaryLabel, secondaryLabel, null)
             onCloseRequest()
-        }
+        },
     )
 
     showDialog?.let {
@@ -128,12 +130,12 @@ fun AddRecord(
     isIncome: Boolean,
     onIncomeChange: (Boolean) -> Unit,
     primaryLabels: List<String>,
-    enabledPrimaryLabel: String?,
-    onPrimaryLabelSelect: (String) -> Unit,
+    checkedPrimaryLabel: Int,
+    onPrimaryLabelSelect: (Int) -> Unit,
     secondaryLabels: List<String>,
-    enabledSecondaryLabel: String?,
-    onSecondaryLabelSelect: (String) -> Unit,
-    onAddLabelClick: (isIncomeLabel: Boolean, parentLabel: String?) -> Unit,
+    checkedSecondaryLabel: Int?,
+    onSecondaryLabelSelect: (Int) -> Unit,
+    onAddLabelClick: (isIncomeLabel: Boolean, parentLabel: Int?) -> Unit,
     onAddRecordClick: (isIncome: Boolean, money: Int) -> Unit
 ) {
     Surface(modifier) {
@@ -142,7 +144,7 @@ fun AddRecord(
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
-            var moneyStr by remember { mutableStateOf("0") }
+            var moneyStr by remember { mutableStateOf("") }
 
             val labelColor = if (isIncome) MaterialTheme.colorScheme.tertiaryContainer
             else MaterialTheme.colorScheme.primaryContainer
@@ -169,7 +171,7 @@ fun AddRecord(
             LabelList(
                 Modifier.fillMaxWidth(),
                 primaryLabels,
-                enabledPrimaryLabel,
+                checkedPrimaryLabel,
                 onLabelClick = onPrimaryLabelSelect,
                 labelColor = labelColor,
                 onAddLabelClick = { onAddLabelClick(isIncome, null) }
@@ -182,17 +184,21 @@ fun AddRecord(
             LabelList(
                 Modifier.fillMaxWidth(),
                 secondaryLabels,
-                enabledSecondaryLabel,
+                checkedSecondaryLabel,
                 onLabelClick = onSecondaryLabelSelect,
                 labelColor = labelColor,
-                onAddLabelClick = { onAddLabelClick(isIncome, enabledPrimaryLabel) }
+                onAddLabelClick = { onAddLabelClick(isIncome, checkedPrimaryLabel) }
             )
             Spacer(Modifier.height(16.dp))
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                onClick = { onAddRecordClick(isIncome, parseMoneyToCent(moneyStr)) },
+                onClick = {
+                    onAddRecordClick(isIncome, parseMoneyToCent(moneyStr))
+                    moneyStr = ""
+                },
+                enabled = moneyStr.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(buttonColor)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
@@ -278,8 +284,8 @@ private fun EditAreaPreview() {
 private fun LabelList(
     modifier: Modifier,
     labels: List<String>,
-    enabledLabel: String?,
-    onLabelClick: (label: String) -> Unit,
+    checkedLabel: Int?,
+    onLabelClick: (Int) -> Unit,
     onAddLabelClick: () -> Unit,
     labelColor: Color
 ) {
@@ -294,11 +300,11 @@ private fun LabelList(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(labels) { item ->
+            itemsIndexed(labels) { index, item ->
                 LabelItem(
                     modifier = Modifier.animateItemPlacement(),
-                    selected = enabledLabel == item,
-                    onSelectChange = { onLabelClick(item) },
+                    selected = checkedLabel == index,
+                    onSelectChange = { onLabelClick(index) },
                     text = item,
                     activeColor = labelColor
                 )
@@ -324,52 +330,6 @@ private fun LabelList(
     }
 }
 
-private fun validateNumberString(str: String): Boolean {
-    var hasDot = false
-    var decimalLength = 0
-
-    for (c in str) {
-        if (c == '.') {
-            if (hasDot) return false
-            else hasDot = true
-        } else if (c in '0'..'9') {
-            if (hasDot) {
-                decimalLength += 1
-                if (decimalLength > 2) {
-                    return false
-                }
-            }
-        } else {
-            return false
-        }
-    }
-    return true
-}
-
-/**
- * Trim '0'
- * 0043.1
- * 43.1
- */
-private fun normalizeNumberString(value: TextFieldValue): TextFieldValue {
-    val text = value.text
-    return if (text == "0") {
-        value
-    } else if (text.getOrNull(text.indexOf('.') - 1) == '0') {
-        value
-    } else {
-        var zeros = 0
-        for (c in text) {
-            if (c == '0') zeros++
-            else break
-        }
-        value.copy(
-            text = text.substring(zeros until text.length),
-            selection = TextRange(value.selection.start - zeros, value.selection.end - zeros)
-        )
-    }
-}
-
 @Composable
 @Preview
 private fun PreviewLabelList() {
@@ -377,7 +337,7 @@ private fun PreviewLabelList() {
         val primaryLabels = remember {
             listOf("购物", "餐饮", "洗浴")
         }
-        var enabledLabel by remember { mutableStateOf<String?>(null) }
+        var enabledLabel by remember { mutableStateOf(0) }
         LabelList(modifier = Modifier.fillMaxWidth(), primaryLabels, enabledLabel, onLabelClick = {
             enabledLabel = it
         }, labelColor = MaterialTheme.colorScheme.tertiary, onAddLabelClick = {})
@@ -531,8 +491,8 @@ private fun AddRecordPreview() {
             secondaryLabels = remember {
                 listOf("早餐", "午餐", "晚餐")
             },
-            enabledPrimaryLabel = null,
-            enabledSecondaryLabel = null,
+            checkedPrimaryLabel = 0,
+            checkedSecondaryLabel = 0,
             modifier = Modifier.fillMaxWidth(),
             onPrimaryLabelSelect = {},
             onSecondaryLabelSelect = {},

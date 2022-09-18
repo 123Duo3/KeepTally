@@ -1,10 +1,11 @@
-package me.konyaco.keeptally.ui.detail.component
+package me.konyaco.keeptally.ui.detail.component.addrecord
 
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.sync.Mutex
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddLabelDialog(onDismissRequest: () -> Unit, onConfirm: (String) -> Unit) {
     var value by remember { mutableStateOf("") }
