@@ -17,7 +17,7 @@ import me.konyaco.keeptally.ui.component.HomeTopBar
 import me.konyaco.keeptally.ui.component.HomeTopBarState
 import me.konyaco.keeptally.ui.component.rememberHomeTopBarState
 import me.konyaco.keeptally.ui.detail.DetailScreen
-import me.konyaco.keeptally.ui.detail.component.AddRecord
+import me.konyaco.keeptally.ui.detail.component.addrecord.AddRecord
 import me.konyaco.keeptally.ui.filter.FilterScreen
 import me.konyaco.keeptally.ui.other.OtherScreen
 import me.konyaco.keeptally.ui.statistic.StatisticScreen
@@ -57,7 +57,6 @@ private fun Main(viewModel: MainViewModel) {
             AddRecord(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
                     .imePadding(),
                 onCloseRequest = {
                     localFocus.clearFocus()
@@ -69,7 +68,6 @@ private fun Main(viewModel: MainViewModel) {
     ) {
         Content(viewModel, sheet)
     }
-
 }
 
 @Composable
