@@ -8,13 +8,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import me.konyaco.keeptally.viewmodel.MainViewModel
 import me.konyaco.keeptally.ui.RecordSign
 import me.konyaco.keeptally.ui.component.RecordItem
 import me.konyaco.keeptally.ui.formatMoneyCent
 import me.konyaco.keeptally.ui.getRecordColor
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.ui.theme.RobotoSlab
+import me.konyaco.keeptally.viewmodel.MainViewModel
 
 @Composable
 fun DailyRecord(
@@ -32,19 +32,10 @@ fun DailyRecord(
                 .padding(horizontal = 16.dp), date, expenditure, income
         )
         Spacer(Modifier.height(8.dp))
-
         var dropdown by remember { mutableStateOf<MainViewModel.Record?>(null) }
 
-        DropdownMenu(expanded = dropdown != null, onDismissRequest = { dropdown = null }) {
-            DropdownMenuItem(text = {
-                Text(text = "删除")
-            }, onClick = {
-                dropdown?.let(onDeleteClick)
-                dropdown = null
-            })
-        }
         Column(Modifier.fillMaxWidth()) {
-            records.forEach { record ->
+            for (record in records) {
                 val color = getRecordColor(record.type.colorIndex, record.type.income, isSystemInDarkTheme())
                 RecordItem(
                     modifier = Modifier.fillMaxWidth(),
@@ -57,6 +48,15 @@ fun DailyRecord(
                     onLongClick = { dropdown = record }
                 )
             }
+        }
+
+        DropdownMenu(expanded = dropdown != null, onDismissRequest = { dropdown = null }) {
+            DropdownMenuItem(text = {
+                Text(text = "删除")
+            }, onClick = {
+                dropdown?.let(onDeleteClick)
+                dropdown = null
+            })
         }
     }
 }

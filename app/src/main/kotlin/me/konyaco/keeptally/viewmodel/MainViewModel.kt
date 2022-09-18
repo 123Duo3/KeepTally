@@ -152,13 +152,13 @@ class MainViewModel @Inject constructor(
 
     fun setDateRange(dateRange: DateRange) {
         this.dateRange.value = dateRange
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             refreshRecords()
         }
     }
 
     fun addPrimaryLabel(name: String, isIncomeLabel: Boolean) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             // Check existence
             if (recordTypeDao.getRootByLabel(name) == null) {
                 recordTypeDao.insertAll(EntityRecordType(0, name, null, isIncomeLabel))
@@ -172,7 +172,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun addSecondaryLabel(primaryLabel: String, name: String, isIncomeLabel: Boolean) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             val primary = recordTypeDao.getRootByLabel(primaryLabel)
 
             // Check existence
@@ -201,7 +201,7 @@ class MainViewModel @Inject constructor(
         secondaryLabel: String?,
         description: String?
     ) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             val primary = recordTypeDao.getRootByLabel(primaryLabel)
                 ?: error("Primary label: $primaryLabel was not found")
             val label = if (secondaryLabel != null) {
@@ -257,7 +257,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun deleteRecord(id: Int) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             recordDao.delete(me.konyaco.keeptally.storage.entity.Record(id = id, 0, 0, 0, null))
             refreshRecords()
         }
