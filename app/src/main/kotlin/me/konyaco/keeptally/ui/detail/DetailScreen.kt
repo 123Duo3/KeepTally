@@ -3,8 +3,8 @@ package me.konyaco.keeptally.ui.detail
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Add
 import androidx.compose.material3.*
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import me.konyaco.keeptally.R
 import me.konyaco.keeptally.ui.detail.component.DailyRecord
-import me.konyaco.keeptally.ui.theme.KeepTallyTheme
+import me.konyaco.keeptally.ui.theme.AndroidKeepTallyTheme
 import me.konyaco.keeptally.viewmodel.MainViewModel
 
 @Composable
@@ -27,15 +27,13 @@ fun DetailScreen(
     viewModel: MainViewModel = hiltViewModel(),
     onAddClick: () -> Unit
 ) {
-    val statistics by viewModel.statistics.collectAsState()
-    val records by viewModel.records.collectAsState()
-
     Box(Modifier.fillMaxSize()) {
         Column(
             Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
+            val statistics by viewModel.statistics.collectAsState()
             TotalExpenditure(
                 Modifier
                     .fillMaxWidth()
@@ -52,21 +50,9 @@ fun DetailScreen(
             )
             Spacer(Modifier.height(12.dp))
 
-            if (remember(records) { records.isEmpty() }) {
-                EmptyContent(
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
-            } else {
-                Content(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    records = records,
-                    onDelete = { viewModel.deleteRecord(it.id) }
-                )
-            }
+            Content(modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f))
         }
         AddRecordButton(Modifier.align(Alignment.BottomEnd), onAddClick)
     }
@@ -113,6 +99,23 @@ private fun EmptyContent(modifier: Modifier) {
 
 @Composable
 private fun Content(
+    viewModel: MainViewModel = hiltViewModel(),
+    modifier: Modifier
+) {
+    val records by viewModel.records.collectAsState()
+    if (records.isEmpty()) {
+        EmptyContent(modifier)
+    } else {
+        Content(
+            modifier = modifier,
+            records = viewModel.records.collectAsState().value,
+            onDelete = { viewModel.deleteRecord(it.id) }
+        )
+    }
+}
+
+@Composable
+private fun Content(
     modifier: Modifier,
     records: List<MainViewModel.DailyRecord>,
     onDelete: (MainViewModel.Record) -> Unit
@@ -148,6 +151,11 @@ private fun Content(
     }
 }
 
+@Composable
+private fun LazyListScope.content(){
+    // TODO:
+}
+
 @Stable
 @Composable
 private fun MainViewModel.Date.parseAsString(): String {
@@ -159,10 +167,11 @@ private fun MainViewModel.Date.parseAsString(): String {
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
-fun DetailPagePreview() {
-    KeepTallyTheme {
-//        DetailScreen()
+private fun DetailPagePreview() {
+    AndroidKeepTallyTheme {
+        DetailScreen(onAddClick = {})
     }
-}
+}*/

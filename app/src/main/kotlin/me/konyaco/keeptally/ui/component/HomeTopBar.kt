@@ -1,13 +1,15 @@
 package me.konyaco.keeptally.ui.component
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.*
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.*
 import androidx.compose.material3.*
@@ -295,7 +297,13 @@ private fun CustomTab(
         horizontalArrangement = Arrangement.Center
     ) {
         Icon(icon, text, tint = contentColor)
-        AnimatedVisibility(visible = selected && displayText) {
+        AnimatedVisibility(
+            visible = selected && displayText,
+            enter = fadeIn(tween(easing = LinearOutSlowInEasing)) +
+                    expandHorizontally(tween(easing = LinearOutSlowInEasing)),
+            exit = fadeOut(tween(durationMillis = 80, easing = FastOutLinearInEasing)) +
+                    shrinkHorizontally(tween(durationMillis = 80, easing = FastOutLinearInEasing))
+        ) {
             Text(
                 modifier = Modifier.padding(start = 24.dp),
                 text = text,
