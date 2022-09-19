@@ -126,9 +126,12 @@ class MainViewModel @Inject constructor(
 
     private fun calculateDayOffset(date: ZonedDateTime): Int {
         val today = with(ZonedDateTime.now()) {
-            ZonedDateTime.of(year, monthValue, dayOfMonth, 23, 59, 59, 999_999_999, zone)
+            ZonedDateTime.of(year, monthValue, dayOfMonth, 0, 0, 0, 0, zone)
         }
-        val offsetDay = Duration.between(date, today).toDays().toInt()
+        val target = with(date) {
+            ZonedDateTime.of(year, monthValue, dayOfMonth, 0, 0, 0, 0, zone)
+        }
+        val offsetDay = Duration.between(target, today).toDays().toInt()
         return offsetDay
     }
 

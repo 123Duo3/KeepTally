@@ -152,7 +152,7 @@ private fun Content(
 }
 
 @Composable
-private fun LazyListScope.content(){
+private fun LazyListScope.content() {
     // TODO:
 }
 
@@ -160,6 +160,8 @@ private fun LazyListScope.content(){
 @Composable
 private fun MainViewModel.Date.parseAsString(): String {
     return when (daysOffset) {
+        -2 -> "后天"
+        -1 -> "明天"
         0 -> "今天"
         1 -> "昨天"
         2 -> "前天"
