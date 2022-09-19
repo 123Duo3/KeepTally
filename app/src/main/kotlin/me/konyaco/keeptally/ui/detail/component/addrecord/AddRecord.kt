@@ -144,7 +144,7 @@ fun AddRecord(
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
-            var moneyStr by remember { mutableStateOf("") }
+            var moneyStr by remember { mutableStateOf(TextFieldValue("")) }
 
             val labelColor = if (isIncome) MaterialTheme.colorScheme.tertiaryContainer
             else MaterialTheme.colorScheme.primaryContainer
@@ -195,10 +195,10 @@ fun AddRecord(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 onClick = {
-                    onAddRecordClick(isIncome, parseMoneyToCent(moneyStr))
-                    moneyStr = ""
+                    onAddRecordClick(isIncome, parseMoneyToCent(moneyStr.text))
+                    moneyStr = TextFieldValue("")
                 },
-                enabled = moneyStr.isNotBlank(),
+                enabled = moneyStr.text.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(buttonColor)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
@@ -215,8 +215,8 @@ private fun EditArea(
     modifier: Modifier,
     income: Boolean,
     onIncomeChange: (Boolean) -> Unit,
-    moneyStr: String,
-    onMoneyStrChange: (String) -> Unit
+    moneyStr: TextFieldValue,
+    onMoneyStrChange: (TextFieldValue) -> Unit
 ) {
     val color = if (income) MaterialTheme.colorScheme.tertiary
     else MaterialTheme.colorScheme.primary
@@ -231,18 +231,17 @@ private fun EditArea(
             )
         }
         Divider(Modifier.size(1.dp, 32.dp))
-        var field by remember { mutableStateOf(TextFieldValue(moneyStr)) }
+//        var field by remember(moneyStr) { mutableStateOf(TextFieldValue(moneyStr)) }
         val focus = LocalFocusManager.current
         BasicTextField(
             modifier = Modifier
                 .weight(1f)
                 .alignByBaseline(),
-            value = field,
+            value = moneyStr,
             onValueChange = {
                 if (validateNumberString(it.text)) {
                     val text = normalizeNumberString(it)
-                    field = text
-                    onMoneyStrChange(text.text)
+                    onMoneyStrChange(text)
                 }
             },
             textStyle = MaterialTheme.typography.displaySmall.copy(
@@ -275,7 +274,12 @@ private fun EditArea(
 @Composable
 private fun EditAreaPreview() {
     KeepTallyTheme {
-        EditArea(Modifier.fillMaxWidth(), true, {}, "", onMoneyStrChange = {})
+        EditArea(
+            Modifier.fillMaxWidth(),
+            true,
+            {},
+            remember { TextFieldValue() },
+            onMoneyStrChange = {})
     }
 }
 
