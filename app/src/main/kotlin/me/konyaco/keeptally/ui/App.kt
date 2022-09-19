@@ -100,9 +100,9 @@ private fun Content(
             if (!isScrolling) {
                 val offset = pagerState.currentPageOffset
                 val current = pagerState.currentPage
-                val index = if (offset > 0.38f) {
+                val index = if (offset > 0.50f) {
                     current + 1
-                } else if (offset < -0.38f) {
+                } else if (offset < -0.50f) {
                     current - 1
                 } else {
                     current
