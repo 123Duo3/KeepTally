@@ -1,27 +1,18 @@
 package me.konyaco.keeptally.ui.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import me.konyaco.keeptally.ui.RecordSign
-import me.konyaco.keeptally.ui.formatMoneyCent
-import me.konyaco.keeptally.ui.statistic.component.MoneyIndicator
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
-import me.konyaco.keeptally.ui.theme.RobotoSlab
-import kotlin.math.abs
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -46,7 +37,7 @@ fun RecordItem(
         Column(Modifier.weight(1f)) {
             Text(text = title, style = MaterialTheme.typography.titleMedium)
             Text(
-                text = "$time $category",
+                text = derivedStateOf { "$time $category" }.value,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary
             )

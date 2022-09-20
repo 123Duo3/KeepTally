@@ -6,13 +6,15 @@ import me.konyaco.keeptally.viewmodel.model.Colors
 import java.math.BigDecimal
 import java.text.DecimalFormat
 
+private val decimalFormat = DecimalFormat.getInstance().apply {
+    isGroupingUsed = true
+}
+
 @Stable
 fun formatMoneyCent(money: Int): Pair<String, String> {
     val integer = money / 100
     val decimal = money % 100
-    val integerStr = DecimalFormat.getInstance().apply {
-        isGroupingUsed = true
-    }.format(integer)
+    val integerStr = decimalFormat.format(integer)
     val decimalStr = "%02d".format(decimal)
     return integerStr to decimalStr
 }
@@ -34,6 +36,7 @@ object RecordSign {
     const val RMB = "¥"
 }
 
+@Stable
 fun getRecordColor(
     colorIndex: Int,
     isIncome: Boolean,

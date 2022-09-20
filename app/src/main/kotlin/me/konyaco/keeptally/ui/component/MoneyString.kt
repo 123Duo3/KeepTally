@@ -5,8 +5,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -25,8 +24,8 @@ fun MoneyString(
     positiveColor: Color = MaterialTheme.colorScheme.tertiary,
     negativeColor: Color = MaterialTheme.colorScheme.primary
 ) {
-    val income = money >= 0
-    val moneyStr = formatMoneyCentToString(abs(money))
+    val income by derivedStateOf { money >= 0 }
+    val moneyStr by derivedStateOf { formatMoneyCentToString(abs(money)) }
     CompositionLocalProvider(
         LocalContentColor provides if (income) positiveColor else negativeColor,
         LocalTextStyle provides MaterialTheme.typography.headlineMedium.copy(fontFamily = FontFamily.RobotoSlab)
@@ -49,7 +48,7 @@ fun MoneyString(
             budget?.let {
                 Text(
                     modifier = Modifier.alignByBaseline(),
-                    text = "/" + formatMoneyCent(it).first,
+                    text = remember(it) { "/" + formatMoneyCent(it).first },
                     style = MaterialTheme.typography.titleLarge,
                     fontFamily = FontFamily.RobotoSlab
                 )

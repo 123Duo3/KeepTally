@@ -36,7 +36,10 @@ fun DailyRecord(
 
         Column(Modifier.fillMaxWidth()) {
             for (record in records) {
-                val color = getRecordColor(record.type.colorIndex, record.type.income, isSystemInDarkTheme())
+                val dark = isSystemInDarkTheme()
+                val color = remember(record, dark) {
+                    getRecordColor(record.type.colorIndex, record.type.income, dark)
+                }
                 RecordItem(
                     modifier = Modifier.fillMaxWidth(),
                     color = color,
@@ -44,7 +47,7 @@ fun DailyRecord(
                     time = record.time,
                     category = record.type.parent ?: "",
                     money = record.money,
-                    onClick = {},
+                    onClick = { /* TODO */ },
                     onLongClick = { dropdown = record }
                 )
             }
@@ -86,10 +89,12 @@ private fun Total(
     }
 }
 
-@Stable
+@Composable
 private fun moneyToString(money: Int, positive: Boolean): String {
-    val (integer, decimal) = formatMoneyCent(money)
-    return "${if (positive) RecordSign.POSITIVE else RecordSign.NEGATIVE}$integer.$decimal${RecordSign.RMB}"
+    return derivedStateOf {
+        val (integer, decimal) = formatMoneyCent(money)
+        "${if (positive) RecordSign.POSITIVE else RecordSign.NEGATIVE}$integer.$decimal${RecordSign.RMB}"
+    }.value
 }
 
 @Preview(showBackground = true)

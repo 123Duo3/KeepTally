@@ -85,13 +85,9 @@ fun AddRecord(
         primaryLabels = primaryLabels,
         secondaryLabels = secondaryLabels,
         checkedPrimaryLabel = selectedPrimaryLabel,
-        onPrimaryLabelSelect = {
-            selectedPrimaryLabel = it
-        },
+        onPrimaryLabelSelect = { selectedPrimaryLabel = it },
         checkedSecondaryLabel = selectedSecondaryLabel,
-        onSecondaryLabelSelect = {
-            selectedSecondaryLabel = it
-        },
+        onSecondaryLabelSelect = { selectedSecondaryLabel = it },
         onAddLabelClick = { isIncomeLabel, parentLabel ->
             val parentLabel = parentLabel?.let {
                 labels.keys.elementAtOrNull(it)?.label
@@ -190,6 +186,14 @@ fun AddRecord(
                 onAddLabelClick = { onAddLabelClick(isIncome, checkedPrimaryLabel) }
             )
             Spacer(Modifier.height(16.dp))
+
+            var input by remember { mutableStateOf(TextFieldValue()) }
+            EditDescription(
+                modifier = Modifier.fillMaxWidth(),
+                value = input,
+                onValueChange = { input = it }
+            )
+
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -207,6 +211,30 @@ fun AddRecord(
             }
             Spacer(Modifier.height(58.dp))
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditDescription(
+    modifier: Modifier,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit
+) {
+    Box(modifier) {
+        BasicTextField(
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            value = value,
+            onValueChange = onValueChange,
+            decorationBox = {
+                Box(Modifier.fillMaxWidth().padding(8.dp)) {
+                    it()
+                    if (value.text.isEmpty()) {
+                        Text("记录描述")
+                    }
+                }
+            }
+        )
     }
 }
 
