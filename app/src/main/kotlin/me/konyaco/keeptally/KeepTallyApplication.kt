@@ -2,7 +2,6 @@ package me.konyaco.keeptally
 
 import android.app.Application
 import android.content.Context
-import androidx.room.Database
 import androidx.room.Room
 import dagger.Module
 import dagger.Provides

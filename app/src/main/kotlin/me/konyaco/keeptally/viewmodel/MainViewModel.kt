@@ -78,14 +78,19 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            sharedViewModel.load()
-            refreshLabels()
-            refreshRecords()
+            sharedViewModel.isReady.collect {
+                if (it) init()
+            }
         }
     }
 
     private val hhmFormatter = DateTimeFormatter.ofPattern("HH:mm")
     private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
+
+    private suspend fun init() {
+        refreshLabels()
+        refreshRecords()
+    }
 
     private suspend fun refreshRecords() = withContext(Dispatchers.IO) {
         val range = dateRange.value
@@ -167,7 +172,7 @@ class MainViewModel @Inject constructor(
             // Check existence
             if (recordTypeDao.getRootByLabel(name) == null) {
                 recordTypeDao.insertAll(EntityRecordType(0, name, null, isIncomeLabel))
-                sharedViewModel.load()
+                sharedViewModel.refresh()
                 refreshLabels()
             } else {
                 // TODO: Show error message to user
