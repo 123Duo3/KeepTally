@@ -25,8 +25,8 @@ fun OtherScreen() {
             modifier = Modifier.fillMaxWidth(),
             userName = "示例用户",
             email = "user@example.com",
-            alipayBalance = 12345,
-            wechatBalance = 12455
+            alipayBalance = "123.45",
+            wechatBalance = "123.45"
         )
         Spacer(Modifier.height(16.dp))
         OptionList(Modifier.fillMaxWidth())
