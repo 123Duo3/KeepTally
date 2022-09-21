@@ -30,11 +30,13 @@ fun RecordList(
                     modifier = Modifier.fillMaxWidth(),
                     color = getRecordColor(record.color, false, isDark),
                     title = record.label,
-                    money = record.money,
-                    budget = record.budget,
+                    money = record.money.money,
+                    budget = record.budget.money,
                     onClick = {
                         onClick(index)
-                    }
+                    },
+                    moneyStr = record.money.moneyStr.join,
+                    budgetStr = record.budget.moneyStr.integer
                 )
             }
         }

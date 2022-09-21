@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import me.konyaco.keeptally.R
 import me.konyaco.keeptally.ui.detail.component.DailyRecord
+import me.konyaco.keeptally.ui.detail.component.MoreInfo
+import me.konyaco.keeptally.ui.detail.component.TotalExpenditure
 import me.konyaco.keeptally.viewmodel.MainViewModel
 
 @Composable
@@ -36,21 +38,24 @@ fun DetailScreen(
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
-                expenditure = statistics.expenditure
+                integer = statistics.expenditure.moneyStr.integer,
+                decimal = statistics.expenditure.moneyStr.decimal
             )
             Divider(Modifier.padding(vertical = 8.dp))
             MoreInfo(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
-                budget = statistics.budget,
-                income = statistics.income
+                budget = statistics.budget.moneyStr.join,
+                income = statistics.income.moneyStr.join
             )
             Spacer(Modifier.height(12.dp))
 
-            Content(modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f))
+            Content(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
         }
         AddRecordButton(Modifier.align(Alignment.BottomEnd), onAddClick)
     }
@@ -137,8 +142,8 @@ private fun Content(
                     DailyRecord(
                         Modifier.fillParentMaxWidth(),
                         item.date.parseAsString(),
-                        item.expenditure,
-                        item.income,
+                        item.expenditure.moneyStr.join,
+                        item.income.moneyStr.join,
                         item.records,
                         onDelete
                     )

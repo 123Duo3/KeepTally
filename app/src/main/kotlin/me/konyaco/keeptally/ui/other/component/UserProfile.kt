@@ -20,8 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.konyaco.keeptally.R
-import me.konyaco.keeptally.ui.RecordSign
-import me.konyaco.keeptally.ui.formatMoneyCentToString
+import me.konyaco.keeptally.viewmodel.model.RecordSign
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.ui.theme.RobotoSlab
 
@@ -30,8 +29,8 @@ fun UserProfile(
     modifier: Modifier,
     userName: String,
     email: String,
-    alipayBalance: Int,
-    wechatBalance: Int
+    alipayBalance: String,
+    wechatBalance: String
 ) {
     Surface(modifier) {
         Column(Modifier.padding(horizontal = 16.dp, vertical = 24.dp)) {
@@ -61,9 +60,7 @@ fun UserProfile(
                 )
             }
             Spacer(Modifier.height(16.dp))
-            Row(
-                Modifier.fillMaxWidth()
-            ) {
+            Row(Modifier.fillMaxWidth()) {
                 AlipayButton(money = alipayBalance, modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.width(16.dp))
                 WechatPayButton(money = wechatBalance, modifier = Modifier.weight(1f))
@@ -76,7 +73,7 @@ fun UserProfile(
 private fun PaymentButton(
     icon: Painter,
     text: String,
-    money: Int,
+    money: String,
     color: Color,
     modifier: Modifier = Modifier
 ) {
@@ -108,7 +105,7 @@ private fun PaymentButton(
         )
         Text(
             modifier = Modifier.weight(1f),
-            text = formatMoneyCentToString(money) + RecordSign.RMB,
+            text = "$money${RecordSign.RMB}",
             color = LocalContentColor.current.copy(0.8f),
             style = MaterialTheme.typography.labelLarge,
             fontFamily = FontFamily.RobotoSlab,
@@ -118,7 +115,7 @@ private fun PaymentButton(
 }
 
 @Composable
-private fun AlipayButton(money: Int, modifier: Modifier) {
+private fun AlipayButton(money: String, modifier: Modifier) {
     PaymentButton(
         icon = painterResource(id = R.drawable.ic_alipay),
         text = "支付宝",
@@ -129,7 +126,7 @@ private fun AlipayButton(money: Int, modifier: Modifier) {
 }
 
 @Composable
-private fun WechatPayButton(money: Int, modifier: Modifier) {
+private fun WechatPayButton(money: String, modifier: Modifier) {
     PaymentButton(
         icon = painterResource(id = R.drawable.ic_wechatpay),
         text = "微信",
@@ -148,8 +145,8 @@ private fun Preview() {
             modifier = Modifier.fillMaxWidth(),
             userName = "示例用户",
             email = "user@email.com",
-            alipayBalance = 12345,
-            wechatBalance = 54321
+            alipayBalance = "123.45",
+            wechatBalance = "123.45"
         )
     }
 }

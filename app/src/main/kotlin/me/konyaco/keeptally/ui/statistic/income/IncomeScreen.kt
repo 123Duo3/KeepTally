@@ -49,13 +49,13 @@ fun IncomeScreen(viewModel: StatisticViewModel = hiltViewModel()) {
         Graph(
             Modifier.align(Alignment.CenterHorizontally),
             "收入",
-            summary.income,
+            summary.income.moneyStr.joinWithSign(true),
             "",
             MaterialTheme.colorScheme.tertiary,
             remember(incomes) {
                 incomes.map {
                     val color = getRecordColor(it.color, true, isDark)
-                    DataItem(color, it.money)
+                    DataItem(color, it.money.money)
                 }
             }
         )

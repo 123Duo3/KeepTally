@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import me.konyaco.keeptally.ui.formatMoneyCentToString
 import me.konyaco.keeptally.ui.getRecordColor
 import me.konyaco.keeptally.ui.statistic.component.DataItem
 import me.konyaco.keeptally.ui.statistic.component.EmptyScreen
@@ -45,13 +44,13 @@ fun ExpenditureScreen(
         Graph(
             Modifier.align(Alignment.CenterHorizontally),
             "支出",
-            summary.expenditure,
-            "/${formatMoneyCentToString(summary.budget)}",
+            summary.expenditure.moneyStr.joinWithSign(false),
+            "/${summary.budget.moneyStr.join}",
             MaterialTheme.colorScheme.primary,
             remember(exp) {
                 exp.map {
                     val color = getRecordColor(it.color, false, isDark)
-                    DataItem(color, it.money)
+                    DataItem(color, it.money.money)
                 }
             }
         )

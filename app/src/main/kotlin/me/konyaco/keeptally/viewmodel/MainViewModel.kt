@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.konyaco.keeptally.storage.database.AppDatabase
 import me.konyaco.keeptally.viewmodel.model.DateRange
-import zonedEpoch
+import me.konyaco.keeptally.viewmodel.model.Money
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
@@ -32,14 +32,15 @@ class MainViewModel @Inject constructor(
 
     data class DailyRecord(
         val date: Date,
-        val expenditure: Int,
-        val income: Int,
-        val records: List<Record>
+        val expenditure: Money,
+        val income: Money,
+        val records: List<Record>,
     )
 
     data class Record(
         val id: Int,
-        val money: Int,
+        val isIncome: Boolean,
+        val money: Money,
         val date: Date,
         val time: String,
         val type: RecordType
@@ -67,12 +68,12 @@ class MainViewModel @Inject constructor(
 
     val dateRange = sharedViewModel.dateRange
 
-    val statistics = MutableStateFlow<Statistics>(Statistics(0, 0, 0))
+    val statistics = MutableStateFlow<Statistics>(Statistics(Money(0), Money(0), Money(0)))
 
     data class Statistics(
-        val expenditure: Int,
-        val income: Int,
-        val budget: Int
+        val expenditure: Money,
+        val income: Money,
+        val budget: Money,
     )
 
     init {
@@ -96,14 +97,14 @@ class MainViewModel @Inject constructor(
 
         val result = recordDao.loadAllByDateDesc(start, end).map {
             it.mapToRecord().also {
-                if (it.money < 0) {
-                    expenditure += abs(it.money)
+                if (it.money.money < 0) {
+                    expenditure += abs(it.money.money)
                 } else {
-                    income += it.money
+                    income += it.money.money
                 }
             }
         }
-        statistics.emit(Statistics(expenditure, income, 0)) // TODO: Budget
+        statistics.emit(Statistics(Money(expenditure), Money(income), Money(0))) // TODO: Budget
         val dailyRecords = groupToDailyRecord(result)
         records.emit(dailyRecords)
     }
@@ -116,7 +117,8 @@ class MainViewModel @Inject constructor(
         val label = recordTypeDao.loadAllByIds(this.typeId).first().mapToRecordType()
 
         return Record(
-            money = this.money,
+            money = Money(this.money),
+            isIncome = false,
             date = date,
             time = time,
             type = label,
@@ -234,16 +236,16 @@ class MainViewModel @Inject constructor(
             var expenditure = 0
             var income = 0
             records.forEach {
-                if (it.money < 0) {
-                    expenditure += abs(it.money)
+                if (it.money.money < 0) {
+                    expenditure += abs(it.money.money)
                 } else {
-                    income += it.money
+                    income += it.money.money
                 }
             }
             DailyRecord(
                 date = records.first().date,
-                expenditure = expenditure,
-                income = income,
+                expenditure = Money(expenditure),
+                income = Money(income),
                 records = records
             )
         }
@@ -265,4 +267,8 @@ class MainViewModel @Inject constructor(
             refreshRecords()
         }
     }
+}
+
+private fun Pair<String, String>.joinToString(): Triple<String, String, String> {
+    return Triple(first, second, "$first.$second")
 }

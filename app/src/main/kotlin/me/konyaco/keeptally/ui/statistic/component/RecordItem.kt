@@ -21,7 +21,9 @@ fun RecordItem(
     color: Color,
     title: String,
     money: Int,
+    moneyStr: String,
     budget: Int?,
+    budgetStr: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -41,8 +43,9 @@ fun RecordItem(
             style = MaterialTheme.typography.titleMedium
         )
         MoneyString(
-            money = money,
-            budget = budget,
+            moneyStr = moneyStr,
+            isIncome = money > 0,
+            budget = budgetStr,
             positiveColor = MaterialTheme.colorScheme.primary,
             negativeColor = MaterialTheme.colorScheme.primary
         )

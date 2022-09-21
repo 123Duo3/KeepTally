@@ -36,7 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import me.konyaco.keeptally.ui.RecordSign
+import me.konyaco.keeptally.viewmodel.model.RecordSign
 import me.konyaco.keeptally.ui.parseMoneyToCent
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.ui.theme.RobotoSlab

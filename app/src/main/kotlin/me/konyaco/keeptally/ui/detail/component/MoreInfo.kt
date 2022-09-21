@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.detail
+package me.konyaco.keeptally.ui.detail.component
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -10,13 +10,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import me.konyaco.keeptally.ui.RecordSign
-import me.konyaco.keeptally.ui.formatMoneyCent
+import me.konyaco.keeptally.viewmodel.model.RecordSign
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.ui.theme.RobotoSlab
 
 @Composable
-fun MoreInfo(modifier: Modifier, budget: Int, income: Int) {
+fun MoreInfo(modifier: Modifier, budget: String, income: String) {
     Column(modifier) {
         TextRow(
             text = "预算",
@@ -35,12 +34,12 @@ fun MoreInfo(modifier: Modifier, budget: Int, income: Int) {
 }
 
 @Composable
-private fun TextRow(text: String, money: Int, sign: String, color: Color) {
+private fun TextRow(text: String, money: String, sign: String, color: Color) {
     Row(Modifier.fillMaxWidth()) {
         Text(text = text, style = MaterialTheme.typography.bodyLarge)
-        val (integer, decimal) = formatMoneyCent(money)
         Text(
-            modifier = Modifier.weight(1f), text = "$sign$integer.$decimal¥",
+            modifier = Modifier.weight(1f),
+            text = "$sign$money${RecordSign.RMB}",
             textAlign = TextAlign.End,
             color = color,
             style = MaterialTheme.typography.bodyLarge,
@@ -53,6 +52,6 @@ private fun TextRow(text: String, money: Int, sign: String, color: Color) {
 @Composable
 private fun MoreInfoPreview() {
     KeepTallyTheme {
-        MoreInfo(Modifier.fillMaxWidth(), 123456, 123456)
+        MoreInfo(Modifier.fillMaxWidth(), "1,234.56", "1,234.56")
     }
 }

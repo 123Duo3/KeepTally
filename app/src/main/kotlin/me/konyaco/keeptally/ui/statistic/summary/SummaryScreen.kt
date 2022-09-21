@@ -31,11 +31,19 @@ private val testData = listOf(
 @Composable
 fun SummaryScreen(viewModel: StatisticViewModel = hiltViewModel()) {
     val summary by viewModel.summary.collectAsState()
-    SummaryScreen(summary.expenditure, summary.income, summary.balance)
+    SummaryScreen(
+        summary.expenditure.moneyStr.join,
+        summary.income.moneyStr.join,
+        summary.balance.moneyStr.joinWithSign(summary.balance.money >= 0)
+    )
 }
 
 @Composable
-fun SummaryScreen(expenditure: Int, income: Int, balance: Int) {
+fun SummaryScreen(
+    expenditure: String,
+    income: String,
+    balance: String
+) {
     Column(
         Modifier
             .fillMaxSize()
@@ -60,7 +68,7 @@ fun SummaryScreen(expenditure: Int, income: Int, balance: Int) {
 private fun TotalScreenPreview() {
     KeepTallyTheme {
         Surface(color = MaterialTheme.colorScheme.inverseOnSurface) {
-            SummaryScreen(2333, 11, 11)
+            SummaryScreen("23.33", "23.00", "-0.33")
         }
     }
 }

@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.detail
+package me.konyaco.keeptally.ui.detail.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -12,13 +12,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import me.konyaco.keeptally.ui.RecordSign
-import me.konyaco.keeptally.ui.formatMoneyCent
+import me.konyaco.keeptally.viewmodel.model.RecordSign
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.ui.theme.RobotoSlab
 
 @Composable
-fun TotalExpenditure(modifier: Modifier, expenditure: Int) {
+fun TotalExpenditure(modifier: Modifier, integer: String, decimal: String) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = RecordSign.RMB,
@@ -27,7 +26,6 @@ fun TotalExpenditure(modifier: Modifier, expenditure: Int) {
             fontFamily = FontFamily.RobotoSlab,
         )
         Row(Modifier.weight(1f), horizontalArrangement = Arrangement.End) {
-            val (integer, decimal) = formatMoneyCent(expenditure)
             Text(
                 modifier = Modifier.alignByBaseline(),
                 text = "${RecordSign.NEGATIVE}$integer.",
@@ -53,6 +51,6 @@ fun TotalExpenditure(modifier: Modifier, expenditure: Int) {
 @Composable
 fun TotalExpenditurePreview() {
     KeepTallyTheme {
-        TotalExpenditure(Modifier.fillMaxWidth(), 123456)
+        TotalExpenditure(Modifier.fillMaxWidth(), "123", "456")
     }
 }

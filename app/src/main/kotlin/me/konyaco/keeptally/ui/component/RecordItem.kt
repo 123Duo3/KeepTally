@@ -22,6 +22,7 @@ fun RecordItem(
     time: String,
     category: String,
     money: Int,
+    moneyStr: String,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -42,7 +43,7 @@ fun RecordItem(
                 color = MaterialTheme.colorScheme.secondary
             )
         }
-        MoneyString(money = money)
+        MoneyString(moneyStr, money > 0)
     }
 }
 
@@ -57,6 +58,7 @@ private fun OutcomeRecordItemPreview() {
             time = "12:30",
             category = "分类",
             money = -1100,
+            moneyStr = "11.00",
             onClick = {},
             onLongClick = {}
         )
@@ -74,6 +76,7 @@ private fun IncomeRecordItemPreview() {
             time = "12:30",
             category = "分类",
             money = 1000000,
+            moneyStr = "10,000.00",
             onClick = {},
             onLongClick = {}
         )

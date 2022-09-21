@@ -8,20 +8,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import me.konyaco.keeptally.ui.RecordSign
+import me.konyaco.keeptally.viewmodel.model.RecordSign
 import me.konyaco.keeptally.ui.component.RecordItem
-import me.konyaco.keeptally.ui.formatMoneyCent
 import me.konyaco.keeptally.ui.getRecordColor
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.ui.theme.RobotoSlab
 import me.konyaco.keeptally.viewmodel.MainViewModel
+import me.konyaco.keeptally.viewmodel.model.Money
 
 @Composable
 fun DailyRecord(
     modifier: Modifier = Modifier,
     date: String,
-    expenditure: Int,
-    income: Int,
+    expenditure: String,
+    income: String,
     records: List<MainViewModel.Record>,
     onDeleteClick: (record: MainViewModel.Record) -> Unit
 ) {
@@ -29,7 +29,10 @@ fun DailyRecord(
         Total(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp), date, expenditure, income
+                .padding(horizontal = 16.dp),
+            date,
+            expenditure,
+            income
         )
         Spacer(Modifier.height(8.dp))
         var dropdown by remember { mutableStateOf<MainViewModel.Record?>(null) }
@@ -46,9 +49,10 @@ fun DailyRecord(
                     title = record.type.label,
                     time = record.time,
                     category = record.type.parent ?: "",
-                    money = record.money,
+                    money = record.money.money,
                     onClick = { /* TODO */ },
-                    onLongClick = { dropdown = record }
+                    onLongClick = { dropdown = record },
+                    moneyStr = record.money.moneyStr.join
                 )
             }
         }
@@ -68,8 +72,8 @@ fun DailyRecord(
 private fun Total(
     modifier: Modifier,
     date: String,
-    expenditure: Int,
-    income: Int
+    expenditure: String,
+    income: String
 ) {
     CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleSmall) {
         Row(modifier) {
@@ -90,10 +94,9 @@ private fun Total(
 }
 
 @Composable
-private fun moneyToString(money: Int, positive: Boolean): String {
+private fun moneyToString(money: String, positive: Boolean): String {
     return derivedStateOf {
-        val (integer, decimal) = formatMoneyCent(money)
-        "${if (positive) RecordSign.POSITIVE else RecordSign.NEGATIVE}$integer.$decimal${RecordSign.RMB}"
+        "${if (positive) RecordSign.POSITIVE else RecordSign.NEGATIVE}$money${RecordSign.RMB}"
     }.value
 }
 
@@ -104,22 +107,24 @@ private fun DailyRecordPreview() {
         DailyRecord(
             modifier = Modifier.fillMaxWidth(),
             date = "今天",
-            expenditure = 6000,
-            income = 0,
+            expenditure = "6,000",
+            income = "0",
             records = listOf(
                 MainViewModel.Record(
                     time = "12:30",
                     type = MainViewModel.RecordType("父分类", "分类", false, 0),
-                    money = -1100,
+                    money = Money(1100),
                     date = MainViewModel.Date("12-20", 0),
-                    id = 0
+                    id = 0,
+                    isIncome = true
                 ),
                 MainViewModel.Record(
                     time = "12:30",
                     type = MainViewModel.RecordType("父分类", "分类", false, 0),
-                    money = -1100,
+                    money = Money(-1100),
                     date = MainViewModel.Date("12-20", 0),
-                    id = 1
+                    id = 1,
+                    isIncome = false
                 )
             ),
             onDeleteClick = {}
