@@ -14,7 +14,13 @@ import androidx.compose.ui.unit.dp
 import me.konyaco.keeptally.ui.component.MoneyString
 
 @Composable
-fun DetailCard(modifier: Modifier, expStr: String, incomeStr: String, balanceStr: String) {
+fun DetailCard(
+    modifier: Modifier,
+    expStr: String,
+    incomeStr: String,
+    balanceStr: String,
+    isBalancePositive: Boolean
+) {
     Surface(
         modifier = modifier
             .padding(horizontal = 16.dp),
@@ -50,7 +56,7 @@ fun DetailCard(modifier: Modifier, expStr: String, incomeStr: String, balanceStr
                 title = "结余",
                 money = balanceStr,
                 onClick = {},
-                isIncome = true
+                isIncome = isBalancePositive
             )
         }
     }

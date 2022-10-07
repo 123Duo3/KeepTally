@@ -33,7 +33,9 @@ data class Money(
             }
         }
     }
-}private val decimalFormat = DecimalFormat.getInstance().apply {
+}
+
+private val decimalFormat = DecimalFormat.getInstance().apply {
     isGroupingUsed = true
 }
 

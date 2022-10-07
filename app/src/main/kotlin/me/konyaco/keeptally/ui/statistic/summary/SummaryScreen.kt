@@ -34,7 +34,8 @@ fun SummaryScreen(viewModel: StatisticViewModel = hiltViewModel()) {
     SummaryScreen(
         summary.expenditure.moneyStr.join,
         summary.income.moneyStr.join,
-        summary.balance.moneyStr.joinWithSign(summary.balance.money >= 0)
+        summary.balance.moneyStr.join,
+        summary.balance.money >= 0
     )
 }
 
@@ -42,7 +43,8 @@ fun SummaryScreen(viewModel: StatisticViewModel = hiltViewModel()) {
 fun SummaryScreen(
     expenditure: String,
     income: String,
-    balance: String
+    balance: String,
+    isBalancePositive: Boolean
 ) {
     Column(
         Modifier
@@ -59,7 +61,7 @@ fun SummaryScreen(
             testData
         )
         Spacer(Modifier.height(32.dp))
-        DetailCard(Modifier.fillMaxSize(), expenditure, income, balance)
+        DetailCard(Modifier.fillMaxSize(), expenditure, income, balance, isBalancePositive)
     }
 }
 
@@ -68,7 +70,7 @@ fun SummaryScreen(
 private fun TotalScreenPreview() {
     KeepTallyTheme {
         Surface(color = MaterialTheme.colorScheme.inverseOnSurface) {
-            SummaryScreen("23.33", "23.00", "-0.33")
+            SummaryScreen("23.33", "23.00", "0.33", false)
         }
     }
 }
