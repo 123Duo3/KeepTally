@@ -14,12 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import me.konyaco.keeptally.R
 import me.konyaco.keeptally.ui.detail.component.DailyRecord
-import me.konyaco.keeptally.ui.theme.AndroidKeepTallyTheme
+import me.konyaco.keeptally.ui.detail.component.MoreInfo
+import me.konyaco.keeptally.ui.detail.component.TotalExpenditure
 import me.konyaco.keeptally.viewmodel.MainViewModel
 
 @Composable
@@ -38,21 +38,24 @@ fun DetailScreen(
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
-                expenditure = statistics.expenditure
+                integer = statistics.expenditure.moneyStr.integer,
+                decimal = statistics.expenditure.moneyStr.decimal
             )
             Divider(Modifier.padding(vertical = 8.dp))
             MoreInfo(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
-                budget = statistics.budget,
-                income = statistics.income
+                budget = statistics.budget.moneyStr.join,
+                income = statistics.income.moneyStr.join
             )
             Spacer(Modifier.height(12.dp))
 
-            Content(modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f))
+            Content(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
         }
         AddRecordButton(Modifier.align(Alignment.BottomEnd), onAddClick)
     }
@@ -139,8 +142,8 @@ private fun Content(
                     DailyRecord(
                         Modifier.fillParentMaxWidth(),
                         item.date.parseAsString(),
-                        item.expenditure,
-                        item.income,
+                        item.expenditure.moneyStr.join,
+                        item.income.moneyStr.join,
                         item.records,
                         onDelete
                     )
@@ -152,7 +155,7 @@ private fun Content(
 }
 
 @Composable
-private fun LazyListScope.content(){
+private fun LazyListScope.content() {
     // TODO:
 }
 
@@ -160,6 +163,8 @@ private fun LazyListScope.content(){
 @Composable
 private fun MainViewModel.Date.parseAsString(): String {
     return when (daysOffset) {
+        -2 -> "后天"
+        -1 -> "明天"
         0 -> "今天"
         1 -> "昨天"
         2 -> "前天"

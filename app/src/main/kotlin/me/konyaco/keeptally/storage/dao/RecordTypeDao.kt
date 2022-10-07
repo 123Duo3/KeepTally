@@ -8,6 +8,9 @@ import me.konyaco.keeptally.storage.entity.RecordType
 
 @Dao
 interface RecordTypeDao {
+    @Query("SELECT count(*) FROM recordtype")
+    suspend fun count(): Long
+
     @Query("SELECT * FROM recordtype")
     suspend fun getAll(): List<RecordType>
 
@@ -33,7 +36,7 @@ interface RecordTypeDao {
     suspend fun getSubTypes(parentId: Int): List<RecordType>
 
     @Insert
-    suspend fun insertAll(vararg types: RecordType)
+    suspend fun insertAll(vararg types: RecordType): List<Long>
 
     @Delete
     suspend fun delete(type: RecordType)

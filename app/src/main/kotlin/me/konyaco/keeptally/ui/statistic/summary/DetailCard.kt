@@ -14,7 +14,13 @@ import androidx.compose.ui.unit.dp
 import me.konyaco.keeptally.ui.component.MoneyString
 
 @Composable
-fun DetailCard(modifier: Modifier, expenditure: Int, income: Int, balance: Int) {
+fun DetailCard(
+    modifier: Modifier,
+    expStr: String,
+    incomeStr: String,
+    balanceStr: String,
+    isBalancePositive: Boolean
+) {
     Surface(
         modifier = modifier
             .padding(horizontal = 16.dp),
@@ -28,15 +34,17 @@ fun DetailCard(modifier: Modifier, expenditure: Int, income: Int, balance: Int) 
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.primary,
                 title = "支出",
-                money = expenditure,
-                onClick = {}
+                money = expStr,
+                onClick = {},
+                isIncome = false
             )
             RecordItem(
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.tertiary,
                 title = "收入",
-                money = income,
-                onClick = {}
+                money = incomeStr,
+                onClick = {},
+                isIncome = true
             )
             Divider(
                 Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
@@ -46,8 +54,9 @@ fun DetailCard(modifier: Modifier, expenditure: Int, income: Int, balance: Int) 
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.onSurface,
                 title = "结余",
-                money = balance,
-                onClick = {}
+                money = balanceStr,
+                onClick = {},
+                isIncome = isBalancePositive
             )
         }
     }
@@ -58,7 +67,8 @@ fun DetailCard(modifier: Modifier, expenditure: Int, income: Int, balance: Int) 
 fun RecordItem(
     color: Color,
     title: String,
-    money: Int,
+    isIncome: Boolean,
+    money: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -81,7 +91,7 @@ fun RecordItem(
             text = title,
             style = MaterialTheme.typography.titleMedium
         )
-        MoneyString(money = money, positiveColor = color, negativeColor = color)
+        MoneyString(money, isIncome, positiveColor = color, negativeColor = color)
         Spacer(Modifier.width(16.dp))
         Icon(
             modifier = Modifier.size(12.dp),

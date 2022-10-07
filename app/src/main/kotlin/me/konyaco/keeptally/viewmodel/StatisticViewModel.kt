@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.konyaco.keeptally.storage.database.AppDatabase
 import me.konyaco.keeptally.viewmodel.model.DateRange
-import zonedEpoch
+import me.konyaco.keeptally.viewmodel.model.Money
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,28 +23,31 @@ class StatisticViewModel @Inject constructor(
 
     // TODO: 2022/9/11
     data class Summary(
-        val expenditure: Int,
-        val income: Int,
-        val balance: Int,
-        val budget: Int
+        val expenditure: Money,
+        val income: Money,
+        val balance: Money,
+        val budget: Money
     )
 
     data class Expenditure(
         val typeId: Int,
         val label: String,
-        val money: Int,
-        val budget: Int,
+        val money: Money,
+        val budget: Money,
         val color: Int
     )
 
     data class Income(
         val typeId: Int,
         val label: String,
-        val money: Int,
+        val money: Money,
         val color: Int
     )
 
-    val summary: MutableStateFlow<Summary> = MutableStateFlow(Summary(0, 0, 0, 0))
+    private val defaultMoney = Money(0)
+
+    val summary: MutableStateFlow<Summary> =
+        MutableStateFlow(Summary(defaultMoney, defaultMoney, defaultMoney, defaultMoney))
     val expenditures: MutableStateFlow<List<Expenditure>> = MutableStateFlow(emptyList())
     val incomes: MutableStateFlow<List<Income>> = MutableStateFlow(emptyList())
 
@@ -74,27 +77,43 @@ class StatisticViewModel @Inject constructor(
         records.forEach { record ->
             // TODO(Optimize): Add cache to optimize
             var type = types[record.typeId]!!
+            // Get the root label
             while (type.parentId != null) {
                 type = types[type.parentId!!]!!
             }
             if (type.isIncome) {
                 val income = incomesR.getOrPut(type.id) {
-                    Income(type.id, type.label, 0, sharedViewModel.colors.value[type.id]!!)
+                    Income(
+                        type.id, type.label, Money(0),
+                        sharedViewModel.colors.value[type.id]!!
+                    )
                 }
-                incomesR[type.id] = income.copy(money = income.money + record.money)
+                incomesR[type.id] =
+                    income.copy(money = Money(income.money.money + record.money))
             } else {
                 val exp = expenditureR.getOrPut(type.id) {
-                    Expenditure(type.id, type.label, 0, 0, sharedViewModel.colors.value[type.id]!!)
+                    Expenditure(
+                        type.id, type.label, Money(0), Money(0),
+                        sharedViewModel.colors.value[type.id]!!
+                    )
                 }
-                expenditureR[type.id] = exp.copy(money = exp.money + record.money)
+                expenditureR[type.id] =
+                    exp.copy(money = Money(exp.money.money + record.money))
             }
         }
 
-        val incomeSum = incomesR.values.sumOf { it.money }
-        val expenditureSum = expenditureR.values.sumOf { it.money }
+        val incomeSum = incomesR.values.sumOf { it.money.money }
+        val expenditureSum = expenditureR.values.sumOf { it.money.money }
 
         expenditures.emit(expenditureR.values.toList())
         incomes.emit(incomesR.values.toList())
-        summary.emit(Summary(expenditureSum, incomeSum, incomeSum + expenditureSum, 0))
+        summary.emit(
+            Summary(
+                Money(expenditureSum),
+                Money(incomeSum),
+                Money(incomeSum + expenditureSum),
+                Money(0) // TODO
+            )
+        )
     }
 }

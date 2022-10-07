@@ -10,16 +10,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import me.konyaco.keeptally.ui.RecordSign
-import me.konyaco.keeptally.ui.formatMoneyCentToString
+import me.konyaco.keeptally.viewmodel.model.RecordSign
 import me.konyaco.keeptally.ui.theme.RobotoSlab
-import kotlin.math.abs
 
 @Composable
 fun Graph(
     modifier: Modifier,
     label: String,
-    money: Int,
+    moneyStr: String,
     caption: String,
     color: Color,
     data: List<DataItem>
@@ -49,8 +47,7 @@ fun Graph(
             Row(Modifier.constrainAs(moneyRef) { centerTo(parent) }) {
                 Text(
                     modifier = Modifier.alignByBaseline(),
-                    text = (if (money >= 0) RecordSign.POSITIVE else RecordSign.NEGATIVE)
-                            + formatMoneyCentToString(abs(money)),
+                    text = moneyStr,
                     color = color,
                     style = MaterialTheme.typography.displaySmall
                 )

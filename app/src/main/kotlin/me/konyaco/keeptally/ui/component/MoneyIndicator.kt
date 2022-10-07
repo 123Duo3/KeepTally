@@ -1,10 +1,12 @@
-package me.konyaco.keeptally.ui.statistic.component
+package me.konyaco.keeptally.ui.component
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -20,13 +22,15 @@ fun MoneyIndicator(
     gapColor: Color = MaterialTheme.colorScheme.inverseOnSurface,
     overflowColor: Color = MaterialTheme.colorScheme.error
 ) {
-    val progress = if (budget == 0) 1f else (money.toDouble() / budget).toFloat().coerceAtMost(2f)
+    val progress by derivedStateOf {
+        if (budget == 0) 1f else (money.toDouble() / budget).toFloat().coerceAtMost(2f)
+    }
     Canvas(
         Modifier
             .size(4.dp, 32.dp)
             .background(gapColor)
     ) {
-        val height = size.height * progress.coerceAtMost(1f)
+        val height by derivedStateOf { size.height * progress.coerceAtMost(1f) }
         drawRect(
             color = fillColor,
             topLeft = Offset(x = 0f, y = size.height - height),
