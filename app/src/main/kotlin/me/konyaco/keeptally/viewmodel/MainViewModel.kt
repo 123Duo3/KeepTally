@@ -43,7 +43,8 @@ class MainViewModel @Inject constructor(
         val money: Money,
         val date: Date,
         val time: String,
-        val type: RecordType
+        val type: RecordType,
+        val description: String?
     )
 
     data class Date(
@@ -127,7 +128,8 @@ class MainViewModel @Inject constructor(
             date = date,
             time = time,
             type = label,
-            id = this.id
+            id = this.id,
+            description = description
         )
     }
 

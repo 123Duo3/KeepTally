@@ -1,5 +1,6 @@
 package me.konyaco.keeptally.ui.detail.component
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,14 +38,19 @@ fun MoreInfo(modifier: Modifier, budget: String, income: String) {
 private fun TextRow(text: String, money: String, sign: String, color: Color) {
     Row(Modifier.fillMaxWidth()) {
         Text(text = text, style = MaterialTheme.typography.bodyLarge)
-        Text(
+        Crossfade(
             modifier = Modifier.weight(1f),
-            text = "$sign$money${RecordSign.RMB}",
-            textAlign = TextAlign.End,
-            color = color,
-            style = MaterialTheme.typography.bodyLarge,
-            fontFamily = FontFamily.RobotoSlab
-        )
+            targetState = "$sign$money${RecordSign.RMB}") {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = it,
+                textAlign = TextAlign.End,
+                color = color,
+                style = MaterialTheme.typography.bodyLarge,
+                fontFamily = FontFamily.RobotoSlab
+            )
+        }
+
     }
 }
 
