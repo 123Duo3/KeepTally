@@ -28,6 +28,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -87,18 +88,22 @@ fun AddRecord(
         checkedPrimaryLabel = selectedPrimaryLabel,
         onPrimaryLabelSelect = { selectedPrimaryLabel = it },
         checkedSecondaryLabel = selectedSecondaryLabel,
-        onSecondaryLabelSelect = { selectedSecondaryLabel = it },
+        onSecondaryLabelSelect = {
+            selectedSecondaryLabel =
+                if (selectedSecondaryLabel == it) null
+                else it
+        },
         onAddLabelClick = { isIncomeLabel, parentLabel ->
             val parentLabel = parentLabel?.let {
                 labels.keys.elementAtOrNull(it)?.label
             }
             showDialog = AddDialogState(isIncomeLabel, parentLabel)
         },
-        onAddRecordClick = { income, money ->
+        onAddRecordClick = { income, money, desc ->
             val primaryLabel = primaryLabels[selectedPrimaryLabel]
             val secondaryLabel = selectedSecondaryLabel?.let { secondaryLabels[it] }
 
-            viewModel.addRecord(income, money, primaryLabel, secondaryLabel, null)
+            viewModel.addRecord(income, money, primaryLabel, secondaryLabel, desc)
             onCloseRequest()
         },
     )
@@ -119,6 +124,7 @@ fun AddRecord(
     }
 }
 
+
 @Composable
 fun AddRecord(
     onCloseClick: () -> Unit,
@@ -132,7 +138,7 @@ fun AddRecord(
     checkedSecondaryLabel: Int?,
     onSecondaryLabelSelect: (Int) -> Unit,
     onAddLabelClick: (isIncomeLabel: Boolean, parentLabel: Int?) -> Unit,
-    onAddRecordClick: (isIncome: Boolean, money: Int) -> Unit
+    onAddRecordClick: (isIncome: Boolean, money: Int, description: String?) -> Unit
 ) {
     Surface(modifier) {
         Column(
@@ -185,11 +191,17 @@ fun AddRecord(
                 labelColor = labelColor,
                 onAddLabelClick = { onAddLabelClick(isIncome, checkedPrimaryLabel) }
             )
-            Spacer(Modifier.height(16.dp))
-
+            Divider(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
             var input by remember { mutableStateOf(TextFieldValue()) }
+
             EditDescription(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 value = input,
                 onValueChange = { input = it }
             )
@@ -199,8 +211,14 @@ fun AddRecord(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 onClick = {
-                    onAddRecordClick(isIncome, parseMoneyToCent(moneyStr.text))
-                    moneyStr = TextFieldValue("")
+                    onAddRecordClick(
+                        isIncome,
+                        parseMoneyToCent(moneyStr.text),
+                        input.text.takeIf { it.isNotEmpty() }
+                    )
+                    // Reset state
+                    moneyStr = TextFieldValue()
+                    input = TextFieldValue()
                 },
                 enabled = moneyStr.text.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(buttonColor)
@@ -214,7 +232,6 @@ fun AddRecord(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditDescription(
     modifier: Modifier,
@@ -223,17 +240,24 @@ private fun EditDescription(
 ) {
     Box(modifier) {
         BasicTextField(
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
             value = value,
             onValueChange = onValueChange,
             decorationBox = {
-                Box(Modifier.fillMaxWidth().padding(8.dp)) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                ) {
                     it()
                     if (value.text.isEmpty()) {
-                        Text("记录描述")
+                        Text("添加备注", color = LocalContentColor.current.copy(0.7f))
                     }
                 }
-            }
+            },
+            textStyle = LocalTextStyle.current.copy(LocalContentColor.current),
+            cursorBrush = SolidColor(LocalContentColor.current)
         )
     }
 }
@@ -259,7 +283,6 @@ private fun EditArea(
             )
         }
         Divider(Modifier.size(1.dp, 32.dp))
-//        var field by remember(moneyStr) { mutableStateOf(TextFieldValue(moneyStr)) }
         val focus = LocalFocusManager.current
         BasicTextField(
             modifier = Modifier
@@ -370,9 +393,15 @@ private fun PreviewLabelList() {
             listOf("购物", "餐饮", "洗浴")
         }
         var enabledLabel by remember { mutableStateOf(0) }
-        LabelList(modifier = Modifier.fillMaxWidth(), primaryLabels, enabledLabel, onLabelClick = {
-            enabledLabel = it
-        }, labelColor = MaterialTheme.colorScheme.tertiary, onAddLabelClick = {})
+        LabelList(
+            modifier = Modifier.fillMaxWidth(),
+            primaryLabels,
+            enabledLabel,
+            onLabelClick = {
+                enabledLabel = it
+            },
+            labelColor = MaterialTheme.colorScheme.tertiary,
+            onAddLabelClick = {})
     }
 }
 
@@ -516,7 +545,7 @@ private fun AddRecordPreview() {
             onCloseClick = {},
             isIncome = false,
             onIncomeChange = {},
-            onAddRecordClick = { _, _ -> },
+            onAddRecordClick = { _, _, _ -> },
             primaryLabels = remember {
                 listOf("购物", "餐饮", "洗浴")
             },
