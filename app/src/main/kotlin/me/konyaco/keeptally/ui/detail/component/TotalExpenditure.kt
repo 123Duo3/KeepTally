@@ -1,5 +1,6 @@
 package me.konyaco.keeptally.ui.detail.component
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,25 +26,31 @@ fun TotalExpenditure(modifier: Modifier, integer: String, decimal: String) {
             style = MaterialTheme.typography.displaySmall,
             fontFamily = FontFamily.RobotoSlab,
         )
-        Row(Modifier.weight(1f), horizontalArrangement = Arrangement.End) {
-            Text(
-                modifier = Modifier.alignByBaseline(),
-                text = "${RecordSign.NEGATIVE}$integer.",
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.displaySmall,
-                fontFamily = FontFamily.RobotoSlab,
-                textAlign = TextAlign.End
-            )
-            Text(
-                modifier = Modifier.alignByBaseline(),
-                text = decimal,
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.W800,
-                fontFamily = FontFamily.RobotoSlab,
-                textAlign = TextAlign.End
-            )
+        Crossfade(
+            modifier = Modifier.weight(1f),
+            targetState = integer to decimal
+        ) { (integer, decimal) ->
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                Text(
+                    modifier = Modifier.alignByBaseline(),
+                    text = "${RecordSign.NEGATIVE}$integer.",
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.displaySmall,
+                    fontFamily = FontFamily.RobotoSlab,
+                    textAlign = TextAlign.End
+                )
+                Text(
+                    modifier = Modifier.alignByBaseline(),
+                    text = decimal,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.W800,
+                    fontFamily = FontFamily.RobotoSlab,
+                    textAlign = TextAlign.End
+                )
+            }
         }
+
     }
 }
 

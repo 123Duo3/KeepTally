@@ -204,10 +204,19 @@ private fun DateChooser(
             .padding(start = 16.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        RangeText(
-            modifier = Modifier.weight(1f),
-            range = state.currentRange
-        )
+        Crossfade(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+            targetState = state.currentRange
+        ) {
+            Box(Modifier.fillMaxSize(), Alignment.Center) {
+                RangeText(
+                    modifier = Modifier.wrapContentWidth(),
+                    range = it
+                )
+            }
+        }
         Spacer(Modifier.width(4.dp))
         Icon(Icons.Sharp.ArrowDropDown, contentDescription = "Dropdown")
     }

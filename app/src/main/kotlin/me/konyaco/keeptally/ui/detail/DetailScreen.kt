@@ -1,14 +1,37 @@
 package me.konyaco.keeptally.ui.detail
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Add
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -77,42 +100,57 @@ private fun AddRecordButton(modifier: Modifier, onAddClick: () -> Unit) {
     )
 }
 
-@Composable
-private fun EmptyContent(modifier: Modifier) {
-    Column(modifier) {
-        LineChart(Modifier.fillMaxWidth())
-        Box(Modifier.fillMaxSize(), Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .sizeIn(maxWidth = 500.dp, maxHeight = 500.dp),
-                    painter = painterResource(id = R.drawable.woman_and_pen),
-                    contentDescription = "Empty",
-                    contentScale = ContentScale.Fit,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer)
-                )
-                Spacer(Modifier.height(8.dp))
-                Text(text = "点击「添加记录」来创建第一笔记账", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        }
-    }
-}
 
 @Composable
 private fun Content(
     viewModel: MainViewModel = hiltViewModel(),
     modifier: Modifier
 ) {
-    val records by viewModel.records.collectAsState()
-    if (records.isEmpty()) {
-        EmptyContent(modifier)
-    } else {
-        Content(
-            modifier = modifier,
-            records = viewModel.records.collectAsState().value,
-            onDelete = { viewModel.deleteRecord(it.id) }
+    Column(modifier) {
+        LineChart(Modifier.fillMaxWidth())
+        val records by viewModel.records.collectAsState()
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Crossfade(modifier = modifier, targetState = records) {
+                if (it.isEmpty()) {
+                    EmptyContent(Modifier.fillMaxSize())
+                } else {
+                    Content(
+                        modifier = Modifier.fillMaxSize(),
+                        records = it,
+                        onDelete = { viewModel.deleteRecord(it.id) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyContent(modifier: Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .sizeIn(maxWidth = 500.dp, maxHeight = 500.dp),
+            painter = painterResource(id = R.drawable.woman_and_pen),
+            contentDescription = "Empty",
+            contentScale = ContentScale.Fit,
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer)
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = "点击「添加记录」来创建第一笔记账",
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -123,33 +161,24 @@ private fun Content(
     records: List<MainViewModel.DailyRecord>,
     onDelete: (MainViewModel.Record) -> Unit
 ) {
-    Column(modifier) {
-        LineChart(Modifier.fillMaxWidth())
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            color = MaterialTheme.colorScheme.surface
-        ) {
-            LazyColumn(
-                contentPadding = PaddingValues(
-                    top = 16.dp,
-                    bottom = 16.dp + WindowInsets.navigationBars.asPaddingValues()
-                        .calculateBottomPadding()
-                )
-            ) {
-                itemsIndexed(records) { index, item ->
-                    DailyRecord(
-                        Modifier.fillParentMaxWidth(),
-                        item.date.parseAsString(),
-                        item.expenditure.moneyStr.join,
-                        item.income.moneyStr.join,
-                        item.records,
-                        onDelete
-                    )
-                    if (index < records.size - 1) Divider(Modifier.padding(vertical = 8.dp))
-                }
-            }
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(
+            top = 16.dp,
+            bottom = 16.dp + WindowInsets.navigationBars.asPaddingValues()
+                .calculateBottomPadding()
+        )
+    ) {
+        itemsIndexed(records) { index, item ->
+            DailyRecord(
+                Modifier.fillParentMaxWidth(),
+                item.date.parseAsString(),
+                item.expenditure.moneyStr.join,
+                item.income.moneyStr.join,
+                item.records,
+                onDelete
+            )
+            if (index < records.size - 1) Divider(Modifier.padding(vertical = 8.dp))
         }
     }
 }
