@@ -52,7 +52,8 @@ fun DailyRecord(
                     money = record.money.money,
                     onClick = { /* TODO */ },
                     onLongClick = { dropdown = record },
-                    moneyStr = record.money.moneyStr.join
+                    moneyStr = record.money.moneyStr.join,
+                    description = record.description
                 )
             }
         }
@@ -116,7 +117,8 @@ private fun DailyRecordPreview() {
                     money = Money(1100),
                     date = MainViewModel.Date("12-20", 0),
                     id = 0,
-                    isIncome = true
+                    isIncome = true,
+                    description = null
                 ),
                 MainViewModel.Record(
                     time = "12:30",
@@ -124,7 +126,8 @@ private fun DailyRecordPreview() {
                     money = Money(-1100),
                     date = MainViewModel.Date("12-20", 0),
                     id = 1,
-                    isIncome = false
+                    isIncome = false,
+                    description = "备注"
                 )
             ),
             onDeleteClick = {}
