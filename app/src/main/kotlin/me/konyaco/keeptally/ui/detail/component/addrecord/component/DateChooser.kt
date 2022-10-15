@@ -73,7 +73,7 @@ internal fun DateChooser(
                                     }
                                 }
                                 .padding(horizontal = 4.dp),
-                            text = "今日"
+                            text = "现在"
                         )
                     }
 
