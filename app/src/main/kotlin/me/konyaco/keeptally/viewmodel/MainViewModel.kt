@@ -12,6 +12,7 @@ import me.konyaco.keeptally.viewmodel.model.DateRange
 import me.konyaco.keeptally.viewmodel.model.Money
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -213,6 +214,17 @@ class MainViewModel @Inject constructor(
         secondaryLabel: String?,
         description: String?
     ) {
+        addRecord(isIncome, money, primaryLabel, secondaryLabel, description, LocalDateTime.now())
+    }
+
+    fun addRecord(
+        isIncome: Boolean,
+        money: Int,
+        primaryLabel: String,
+        secondaryLabel: String?,
+        description: String?,
+        date: LocalDateTime
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             val primary = recordTypeDao.getRootByLabel(primaryLabel)
                 ?: error("Primary label: $primaryLabel was not found")
@@ -227,7 +239,7 @@ class MainViewModel @Inject constructor(
                 EntityRecord(
                     0,
                     money,
-                    Instant.now().epochSecond,
+                    date.atZone(ZoneId.systemDefault()).toEpochSecond(),
                     label.id,
                     description
                 )
