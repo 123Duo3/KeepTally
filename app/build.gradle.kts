@@ -1,14 +1,13 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
-    id("com.google.devtools.ksp") version "1.6.21-1.0.6"
-    id("dagger.hilt.android.plugin")
+    id("com.google.devtools.ksp") version "1.7.20-1.0.6"
+    id("com.google.dagger.hilt.android")
 }
 
 android {
+    namespace = "me.konyaco.keeptally"
     compileSdk = 33
 
     defaultConfig {
@@ -22,6 +21,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        // For Room
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
@@ -54,7 +54,8 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = rootProject.extra["compose_version"] as String
+//        kotlinCompilerExtensionVersion = rootProject.extra["compose_version"] as String
+        kotlinCompilerExtensionVersion = "1.3.2"
     }
     packagingOptions {
         resources {
@@ -68,13 +69,12 @@ kapt {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
 
-    val hiltVersion = "2.43.1"
+    val hiltVersion = "2.44"
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-compiler:$hiltVersion")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
 
     testImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
     androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
@@ -83,7 +83,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
-    implementation("androidx.activity:activity-compose:1.5.1")
+    implementation("androidx.activity:activity-compose:1.6.0")
 
     val composeVersion = rootProject.extra["compose_version"]!!.toString()
     implementation("androidx.compose.ui:ui:$composeVersion")
@@ -92,7 +92,7 @@ dependencies {
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
-    implementation("androidx.compose.material3:material3:1.0.0-beta02")
+    implementation("androidx.compose.material3:material3:1.0.0-rc01")
 
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
