@@ -2,7 +2,7 @@ package me.konyaco.keeptally.storage.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import me.konyaco.keeptally.storage.dao.BudgetDao
+//import me.konyaco.keeptally.storage.dao.BudgetDao
 import me.konyaco.keeptally.storage.dao.RecordDao
 import me.konyaco.keeptally.storage.dao.RecordTypeDao
 import me.konyaco.keeptally.storage.entity.Record
