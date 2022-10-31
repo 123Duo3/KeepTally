@@ -17,10 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -41,48 +40,61 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import me.konyaco.keeptally.R
 import me.konyaco.keeptally.ui.detail.component.DailyRecord
+import me.konyaco.keeptally.ui.detail.component.LineChart
 import me.konyaco.keeptally.ui.detail.component.MoreInfo
 import me.konyaco.keeptally.ui.detail.component.TotalExpenditure
 import me.konyaco.keeptally.viewmodel.MainViewModel
+import me.konyaco.keeptally.viewmodel.MainViewModel.State.Done
+import me.konyaco.keeptally.viewmodel.MainViewModel.State.Initializing
+import me.konyaco.keeptally.viewmodel.MainViewModel.State.Loading
 
 @Composable
 fun DetailScreen(
     viewModel: MainViewModel = hiltViewModel(),
     onAddClick: () -> Unit
 ) {
-    Box(Modifier.fillMaxSize()) {
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
-            val statistics by viewModel.statistics.collectAsState()
-            TotalExpenditure(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                integer = statistics.expenditure.moneyStr.integer,
-                decimal = statistics.expenditure.moneyStr.decimal
-            )
-            Divider(Modifier.padding(vertical = 8.dp))
-            MoreInfo(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                budget = statistics.budget.moneyStr.join,
-                income = statistics.income.moneyStr.join
-            )
-            Spacer(Modifier.height(12.dp))
+    val state by viewModel.state.collectAsState()
+    Crossfade(modifier = Modifier.fillMaxSize(), targetState = state) {
+        Box(Modifier.fillMaxSize()) {
+            when (it) {
+                Initializing, Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
+                Done -> {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        val statistics by viewModel.statistics.collectAsState()
+                        TotalExpenditure(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
+                            integer = statistics.expenditure.moneyStr.integer,
+                            decimal = statistics.expenditure.moneyStr.decimal
+                        )
+                        Divider(Modifier.padding(vertical = 8.dp))
+                        MoreInfo(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
+                            budget = statistics.budget.moneyStr.join,
+                            income = statistics.income.moneyStr.join
+                        )
+                        Spacer(Modifier.height(12.dp))
 
-            Content(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
+                        Content(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        )
+                    }
+                    AddRecordButton(Modifier.align(Alignment.BottomEnd), onAddClick)
+                }
+            }
         }
-        AddRecordButton(Modifier.align(Alignment.BottomEnd), onAddClick)
     }
 }
+
 
 @Composable
 private fun AddRecordButton(modifier: Modifier, onAddClick: () -> Unit) {
@@ -169,9 +181,24 @@ private fun Content(
                 .calculateBottomPadding()
         )
     ) {
-        itemsIndexed(records) { index, item ->
+        records.forEachIndexed { index, item ->
             DailyRecord(
-                Modifier.fillParentMaxWidth(),
+                index == records.size - 1,
+                item.date,
+                item.expenditure.moneyStr.join,
+                item.income.moneyStr.join,
+                item.records,
+                onDelete
+            )
+        }
+
+/*        itemsIndexed(
+            items = records,
+            contentType = { index, item -> 1 },
+            key = { index, item -> item.date.dateString }
+        ) { index, item ->
+            DailyRecord(
+                Modifier.fillMaxWidth(),
                 item.date.parseAsString(),
                 item.expenditure.moneyStr.join,
                 item.income.moneyStr.join,
@@ -179,18 +206,12 @@ private fun Content(
                 onDelete
             )
             if (index < records.size - 1) Divider(Modifier.padding(vertical = 8.dp))
-        }
+        }*/
     }
 }
 
-@Composable
-private fun LazyListScope.content() {
-    // TODO:
-}
-
 @Stable
-@Composable
-private fun MainViewModel.Date.parseAsString(): String {
+fun MainViewModel.Date.parseAsString(): String {
     return when (daysOffset) {
         -2 -> "后天"
         -1 -> "明天"
