@@ -90,7 +90,7 @@ class MainViewModel @Inject constructor(
     }
 
     private val hhmFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
+    private val dateFormatter = DateTimeFormatter.ofPattern("MMMd" + "日")
 
     private suspend fun init() {
         refreshLabels()

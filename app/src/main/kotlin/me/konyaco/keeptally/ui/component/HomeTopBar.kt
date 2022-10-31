@@ -18,6 +18,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
@@ -314,10 +315,11 @@ private fun CustomTab(
                     shrinkHorizontally(tween(durationMillis = 80, easing = FastOutLinearInEasing))
         ) {
             Text(
-                modifier = Modifier.padding(start = 24.dp),
+                modifier = Modifier.padding(start = 16.dp),
                 text = text,
                 color = contentColor,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
             )
         }
     }
