@@ -85,7 +85,7 @@ private fun Content(
 }
 
 @Composable
-@OptIn(ExperimentalPagerApi::class, ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
 private fun ContentAnimatedContent(
     viewModel: MainViewModel,
     sheet: ModalBottomSheetState
@@ -97,7 +97,6 @@ private fun ContentAnimatedContent(
     ) {
         val scope = rememberCoroutineScope()
         val homeTopBarState = rememberHomeTopBarState()
-        val pagerState = rememberPagerState()
         var currentScreen by remember { mutableStateOf(HomeTopBarState.TabItem.Detail) }
 
         HomeTopBar(
