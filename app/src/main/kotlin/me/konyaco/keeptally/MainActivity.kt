@@ -23,7 +23,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val navController = rememberNavController()
+            App()
+            /*val navController = rememberNavController()
             CompositionLocalProvider(LocalNavController provides navController) {
                 NavHost(
                     navController = navController,
@@ -32,12 +33,9 @@ class MainActivity : ComponentActivity() {
                         composable("home") {
                             App()
                         }
-                        composable("abvc") {
-
-                        }
                     }
                 )
-            }
+            }*/
         }
     }
 }
