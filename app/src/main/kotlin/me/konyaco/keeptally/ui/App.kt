@@ -22,7 +22,7 @@ import me.konyaco.keeptally.ui.component.HomeTopBar
 import me.konyaco.keeptally.ui.component.HomeTopBarState
 import me.konyaco.keeptally.ui.component.rememberHomeTopBarState
 import me.konyaco.keeptally.ui.detail.DetailScreen
-import me.konyaco.keeptally.ui.detail.component.addrecord.AddRecord
+import me.konyaco.keeptally.ui.component.addrecord.AddRecord
 import me.konyaco.keeptally.ui.filter.FilterScreen
 import me.konyaco.keeptally.ui.other.OtherScreen
 import me.konyaco.keeptally.ui.statistic.StatisticScreen
@@ -97,7 +97,6 @@ private fun ContentAnimatedContent(
     ) {
         val scope = rememberCoroutineScope()
         val homeTopBarState = rememberHomeTopBarState()
-        var currentScreen by remember { mutableStateOf(HomeTopBarState.TabItem.Detail) }
 
         HomeTopBar(
             Modifier.fillMaxWidth(),
@@ -107,7 +106,6 @@ private fun ContentAnimatedContent(
             },
             onTabSelect = {
                 homeTopBarState.selectTab(it)
-                currentScreen = it
             }
         )
 
@@ -115,7 +113,7 @@ private fun ContentAnimatedContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            targetState = currentScreen,
+            targetState = homeTopBarState.selectedTab,
             transitionSpec = {
                 if (initialState < targetState) {
                     ContentTransform(

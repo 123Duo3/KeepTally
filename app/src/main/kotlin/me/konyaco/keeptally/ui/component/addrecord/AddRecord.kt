@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.detail.component.addrecord
+package me.konyaco.keeptally.ui.component.addrecord
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,12 +32,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import me.konyaco.keeptally.ui.detail.component.addrecord.component.AddLabelDialog
-import me.konyaco.keeptally.ui.detail.component.addrecord.component.DateChooser
-import me.konyaco.keeptally.ui.detail.component.addrecord.component.DateChooserState
-import me.konyaco.keeptally.ui.detail.component.addrecord.component.EditArea
-import me.konyaco.keeptally.ui.detail.component.addrecord.component.EditDescription
-import me.konyaco.keeptally.ui.detail.component.addrecord.component.LabelList
+import me.konyaco.keeptally.ui.component.addrecord.component.AddLabelDialog
+import me.konyaco.keeptally.ui.component.addrecord.component.DateChooser
+import me.konyaco.keeptally.ui.component.addrecord.component.DateChooserState
+import me.konyaco.keeptally.ui.component.addrecord.component.EditArea
+import me.konyaco.keeptally.ui.component.addrecord.component.EditDescription
+import me.konyaco.keeptally.ui.component.addrecord.component.LabelList
 import me.konyaco.keeptally.ui.parseMoneyToCent
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.viewmodel.MainViewModel

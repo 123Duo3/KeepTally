@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.detail.component.addrecord.component
+package me.konyaco.keeptally.ui.component.addrecord.component
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,8 +26,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import me.konyaco.keeptally.ui.detail.component.addrecord.normalizeNumberString
-import me.konyaco.keeptally.ui.detail.component.addrecord.validateNumberString
+import me.konyaco.keeptally.ui.component.addrecord.normalizeNumberString
+import me.konyaco.keeptally.ui.component.addrecord.validateNumberString
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.ui.theme.RobotoSlab
 import me.konyaco.keeptally.viewmodel.model.RecordSign
