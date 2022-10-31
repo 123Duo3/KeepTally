@@ -1,5 +1,10 @@
 package me.konyaco.keeptally.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.End
+import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Start
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
@@ -71,8 +76,17 @@ private fun Main(viewModel: MainViewModel) {
 }
 
 @Composable
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 private fun Content(
+    viewModel: MainViewModel,
+    sheet: ModalBottomSheetState
+) {
+    ContentAnimatedContent(viewModel, sheet)
+}
+
+@Composable
+@OptIn(ExperimentalPagerApi::class, ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
+private fun ContentAnimatedContent(
     viewModel: MainViewModel,
     sheet: ModalBottomSheetState
 ) {
@@ -84,7 +98,64 @@ private fun Content(
         val scope = rememberCoroutineScope()
         val homeTopBarState = rememberHomeTopBarState()
         val pagerState = rememberPagerState()
+        var currentScreen by remember { mutableStateOf(HomeTopBarState.TabItem.Detail) }
 
+        HomeTopBar(
+            Modifier.fillMaxWidth(),
+            homeTopBarState,
+            onDateChosen = { year, month ->
+                viewModel.setDateRange(DateRange.Month(year, month))
+            },
+            onTabSelect = {
+                homeTopBarState.selectTab(it)
+                currentScreen = it
+            }
+        )
+
+        AnimatedContent(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            targetState = currentScreen,
+            transitionSpec = {
+                if (initialState < targetState) {
+                    ContentTransform(
+                        targetContentEnter = slideIntoContainer(Start),
+                        initialContentExit = slideOutOfContainer(Start)
+                    )
+                } else {
+                    ContentTransform(
+                        targetContentEnter = slideIntoContainer(End),
+                        initialContentExit = slideOutOfContainer(End)
+                    )
+                }
+            }
+        ) {
+            when (it) {
+                HomeTopBarState.TabItem.Detail -> DetailScreen(onAddClick = { scope.launch { sheet.show() } })
+                HomeTopBarState.TabItem.Filter -> FilterScreen()
+                HomeTopBarState.TabItem.Statistics -> StatisticScreen()
+                HomeTopBarState.TabItem.Other -> OtherScreen()
+            }
+        }
+    }
+}
+
+
+@Composable
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
+private fun ContentPager(
+    viewModel: MainViewModel,
+    sheet: ModalBottomSheetState
+) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+    ) {
+        val scope = rememberCoroutineScope()
+        val homeTopBarState = rememberHomeTopBarState()
+        val pagerState = rememberPagerState()
         var isScrolling by remember { mutableStateOf(false) }
 
 
@@ -129,6 +200,7 @@ private fun Content(
                 }
             }
         )
+
 
         HorizontalPager(
             modifier = Modifier
