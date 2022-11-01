@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.detail.component.addrecord
+package me.konyaco.keeptally.ui.component.addrecord
 
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue

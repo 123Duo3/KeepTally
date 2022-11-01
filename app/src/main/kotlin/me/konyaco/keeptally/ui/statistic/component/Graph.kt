@@ -49,7 +49,8 @@ fun Graph(
                     modifier = Modifier.alignByBaseline(),
                     text = moneyStr,
                     color = color,
-                    style = MaterialTheme.typography.displaySmall
+                    style = MaterialTheme.typography.displaySmall,
+                    fontFamily = FontFamily.RobotoSlab
                 )
                 Text(
                     modifier = Modifier.alignByBaseline(),

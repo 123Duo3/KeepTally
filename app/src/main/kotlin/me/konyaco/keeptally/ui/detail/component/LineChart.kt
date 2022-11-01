@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.detail
+package me.konyaco.keeptally.ui.detail.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row

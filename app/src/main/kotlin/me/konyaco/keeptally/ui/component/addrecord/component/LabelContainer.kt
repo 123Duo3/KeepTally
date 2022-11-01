@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.detail.component.addrecord.component
+package me.konyaco.keeptally.ui.component.addrecord.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState

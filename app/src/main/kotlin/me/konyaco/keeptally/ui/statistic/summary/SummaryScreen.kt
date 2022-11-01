@@ -21,6 +21,7 @@ import me.konyaco.keeptally.ui.statistic.component.DataItem
 import me.konyaco.keeptally.ui.statistic.component.Graph
 import me.konyaco.keeptally.ui.theme.KeepTallyTheme
 import me.konyaco.keeptally.viewmodel.StatisticViewModel
+import me.konyaco.keeptally.viewmodel.model.RecordSign
 
 private val testData = listOf(
     DataItem(Color(0xFF5EDBBC), 1500),
@@ -55,7 +56,7 @@ fun SummaryScreen(
         Graph(
             Modifier.align(Alignment.CenterHorizontally),
             "结余",
-            balance,
+            (if (isBalancePositive) RecordSign.POSITIVE else RecordSign.NEGATIVE) + balance,
             "",
             MaterialTheme.colorScheme.primary,
             testData

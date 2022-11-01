@@ -28,8 +28,20 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     private val recordDao = appDatabase.recordDao()
     private val recordTypeDao = appDatabase.recordTypeDao()
-
     private val localZoneId = ZoneId.systemDefault()
+
+    val state = MutableStateFlow<State>(State.Initializing)
+    val records = MutableStateFlow<List<DailyRecord>>(emptyList())
+    val expenditureLabels = MutableStateFlow<Map<RecordType, List<RecordType>>>(emptyMap())
+    val incomeLabels = MutableStateFlow<Map<RecordType, List<RecordType>>>(emptyMap())
+    val dateRange = sharedViewModel.dateRange
+    val statistics = MutableStateFlow<Statistics>(Statistics(Money(0), Money(0), Money(0)))
+
+    sealed class State {
+        object Initializing: State()
+        object Loading: State()
+        object Done: State()
+    }
 
     data class DailyRecord(
         val date: Date,
@@ -63,15 +75,6 @@ class MainViewModel @Inject constructor(
         val colorIndex: Int
     )
 
-    val records = MutableStateFlow<List<DailyRecord>>(emptyList())
-
-    val expenditureLabels = MutableStateFlow<Map<RecordType, List<RecordType>>>(emptyMap())
-    val incomeLabels = MutableStateFlow<Map<RecordType, List<RecordType>>>(emptyMap())
-
-    val dateRange = sharedViewModel.dateRange
-
-    val statistics = MutableStateFlow<Statistics>(Statistics(Money(0), Money(0), Money(0)))
-
     data class Statistics(
         val expenditure: Money,
         val income: Money,
@@ -87,11 +90,12 @@ class MainViewModel @Inject constructor(
     }
 
     private val hhmFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
+    private val dateFormatter = DateTimeFormatter.ofPattern("MMMd" + "日")
 
     private suspend fun init() {
         refreshLabels()
         refreshRecords()
+        state.value = State.Done
     }
 
     private suspend fun refreshRecords() = withContext(Dispatchers.IO) {

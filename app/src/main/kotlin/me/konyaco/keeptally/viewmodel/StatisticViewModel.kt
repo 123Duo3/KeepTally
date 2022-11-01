@@ -2,6 +2,7 @@ package me.konyaco.keeptally.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.ViewModelLifecycle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,6 @@ class StatisticViewModel @Inject constructor(
     private val sharedViewModel: SharedViewModel,
     private val database: AppDatabase
 ) : ViewModel() {
-
     private val recordDao = database.recordDao()
     private val recordTypeDao = database.recordTypeDao()
 

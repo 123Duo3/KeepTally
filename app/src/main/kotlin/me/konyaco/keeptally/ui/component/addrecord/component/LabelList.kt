@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.detail.component.addrecord.component
+package me.konyaco.keeptally.ui.component.addrecord.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement

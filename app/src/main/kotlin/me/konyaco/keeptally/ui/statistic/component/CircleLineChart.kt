@@ -4,8 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -23,9 +22,9 @@ fun CircleLineChart(
     data: List<DataItem>
 ) {
     Box(modifier) {
-        val sum by derivedStateOf { data.sumOf { it.value } }
+        val sum = remember(data) { data.sumOf { it.value } }
+        val gap = remember(data) { if (data.size > 1) 1f else 0f }
         val width = with(LocalDensity.current) { 4.dp.toPx() }
-        val gap by derivedStateOf { if (data.size > 1) 1f else 0f }
         Canvas(
             modifier = Modifier.fillMaxSize(),
             onDraw = {

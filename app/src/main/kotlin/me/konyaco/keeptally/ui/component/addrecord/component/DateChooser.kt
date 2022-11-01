@@ -1,4 +1,4 @@
-package me.konyaco.keeptally.ui.detail.component.addrecord.component
+package me.konyaco.keeptally.ui.component.addrecord.component
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -73,7 +74,9 @@ internal fun DateChooser(
                                     }
                                 }
                                 .padding(horizontal = 4.dp),
-                            text = "今日"
+                            text = "现在",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.labelLarge
                         )
                     }
 
@@ -101,9 +104,15 @@ internal fun DateChooser(
                                     }
                                 }
                                 .padding(4.dp),
-                            text = dateText
+                            text = dateText,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                        Text(text = "·")
+                        Text(
+                            text = "•",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                         Text(
                             modifier = Modifier
                                 .clickable(
@@ -122,7 +131,9 @@ internal fun DateChooser(
                                     }
                                 }
                                 .padding(4.dp),
-                            text = timeText
+                            text = timeText,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
