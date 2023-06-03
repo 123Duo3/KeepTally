@@ -2,11 +2,9 @@ package me.konyaco.keeptally.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.ViewModelLifecycle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.konyaco.keeptally.storage.database.AppDatabase
 import me.konyaco.keeptally.viewmodel.model.DateRange
@@ -51,11 +49,9 @@ class StatisticViewModel @Inject constructor(
     val expenditures: MutableStateFlow<List<Expenditure>> = MutableStateFlow(emptyList())
     val incomes: MutableStateFlow<List<Income>> = MutableStateFlow(emptyList())
 
-    init {
+    fun refresh() {
         viewModelScope.launch(Dispatchers.IO) {
-            sharedViewModel.dateRange.collectLatest {
-                refresh(it)
-            }
+            refresh(sharedViewModel.dateRange.value)
         }
     }
 

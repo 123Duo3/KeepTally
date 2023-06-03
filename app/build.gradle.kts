@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "me.konyaco.keeptally"
-        minSdk = 21
+        minSdk = 25
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
