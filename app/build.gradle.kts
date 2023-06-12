@@ -53,7 +53,9 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
     kotlin {
         jvmToolchain(17)
     }
