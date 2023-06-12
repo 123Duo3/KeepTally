@@ -50,7 +50,7 @@ private fun Main(viewModel: MainViewModel) {
     val localFocus = LocalFocusManager.current
     val scope = rememberCoroutineScope()
     val sheet = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden,
-        confirmStateChange = {
+        confirmValueChange = {
             if (it == ModalBottomSheetValue.Hidden)
                 localFocus.clearFocus()
             true
@@ -126,7 +126,7 @@ private fun ContentAnimatedContent(
                         initialContentExit = slideOutOfContainer(End)
                     )
                 }
-            }
+            }, label = "content"
         ) {
             when (it) {
                 HomeTopBarState.TabItem.Detail -> DetailScreen(onAddClick = { scope.launch { sheet.show() } })
