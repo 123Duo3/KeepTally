@@ -1,3 +1,3 @@
-package me.konyaco.keeptally.database
+package com.konyaco.keeptally.database
 
 internal class AppDatabaseTest

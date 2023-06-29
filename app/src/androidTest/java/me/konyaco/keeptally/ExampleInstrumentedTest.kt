@@ -1,4 +1,4 @@
-package me.konyaco.keeptally
+package com.konyaco.keeptally
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -17,6 +17,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("me.konyaco.keeptally", appContext.packageName)
+        assertEquals("com.konyaco.keeptally", appContext.packageName)
     }
 }

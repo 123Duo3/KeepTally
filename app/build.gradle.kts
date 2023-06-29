@@ -1,17 +1,20 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
+    kotlin("plugin.serialization") version "1.8.20"
     id("com.google.devtools.ksp") version "1.8.20-1.0.11"
     id("com.google.dagger.hilt.android")
 }
 
 android {
-    namespace = "me.konyaco.keeptally"
+    namespace = "com.konyaco.keeptally"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "me.konyaco.keeptally"
+        applicationId = "com.konyaco.keeptally"
         minSdk = 25
         targetSdk = 33
         versionCode = 1
@@ -33,6 +36,7 @@ android {
                 add(getDefaultProguardFile("proguard-android-optimize.txt"))
                 add(file("proguard-rules.pro"))
             }
+            buildConfigField("String", "BASE_URL", """"https://api.keeptally.konyaco.com"""")
         }
         debug {
             isMinifyEnabled = false
@@ -40,10 +44,13 @@ android {
                 add(getDefaultProguardFile("proguard-android-optimize.txt"))
                 add(file("proguard-rules.pro"))
             }
+            applicationIdSuffix = ".debug"
+            buildConfigField("String", "BASE_URL", """"${gradleLocalProperties(rootDir).getProperty("baseUrl")}"""")
         }
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.6"
@@ -68,15 +75,18 @@ kapt {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
-    val hiltVersion = "2.44"
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    val hiltVersion = "2.46.1"
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-compiler:$hiltVersion")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     testImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
     androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
     kaptTest("com.google.dagger:hilt-compiler:$hiltVersion")
     kaptAndroidTest("com.google.dagger:hilt-compiler:$hiltVersion")
+
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
@@ -101,11 +111,17 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
 
-    val roomVersion = "2.5.1"
+    val roomVersion = "2.5.2"
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
 
+    val ktorVersion = "2.3.1"
+    implementation("io.ktor:ktor-client-android:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     testImplementation("junit:junit:4.13.2")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
