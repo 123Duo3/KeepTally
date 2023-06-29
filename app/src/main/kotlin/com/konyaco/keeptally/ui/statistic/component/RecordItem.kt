@@ -20,9 +20,9 @@ import com.konyaco.keeptally.ui.component.MoneyString
 fun RecordItem(
     color: Color,
     title: String,
-    money: Int,
+    money: Long,
     moneyStr: String,
-    budget: Int?,
+    budget: Long?,
     budgetStr: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -35,7 +35,7 @@ fun RecordItem(
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        MoneyIndicator(money = money, budget = budget ?: 0, fillColor = color)
+        MoneyIndicator(money = money, budget = budget ?: 0L, fillColor = color)
         Spacer(Modifier.width(16.dp))
         Text(
             modifier = Modifier.weight(1f),

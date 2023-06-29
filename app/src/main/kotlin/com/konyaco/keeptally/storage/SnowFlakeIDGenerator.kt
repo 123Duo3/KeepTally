@@ -1,6 +1,8 @@
 package com.konyaco.keeptally.storage
 
-// Generate snowflake id
+/**
+ * Generate snowflake id
+ */
 object SnowFlakeIDGenerator {
     private const val EPOCH = 1609459200000L
     private const val WORKER_ID_BITS = 5
@@ -12,10 +14,16 @@ object SnowFlakeIDGenerator {
     private const val SEQUENCE_MASK = (-1L shl SEQUENCE_BITS).inv()
     private const val WORKER_ID_MAX = (-1L shl WORKER_ID_BITS).inv()
     private const val DATACENTER_ID_MAX = (-1L shl DATACENTER_ID_BITS).inv()
-    private const val WORKER_ID = 0L
-    private const val DATACENTER_ID = 0L
+
+    private var WORKER_ID = 0L
+    private var DATACENTER_ID = 0L
     private var lastTimestamp = -1L
     private var sequence = 0L
+
+    @Synchronized
+    fun setWorkerId(id: Long) {
+        WORKER_ID = id
+    }
 
     @Synchronized
     fun nextId(): Long {

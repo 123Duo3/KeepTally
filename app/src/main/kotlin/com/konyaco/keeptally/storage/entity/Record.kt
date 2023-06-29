@@ -9,9 +9,9 @@ import java.time.Instant
  */
 @Entity
 data class Record(
-    @PrimaryKey val id: Int,
-    val money: Int,
+    @PrimaryKey val id: Long,
+    val money: Long,
     val timestamp: Long = Instant.now().epochSecond,
-    val typeId: Int,
+    val typeId: Long,
     val description: String?
 )

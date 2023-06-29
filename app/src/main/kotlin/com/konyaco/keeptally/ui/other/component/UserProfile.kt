@@ -1,5 +1,6 @@
 package com.konyaco.keeptally.ui.other.component
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,6 +34,7 @@ fun UserProfile(
     email: String,
     alipayBalance: String,
     wechatBalance: String,
+    isSyncing: Boolean,
     onLoginClick: () -> Unit
 ) {
     Surface(
@@ -59,7 +61,10 @@ fun UserProfile(
                         color = MaterialTheme.colorScheme.onSurface.copy(0.7f)
                     )
                 }
-                Icon(imageVector = Icons.Default.CloudDone, contentDescription = "Backup")
+                Crossfade(targetState = isSyncing, label = "Syncing") {
+                    if (it) CircularProgressIndicator(Modifier.size(24.dp))
+                    else Icon(imageVector = Icons.Default.CloudDone, contentDescription = "Backup")
+                }
                 Icon(
                     imageVector = Icons.Default.ChevronRight,
                     contentDescription = "Forward"
@@ -140,21 +145,4 @@ private fun WechatPayButton(money: String, modifier: Modifier) {
         color = MaterialTheme.colorScheme.primary,
         modifier = modifier
     )
-}
-
-
-@Preview
-@Composable
-private fun Preview() {
-    KeepTallyTheme {
-        UserProfile(
-            modifier = Modifier.fillMaxWidth(),
-            userName = "示例用户",
-            email = "user@email.com",
-            alipayBalance = "123.45",
-            wechatBalance = "123.45",
-            onLoginClick = {},
-            isLogin = false
-        )
-    }
 }

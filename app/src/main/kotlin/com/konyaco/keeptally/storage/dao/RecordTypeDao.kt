@@ -21,7 +21,7 @@ interface RecordTypeDao {
     suspend fun getAllExpenditure(): List<RecordType>
 
     @Query("SELECT * FROM recordtype WHERE id IN (:id)")
-    suspend fun loadAllByIds(vararg id: Int): List<RecordType>
+    suspend fun loadAllByIds(vararg id: Long): List<RecordType>
 
     @Query("SELECT * FROM recordtype WHERE parentId IS NULL")
     suspend fun getAllRoot(): List<RecordType>
@@ -33,7 +33,7 @@ interface RecordTypeDao {
     suspend fun getRootByLabel(label: String): RecordType?
 
     @Query("SELECT * FROM recordtype WHERE parentId = :parentId")
-    suspend fun getSubTypes(parentId: Int): List<RecordType>
+    suspend fun getSubTypes(parentId: Long): List<RecordType>
 
     @Insert
     suspend fun insertAll(vararg types: RecordType): List<Long>

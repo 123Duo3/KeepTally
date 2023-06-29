@@ -36,7 +36,7 @@ internal object InjectionModule {
 
     @Provides
     fun provideApi(@ApplicationContext context: Context, dataStore: DataStore<Preferences>, database: AppDatabase): KeepTallyApi {
-        return KeepTallyApi(database, dataStore)
+        return KeepTallyApi(database)
     }
 
     @Provides

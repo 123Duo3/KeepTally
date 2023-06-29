@@ -15,14 +15,14 @@ import com.konyaco.keeptally.ui.theme.KeepTallyTheme
 
 @Composable
 fun MoneyIndicator(
-    money: Int,
-    budget: Int,
+    money: Long,
+    budget: Long,
     fillColor: Color,
     gapColor: Color = MaterialTheme.colorScheme.inverseOnSurface,
     overflowColor: Color = MaterialTheme.colorScheme.error
 ) {
     val progress = remember(budget, money) {
-        if (budget == 0) 1f else (money.toDouble() / budget).toFloat().coerceAtMost(2f)
+        if (budget == 0L) 1f else (money.toDouble() / budget).toFloat().coerceAtMost(2f)
     }
     Canvas(
         Modifier

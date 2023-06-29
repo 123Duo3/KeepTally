@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class RecordType(
-    @PrimaryKey val id: Int,
+    @PrimaryKey val id: Long,
     val label: String,
-    val parentId: Int?,
+    val parentId: Long?,
     val isIncome: Boolean
 )

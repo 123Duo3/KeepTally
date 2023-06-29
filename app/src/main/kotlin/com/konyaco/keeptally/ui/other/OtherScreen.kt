@@ -3,6 +3,7 @@ package com.konyaco.keeptally.ui.other
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -11,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -29,6 +31,10 @@ import com.konyaco.keeptally.viewmodel.OtherViewModel
 fun OtherScreen(
     viewModel: OtherViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.init()
+    }
+
     Column(
         Modifier
             .fillMaxSize()
@@ -42,13 +48,18 @@ fun OtherScreen(
             alipayBalance = viewModel.alipayBalance,
             wechatBalance = viewModel.wechatBalance,
             isLogin = viewModel.isLoggedIn,
-            onLoginClick = { viewModel.handleLogin() }
+            onLoginClick = {
+                if (viewModel.isLoggedIn) viewModel.handleLogout()
+                else viewModel.handleLogin()
+            },
+            isSyncing = viewModel.isSyncing
         )
         Spacer(Modifier.height(16.dp))
         OptionList(Modifier.fillMaxWidth())
 
         LoginDialog(viewModel)
         RegisterDialog(viewModel)
+        LogoutDialog(viewModel)
     }
 }
 
@@ -110,7 +121,10 @@ private fun LoginDialog(
                 )
                 Spacer(Modifier.height(16.dp))
                 Row {
-                    Button(onClick = { viewModel.submitLogin() }, enabled = !viewModel.isLoggingIn) {
+                    Button(
+                        onClick = { viewModel.submitLogin() },
+                        enabled = !viewModel.isLoggingIn
+                    ) {
                         if (viewModel.isLoggingIn) Text("登陆中")
                         else Text("登录")
                     }
@@ -186,7 +200,10 @@ private fun RegisterDialog(viewModel: OtherViewModel) {
                         Text("返回")
                     }
                     Spacer(Modifier.width(12.dp))
-                    Button(onClick = { viewModel.submitRegister() }, enabled = !viewModel.isLoggingIn) {
+                    Button(
+                        onClick = { viewModel.submitRegister() },
+                        enabled = !viewModel.isLoggingIn
+                    ) {
                         if (viewModel.isRegistering) Text("注册中")
                         else Text("注册")
                     }
@@ -229,6 +246,19 @@ private fun LoginButton(
             )
         }
     }
+}
+
+@Composable
+private fun LogoutDialog(viewModel: OtherViewModel) {
+    if (viewModel.showLogoutDialog) AlertDialog(
+        onDismissRequest = { viewModel.closeLogoutDialog() },
+        confirmButton = {
+            Button(onClick = { viewModel.submitLogout() }) {
+                Text("注销")
+            }
+        },
+        text = { Text("注销登录？") }
+    )
 }
 
 @Preview

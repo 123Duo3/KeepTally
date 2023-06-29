@@ -146,7 +146,7 @@ fun AddRecord(
     checkedSecondaryLabel: Int?,
     onSecondaryLabelSelect: (Int) -> Unit,
     onAddLabelClick: (isIncomeLabel: Boolean, parentLabel: Int?) -> Unit,
-    onAddRecordClick: (isIncome: Boolean, money: Int, description: String?, date: DateChooserState) -> Unit
+    onAddRecordClick: (isIncome: Boolean, money: Long, description: String?, date: DateChooserState) -> Unit
 ) {
     Surface(modifier) {
         Column(

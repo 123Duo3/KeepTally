@@ -25,8 +25,7 @@ import kotlinx.serialization.json.Json
 import java.time.Instant
 
 class KeepTallyApi(
-    private val database: AppDatabase,
-    private val dataStore: DataStore<Preferences>
+    private val database: AppDatabase
 ) {
     private val baseUrl = BuildConfig.BASE_URL + "/api"
     private val scope = CoroutineScope(Dispatchers.Default)

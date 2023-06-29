@@ -23,7 +23,7 @@ fun RecordItem(
     title: String,
     time: String,
     category: String,
-    money: Int,
+    money: Long,
     moneyStr: String,
     description: String?,
     onClick: () -> Unit,

@@ -28,7 +28,7 @@ class StatisticViewModel @Inject constructor(
     )
 
     data class Expenditure(
-        val typeId: Int,
+        val typeId: Long,
         val label: String,
         val money: Money,
         val budget: Money,
@@ -36,7 +36,7 @@ class StatisticViewModel @Inject constructor(
     )
 
     data class Income(
-        val typeId: Int,
+        val typeId: Long,
         val label: String,
         val money: Money,
         val color: Int
@@ -66,8 +66,8 @@ class StatisticViewModel @Inject constructor(
             }
         }
 
-        val incomesR = mutableMapOf<Int, Income>()
-        val expenditureR = mutableMapOf<Int, Expenditure>()
+        val incomesR = mutableMapOf<Long, Income>()
+        val expenditureR = mutableMapOf<Long, Expenditure>()
 
         // TODO(Optimize): Use flow
         records.forEach { record ->

@@ -6,15 +6,25 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.konyaco.keeptally.api.KeepTallyApi
+import com.konyaco.keeptally.service.SecretGenerator
+import com.konyaco.keeptally.storage.MyDataStore
+import com.konyaco.keeptally.storage.SnowFlakeIDGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class OtherViewModel @Inject constructor(
-    private val api: KeepTallyApi
+    private val api: KeepTallyApi,
+    private val sharedViewModel: SharedViewModel,
+    private val myDataStore: MyDataStore
 ) : ViewModel() {
+    var initialized by mutableStateOf(false)
     var isLoggedIn by mutableStateOf(false)
     var isLoggingIn by mutableStateOf(false)
 
@@ -41,17 +51,52 @@ class OtherViewModel @Inject constructor(
     var registerName by mutableStateOf("")
     var registerResult by mutableStateOf<String?>(null)
 
+    var isSyncing  by sharedViewModel.isSyncing
+
+    var showLogoutDialog by mutableStateOf(false)
+    fun init() {
+        viewModelScope.launch(Dispatchers.IO) {
+            suspendCoroutine<Unit> {cont ->
+                launch {
+                    myDataStore.userStatus.take(1).collectLatest {
+                        if (it != null) {
+                            isLoggedIn = true
+                            username = it.name
+                            email = it.email
+                            SnowFlakeIDGenerator.setWorkerId(it.clientId)
+                        }
+                        cont.resume(Unit)
+                    }
+                }
+            }
+            initialized = true
+        }
+    }
+
     fun submitLogin() = viewModelScope.launch(Dispatchers.IO) {
         isLoggingIn = true
         try {
-            val response = api.login(loginEmail, loginPassword)
-            if (response.code == 0) {
+            val resp = api.login(loginEmail, loginPassword)
+            if (resp.code == 0) {
+                val clientId = resp.data!!.clientId
                 val profile = api.profile().data!!
+
+                myDataStore.saveUserStatus(
+                    MyDataStore.UserStatus(
+                        name = profile.username,
+                        email = profile.email,
+                        secret = SecretGenerator.generateSecret(loginPassword),
+                        clientId = clientId,
+                    )
+                )
+                SnowFlakeIDGenerator.setWorkerId(clientId)
+                // Login succeed
                 username = profile.username
                 email = profile.email
+                showLoginDialog = false
                 isLoggedIn = true
             } else {
-                loginError = response.msg
+                loginError = resp.msg
             }
         } catch (e: Throwable) {
             e.printStackTrace()
@@ -98,5 +143,21 @@ class OtherViewModel @Inject constructor(
     fun handleBack() {
         showRegisterDialog = false
         showLoginDialog = true
+    }
+
+    fun handleLogout() {
+        showLogoutDialog = true
+    }
+
+    fun submitLogout() = viewModelScope.launch(Dispatchers.IO) {
+        myDataStore.clearUserStatus()
+        isLoggedIn = false
+        username = "未登录"
+        email = "未登录"
+        showLogoutDialog = false
+    }
+
+    fun closeLogoutDialog() {
+        showLogoutDialog = false
     }
 }

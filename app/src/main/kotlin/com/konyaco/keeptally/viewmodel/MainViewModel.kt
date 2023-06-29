@@ -3,13 +3,14 @@ package com.konyaco.keeptally.viewmodel
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.konyaco.keeptally.storage.SnowFlakeIDGenerator
+import com.konyaco.keeptally.storage.database.AppDatabase
+import com.konyaco.keeptally.viewmodel.model.DateRange
+import com.konyaco.keeptally.viewmodel.model.Money
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.konyaco.keeptally.storage.database.AppDatabase
-import com.konyaco.keeptally.viewmodel.model.DateRange
-import com.konyaco.keeptally.viewmodel.model.Money
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
@@ -51,7 +52,7 @@ class MainViewModel @Inject constructor(
     )
 
     data class Record(
-        val id: Int,
+        val id: Long,
         val isIncome: Boolean,
         val money: Money,
         val date: Date,
@@ -103,8 +104,8 @@ class MainViewModel @Inject constructor(
         val start = range.start.zonedEpoch()
         val end = range.end.zonedEpoch()
 
-        var expenditure = 0
-        var income = 0
+        var expenditure = 0L
+        var income = 0L
 
         val result = recordDao.loadAllByDateDesc(start, end).map {
             it.mapToRecord().also {
@@ -178,7 +179,8 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             // Check existence
             if (recordTypeDao.getRootByLabel(name) == null) {
-                recordTypeDao.insertAll(EntityRecordType(0, name, null, isIncomeLabel))
+                recordTypeDao.insertAll(EntityRecordType(
+                    SnowFlakeIDGenerator.nextId(), name, null, isIncomeLabel))
                 sharedViewModel.refresh()
                 refreshLabels()
             } else {
@@ -213,7 +215,7 @@ class MainViewModel @Inject constructor(
 
     fun addRecord(
         isIncome: Boolean,
-        money: Int,
+        money: Long,
         primaryLabel: String,
         secondaryLabel: String?,
         description: String?
@@ -223,7 +225,7 @@ class MainViewModel @Inject constructor(
 
     fun addRecord(
         isIncome: Boolean,
-        money: Int,
+        money: Long,
         primaryLabel: String,
         secondaryLabel: String?,
         description: String?,
@@ -241,7 +243,7 @@ class MainViewModel @Inject constructor(
             val money = if (isIncome) abs(money) else -abs(money)
             recordDao.insertAll(
                 EntityRecord(
-                    0,
+                    SnowFlakeIDGenerator.nextId(),
                     money,
                     date.atZone(ZoneId.systemDefault()).toEpochSecond(),
                     label.id,
@@ -249,6 +251,7 @@ class MainViewModel @Inject constructor(
                 )
             )
             refreshRecords()
+            sharedViewModel.sync()
         }
     }
 
@@ -256,8 +259,8 @@ class MainViewModel @Inject constructor(
         return records.groupBy {
             it.date.dateString
         }.map { (date, records) ->
-            var expenditure = 0
-            var income = 0
+            var expenditure = 0L
+            var income = 0L
             records.forEach {
                 if (it.money.money < 0) {
                     expenditure += abs(it.money.money)
@@ -284,7 +287,7 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun deleteRecord(id: Int) {
+    fun deleteRecord(id: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             recordDao.delete(com.konyaco.keeptally.storage.entity.Record(id = id, 0, 0, 0, null))
             refreshRecords()

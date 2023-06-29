@@ -9,7 +9,7 @@ import kotlin.math.abs
  * @param money abs money
  */
 data class Money(
-    val money: Int,
+    val money: Long,
     val moneyStr: MoneyString = MoneyString.fromMoney(money)
 ) {
     data class MoneyString(
@@ -27,7 +27,7 @@ data class Money(
         }
 
         companion object {
-            fun fromMoney(money: Int): MoneyString {
+            fun fromMoney(money: Long): MoneyString {
                 val format = formatMoneyCent(abs(money))
                 return MoneyString(format.first, format.second)
             }
@@ -40,7 +40,7 @@ private val decimalFormat = DecimalFormat.getInstance().apply {
 }
 
 @Stable
-fun formatMoneyCent(money: Int): Pair<String, String> {
+fun formatMoneyCent(money: Long): Pair<String, String> {
     val integer = money / 100
     val decimal = money % 100
     val integerStr = decimalFormat.format(integer)

@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 
 data class DataItem(
     val color: Color,
-    val value: Int
+    val value: Long
 )
 
 @Composable

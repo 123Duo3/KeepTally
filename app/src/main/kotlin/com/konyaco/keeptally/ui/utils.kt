@@ -6,8 +6,8 @@ import com.konyaco.keeptally.viewmodel.model.Colors
 import java.math.BigDecimal
 
 @Stable
-fun parseMoneyToCent(str: String): Int {
-    return BigDecimal(str).multiply(BigDecimal(100)).toInt()
+fun parseMoneyToCent(str: String): Long {
+    return BigDecimal(str).multiply(BigDecimal(100)).toLong()
 }
 
 @Stable
