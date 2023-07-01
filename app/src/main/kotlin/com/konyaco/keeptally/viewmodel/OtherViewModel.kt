@@ -54,6 +54,7 @@ class OtherViewModel @Inject constructor(
     var isSyncing  by sharedViewModel.isSyncing
 
     var showLogoutDialog by mutableStateOf(false)
+
     fun init() {
         viewModelScope.launch(Dispatchers.IO) {
             suspendCoroutine<Unit> {cont ->
@@ -66,6 +67,12 @@ class OtherViewModel @Inject constructor(
                             SnowFlakeIDGenerator.setWorkerId(it.clientId)
                         }
                         cont.resume(Unit)
+                    }
+                    api.profile().data?.let {
+                        username = it.username
+                        email = it.email
+                        bio = it.bio
+                        image = it.image
                     }
                 }
             }

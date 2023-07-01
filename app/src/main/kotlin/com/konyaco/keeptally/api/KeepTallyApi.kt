@@ -123,6 +123,10 @@ class KeepTallyApi(
             setBody(request)
         }.body()
     }
+
+    suspend fun logout(): HttpResult<Unit> {
+        return httpClient.post("$baseUrl/user/logout").body()
+    }
 }
 
 private class DataStoreCookiesStorage(
