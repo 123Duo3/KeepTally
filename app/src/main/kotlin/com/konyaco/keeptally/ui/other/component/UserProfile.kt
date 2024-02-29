@@ -2,14 +2,32 @@ package com.konyaco.keeptally.ui.other.component
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,13 +37,11 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.konyaco.keeptally.R
-import com.konyaco.keeptally.viewmodel.model.RecordSign
-import com.konyaco.keeptally.ui.theme.KeepTallyTheme
 import com.konyaco.keeptally.ui.theme.RobotoSlab
 import com.konyaco.keeptally.viewmodel.SharedViewModel
+import com.konyaco.keeptally.viewmodel.model.RecordSign
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

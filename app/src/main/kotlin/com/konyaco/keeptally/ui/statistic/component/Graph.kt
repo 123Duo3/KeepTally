@@ -1,6 +1,11 @@
 package com.konyaco.keeptally.ui.statistic.component
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -10,8 +15,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.konyaco.keeptally.viewmodel.model.RecordSign
 import com.konyaco.keeptally.ui.theme.RobotoSlab
+import com.konyaco.keeptally.viewmodel.model.RecordSign
 
 @Composable
 fun Graph(

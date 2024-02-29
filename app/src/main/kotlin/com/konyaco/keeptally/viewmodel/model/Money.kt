@@ -1,7 +1,6 @@
 package com.konyaco.keeptally.viewmodel.model
 
 import androidx.compose.runtime.Stable
-import com.konyaco.keeptally.viewmodel.model.RecordSign
 import java.text.DecimalFormat
 import kotlin.math.abs
 

@@ -11,9 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
-import com.konyaco.keeptally.viewmodel.model.RecordSign
 import com.konyaco.keeptally.ui.theme.KeepTallyTheme
 import com.konyaco.keeptally.ui.theme.RobotoSlab
+import com.konyaco.keeptally.viewmodel.model.RecordSign
 
 @Composable
 fun MoneyString(

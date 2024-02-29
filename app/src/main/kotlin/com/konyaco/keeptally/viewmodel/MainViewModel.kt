@@ -1,7 +1,6 @@
 package com.konyaco.keeptally.viewmodel
 
 import android.util.Log
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

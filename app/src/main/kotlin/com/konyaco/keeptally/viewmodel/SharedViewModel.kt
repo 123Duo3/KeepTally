@@ -2,7 +2,6 @@ package com.konyaco.keeptally.viewmodel
 
 import android.util.Log
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.konyaco.keeptally.service.KeepTallyService
@@ -10,17 +9,14 @@ import com.konyaco.keeptally.storage.MyDataStore
 import com.konyaco.keeptally.storage.SnowFlakeIDGenerator
 import com.konyaco.keeptally.storage.database.AppDatabase
 import com.konyaco.keeptally.storage.entity.RecordType
-import com.konyaco.keeptally.ui.statistic.component.TabItem
 import com.konyaco.keeptally.viewmodel.model.DateRange
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.descriptors.serialDescriptor
 import javax.inject.Inject
 import javax.inject.Singleton
 

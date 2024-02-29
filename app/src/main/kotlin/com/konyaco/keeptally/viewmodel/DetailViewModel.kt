@@ -2,9 +2,9 @@ package com.konyaco.keeptally.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import com.konyaco.keeptally.storage.database.AppDatabase
 import com.konyaco.keeptally.viewmodel.model.Money
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
