@@ -5,33 +5,61 @@ import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.
 import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Start
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.launch
+import com.konyaco.keeptally.di.sharedViewModel
 import com.konyaco.keeptally.ui.component.HomeTopBar
 import com.konyaco.keeptally.ui.component.HomeTopBarState
+import com.konyaco.keeptally.ui.component.addrecord.AddRecord
 import com.konyaco.keeptally.ui.component.rememberHomeTopBarState
 import com.konyaco.keeptally.ui.detail.DetailScreen
-import com.konyaco.keeptally.ui.component.addrecord.AddRecord
 import com.konyaco.keeptally.ui.filter.FilterScreen
 import com.konyaco.keeptally.ui.other.OtherScreen
 import com.konyaco.keeptally.ui.statistic.StatisticScreen
 import com.konyaco.keeptally.ui.theme.AndroidKeepTallyTheme
 import com.konyaco.keeptally.viewmodel.MainViewModel
+import com.konyaco.keeptally.viewmodel.SharedViewModel
 import com.konyaco.keeptally.viewmodel.model.DateRange
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun App(viewModel: MainViewModel = hiltViewModel()) {
+fun App(
+    viewModel: MainViewModel = hiltViewModel(),
+    sharedViewModel: SharedViewModel = sharedViewModel()
+) {
     AndroidKeepTallyTheme {
         Surface(
             modifier = Modifier
@@ -39,73 +67,69 @@ fun App(viewModel: MainViewModel = hiltViewModel()) {
             color = MaterialTheme.colorScheme.inverseOnSurface,
             contentColor = MaterialTheme.colorScheme.onBackground
         ) {
-            Main(viewModel)
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun Main(viewModel: MainViewModel) {
-    val localFocus = LocalFocusManager.current
-    val scope = rememberCoroutineScope()
-    val sheet = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden,
-        confirmValueChange = {
-            if (it == ModalBottomSheetValue.Hidden)
-                localFocus.clearFocus()
-            true
-        }
-    )
-    ModalBottomSheetLayout(
-        sheetState = sheet,
-        sheetContent = {
-            AddRecord(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .imePadding(),
-                onCloseRequest = {
-                    localFocus.clearFocus()
-                    scope.launch { sheet.hide() }
+            Box(Modifier.fillMaxSize()) {
+                val localFocus = rememberUpdatedState(LocalFocusManager.current)
+                val scope = rememberCoroutineScope()
+                val sheetState = rememberModalBottomSheetState(
+                    initialValue = ModalBottomSheetValue.Hidden,
+                    confirmValueChange = {
+                        if (it == ModalBottomSheetValue.Hidden)
+                            localFocus.value.clearFocus()
+                        true
+                    }
+                )
+                ModalBottomSheetLayout(
+                    sheetState = sheetState,
+                    sheetContent = {
+                        AddRecord(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .imePadding(),
+                            onCloseRequest = {
+                                localFocus.value.clearFocus()
+                                scope.launch { sheetState.hide() }
+                            }
+                        )
+                    },
+                    sheetShape = RectangleShape
+                ) {
+                    CompositionLocalProvider(LocalSheetState provides sheetState) {
+                        Content(viewModel)
+                    }
                 }
-            )
-        },
-        sheetShape = RectangleShape
-    ) {
-        Content(viewModel, sheet)
+                SnackbarHost(
+                    sharedViewModel.snackbarHostState,
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 32.dp)
+                )
+            }
+        }
     }
 }
 
-@Composable
 @OptIn(ExperimentalMaterialApi::class)
-private fun Content(
-    viewModel: MainViewModel,
-    sheet: ModalBottomSheetState
-) {
-    ContentAnimatedContent(viewModel, sheet)
+@Composable
+private fun Content(viewModel: MainViewModel) {
+    ContentAnimatedContent(viewModel)
 }
 
 @Composable
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
-private fun ContentAnimatedContent(
-    viewModel: MainViewModel,
-    sheet: ModalBottomSheetState
-) {
+private fun ContentAnimatedContent(viewModel: MainViewModel) {
     Column(
         Modifier
             .fillMaxSize()
             .statusBarsPadding()
     ) {
-        val scope = rememberCoroutineScope()
-        val homeTopBarState = rememberHomeTopBarState()
-
         HomeTopBar(
             Modifier.fillMaxWidth(),
-            homeTopBarState,
+            viewModel.homeTopBarState,
             onDateChosen = { year, month ->
                 viewModel.setDateRange(DateRange.Month(year, month))
             },
             onTabSelect = {
-                homeTopBarState.selectTab(it)
+                viewModel.homeTopBarState.selectTab(it)
             }
         )
 
@@ -113,7 +137,7 @@ private fun ContentAnimatedContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            targetState = homeTopBarState.selectedTab,
+            targetState = viewModel.homeTopBarState.selectedTab,
             transitionSpec = {
                 if (initialState < targetState) {
                     ContentTransform(
@@ -129,7 +153,7 @@ private fun ContentAnimatedContent(
             }, label = "content"
         ) {
             when (it) {
-                HomeTopBarState.TabItem.Detail -> DetailScreen(onAddClick = { scope.launch { sheet.show() } })
+                HomeTopBarState.TabItem.Detail -> DetailScreen()
                 HomeTopBarState.TabItem.Filter -> FilterScreen()
                 HomeTopBarState.TabItem.Statistics -> StatisticScreen()
                 HomeTopBarState.TabItem.Other -> OtherScreen()
@@ -142,8 +166,7 @@ private fun ContentAnimatedContent(
 @Composable
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 private fun ContentPager(
-    viewModel: MainViewModel,
-    sheet: ModalBottomSheetState
+    viewModel: MainViewModel
 ) {
     Column(
         Modifier
@@ -207,11 +230,16 @@ private fun ContentPager(
             state = pagerState
         ) {
             when (it) {
-                0 -> DetailScreen(onAddClick = { scope.launch { sheet.show() } }) // FIXME(2022/9/17): This will cause frequent recomposition
+                0 -> DetailScreen()
                 1 -> FilterScreen()
                 2 -> StatisticScreen()
                 3 -> OtherScreen()
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+val LocalSheetState = compositionLocalOf<ModalBottomSheetState> {
+    error("No ModalBottomSheetState provided")
 }

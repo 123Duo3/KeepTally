@@ -1,7 +1,10 @@
 package com.konyaco.keeptally.ui.component.addrecord.component
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +27,7 @@ internal fun LabelItem(
     selected: Boolean,
     onSelectChange: (Boolean) -> Unit,
     text: String,
+    icon: @Composable (() -> Unit)? = null,
     activeColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     activeContentColor: Color = contentColorFor(activeColor)
 ) {
@@ -34,7 +38,11 @@ internal fun LabelItem(
         activeColor = activeColor,
         activeContentColor = activeContentColor
     ) {
-        Box(Modifier.padding(12.dp, 6.dp), Alignment.Center) {
+        Row(Modifier.padding(12.dp, 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+            if (icon != null) {
+                icon()
+                Spacer(modifier = Modifier.width(8.dp))
+            }
             Text(
                 modifier = Modifier.wrapContentSize(),
                 text = text,

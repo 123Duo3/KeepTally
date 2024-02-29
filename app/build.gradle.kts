@@ -73,6 +73,7 @@ kapt {
 }
 
 dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
@@ -125,6 +126,11 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
 
     implementation("com.lambdapioneer.argon2kt:argon2kt:1.4.0")
+    // kotlinx-datetime
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+
+    // Profile Installer
+    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

@@ -40,8 +40,8 @@ fun DailyRecord(
     date: String,
     expenditure: String,
     income: String,
-    records: List<MainViewModel.Record>,
-    onDeleteClick: (record: MainViewModel.Record) -> Unit
+    records: List<MainViewModel.Companion.Record>,
+    onDeleteClick: (record: MainViewModel.Companion.Record) -> Unit
 ) {
     Column(modifier) {
         val dark = isSystemInDarkTheme()
@@ -52,7 +52,7 @@ fun DailyRecord(
             date, expenditure, income
         )
         Spacer(Modifier.height(8.dp))
-        var dropdown by remember { mutableStateOf<MainViewModel.Record?>(null) }
+        var dropdown by remember { mutableStateOf<MainViewModel.Companion.Record?>(null) }
 
         Column(Modifier.fillMaxWidth()) {
             for (record in records) {
@@ -86,11 +86,11 @@ fun DailyRecord(
 
 fun LazyListScope.DailyRecord(
     isLast: Boolean,
-    date: MainViewModel.Date,
+    date: MainViewModel.Companion.Date,
     expenditure: String,
     income: String,
-    records: List<MainViewModel.Record>,
-    onDeleteClick: (record: MainViewModel.Record) -> Unit
+    records: List<MainViewModel.Companion.Record>,
+    onDeleteClick: (record: MainViewModel.Companion.Record) -> Unit
 ) {
     // Header
     item(contentType = "header") {
@@ -190,20 +190,20 @@ private fun DailyRecordPreview() {
             expenditure = "6,000",
             income = "0",
             records = listOf(
-                MainViewModel.Record(
+                MainViewModel.Companion.Record(
                     time = "12:30",
-                    type = MainViewModel.RecordType("父分类", "分类", false, 0),
+                    type = MainViewModel.Companion.RecordType("父分类", "分类", false, 0),
                     money = Money(1100),
-                    date = MainViewModel.Date("12-20", 0),
+                    date = MainViewModel.Companion.Date("12-20", 0),
                     id = 0,
                     isIncome = true,
                     description = null
                 ),
-                MainViewModel.Record(
+                MainViewModel.Companion.Record(
                     time = "12:30",
-                    type = MainViewModel.RecordType("父分类", "分类", false, 0),
+                    type = MainViewModel.Companion.RecordType("父分类", "分类", false, 0),
                     money = Money(-1100),
-                    date = MainViewModel.Date("12-20", 0),
+                    date = MainViewModel.Companion.Date("12-20", 0),
                     id = 1,
                     isIncome = false,
                     description = "备注"

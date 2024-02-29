@@ -1,28 +1,31 @@
 package com.konyaco.keeptally.api
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
+import com.konyaco.keeptally.BuildConfig
+import com.konyaco.keeptally.api.model.LoginRequest
+import com.konyaco.keeptally.api.model.LoginResponse
+import com.konyaco.keeptally.api.model.ProfileResponse
+import com.konyaco.keeptally.api.model.PullRequest
+import com.konyaco.keeptally.api.model.PullResponse
+import com.konyaco.keeptally.api.model.PushRequest
+import com.konyaco.keeptally.api.model.RegisterRequest
+import com.konyaco.keeptally.api.model.RegisterResponse
+import com.konyaco.keeptally.storage.database.AppDatabase
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.CookiesStorage
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
 import io.ktor.http.Cookie
 import io.ktor.http.Url
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonObject
-import com.konyaco.keeptally.BuildConfig
-import com.konyaco.keeptally.storage.database.AppDatabase
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
-import java.time.Instant
 
 class KeepTallyApi(
     private val database: AppDatabase
@@ -42,91 +45,46 @@ class KeepTallyApi(
         }
     }
 
-    @Serializable
-    data class LoginRequest(
-        val email: String,
-        val password: String
-    )
+    private var onAuthenticationListener: ((Boolean) -> Unit)? = null
 
-    @Serializable
-    data class LoginResponse(
-        val clientId: Long
-    )
-
-    suspend fun login(email: String, password: String): HttpResult<LoginResponse> {
-        return httpClient.post("$baseUrl/user/login") {
+    private suspend inline fun <reified T> post(path: String, body: Any): HttpResult<T> {
+        val data = httpClient.post("$baseUrl$path") {
             contentType(ContentType.Application.Json)
-            setBody(LoginRequest(email, password))
-        }.body()
+            setBody(body)
+        }.body<HttpResult<T>>()
+        if (data.code == 403) {
+            onAuthenticationListener?.invoke(false)
+            error("Not authenticated")
+        }
+        return data
     }
 
-    @Serializable
-    data class RegisterRequest(
-        val username: String,
-        val password: String,
-        val email: String
-    )
-
-    @Serializable
-    data class RegisterResponse(
-        val userId: Long
-    )
-
-    suspend fun register(name: String, email: String, password: String): HttpResult<RegisterResponse> {
-        return httpClient.post("$baseUrl/user/register") {
-            contentType(ContentType.Application.Json)
-            setBody(RegisterRequest(name, password, email))
-        }.body()
+    private suspend inline fun <reified T> get(path: String): HttpResult<T> {
+        val data = httpClient.get("$baseUrl$path").body<HttpResult<T>>()
+        if (data.code == 403) {
+            onAuthenticationListener?.invoke(false)
+            error("Not authenticated")
+        }
+        return data
     }
 
-    @Serializable
-    data class ProfileResponse(
-        val username: String,
-        val email: String,
-        val bio: String,
-        val image: String
-    )
+    suspend fun login(request: LoginRequest): HttpResult<LoginResponse> =
+        post("/user/login", request)
 
-    suspend fun profile(): HttpResult<ProfileResponse> {
-        return httpClient.get("$baseUrl/user/profile").body()
-    }
+    suspend fun register(request: RegisterRequest): HttpResult<RegisterResponse> =
+        post("/user/register", request)
 
-    @Serializable
-    data class PushRequest(
-        val commands: List<PushRequest>
-    ) {
-        data class Command(
-            val type: String,
-            val operationTime: Instant,
-            val data: JsonObject
-        )
-    }
+    suspend fun profile(): HttpResult<ProfileResponse> =
+        get("/user/profile")
 
-    suspend fun pull(): HttpResult<PullResponse> {
-        return httpClient.get("$baseUrl/record/pull")
-            .body()
-    }
+    suspend fun pull(request: PullRequest): HttpResult<PullResponse> =
+        post("/record/pull", request)
 
-    data class PullResponse(
-        val commands: List<PullResponse>
-    ) {
-        data class Command(
-            val command: String,
-            val operationTime: Instant,
-            val commitTime: Instant
-        )
-    }
+    suspend fun push(request: PushRequest): HttpResult<Unit> =
+        post("/record/push", request)
 
-    suspend fun push(request: PushRequest): HttpResult<Unit> {
-        return httpClient.post("$baseUrl/record/push") {
-            contentType(ContentType.Application.Json)
-            setBody(request)
-        }.body()
-    }
-
-    suspend fun logout(): HttpResult<Unit> {
-        return httpClient.post("$baseUrl/user/logout").body()
-    }
+    suspend fun logout(): HttpResult<Unit> =
+        get("/user/logout")
 }
 
 private class DataStoreCookiesStorage(
@@ -139,6 +97,8 @@ private class DataStoreCookiesStorage(
     }
 
     override suspend fun addCookie(requestUrl: Url, cookie: Cookie) {
+        val cookies = database.cookieDao().getByRequestUrlAndName(requestUrl.host, cookie.name)
+        cookies.forEach { database.cookieDao().delete(it) }
         database.cookieDao().insertAll(
             com.konyaco.keeptally.storage.entity.Cookie(
                 0,

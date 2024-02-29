@@ -22,19 +22,20 @@ class MyDataStore @Inject constructor(
         val clientId: Long
     )
 
-    val userStatus: Flow<UserStatus?> = dataStore.data.map {
-        val name = it[PreferencesKeys.USER_STATUS_NAME]
-        val email = it[PreferencesKeys.USER_STATUS_EMAIL]
-        val secret = it[PreferencesKeys.USER_STATUS_SECRET]
-        val clientId = it[PreferencesKeys.USER_STATUS_CLIENT_ID]
-        if (name == null || email == null || secret == null || clientId == null) return@map null
-        UserStatus(
-            name = name,
-            email = email,
-            secret = secret,
-            clientId = clientId
-        )
-    }
+    val userStatus: Flow<UserStatus?>
+        get() = dataStore.data.map {
+            val name = it[PreferencesKeys.USER_STATUS_NAME]
+            val email = it[PreferencesKeys.USER_STATUS_EMAIL]
+            val secret = it[PreferencesKeys.USER_STATUS_SECRET]
+            val clientId = it[PreferencesKeys.USER_STATUS_CLIENT_ID]
+            if (name == null || email == null || secret == null || clientId == null) return@map null
+            UserStatus(
+                name = name,
+                email = email,
+                secret = secret,
+                clientId = clientId
+            )
+        }
 
     suspend fun saveUserStatus(userStatus: UserStatus) {
         dataStore.edit {
@@ -54,9 +55,12 @@ class MyDataStore @Inject constructor(
         }
     }
 
-    val lastPushTime: Flow<Instant> = dataStore.data.map {
-        Instant.parse(it[PreferencesKeys.LAST_PUSH_TIME] ?: Instant.MIN.toString())
-    }
+    val lastPushTime: Flow<Instant>
+        get() = dataStore.data.map {
+            it[PreferencesKeys.LAST_PUSH_TIME]?.let {
+                Instant.parse(it)
+            } ?: Instant.EPOCH
+        }
 
     suspend fun setLastPushTime(instant: Instant) {
         dataStore.edit {
@@ -64,9 +68,12 @@ class MyDataStore @Inject constructor(
         }
     }
 
-    val lastPullTime: Flow<Instant> = dataStore.data.map {
-        Instant.parse(it[PreferencesKeys.LAST_PULL_TIME] ?: Instant.MIN.toString())
-    }
+    val lastPullTime: Flow<Instant>
+        get() = dataStore.data.map {
+            it[PreferencesKeys.LAST_PULL_TIME]?.let {
+                Instant.parse(it)
+            } ?: Instant.EPOCH
+        }
 
     suspend fun setLastPullTime(instant: Instant) {
         dataStore.edit {

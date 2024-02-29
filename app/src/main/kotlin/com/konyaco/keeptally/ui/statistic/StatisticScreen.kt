@@ -34,17 +34,11 @@ fun StatisticScreen(viewModel: StatisticViewModel = hiltViewModel()) {
 
     Column(Modifier
         .fillMaxSize()
-        .nestedScroll(
-            object : NestedScrollConnection {
-
-            }
-        )
+        .nestedScroll(object : NestedScrollConnection {})
     ) {
-        var page by rememberSaveable { mutableStateOf(TabItem.TOTAL) }
+        Tab(selected = viewModel.tab.value, onSelectedChange = { viewModel.changeTab(it) })
 
-        Tab(selected = page, onSelectedChange = { page = it })
-
-        AnimatedContent(targetState = page) {
+        AnimatedContent(targetState = viewModel.tab.value, label = "screen") {
             when (it) {
                 TabItem.TOTAL -> SummaryScreen()
                 TabItem.EXPENDITURE -> ExpenditureScreen()

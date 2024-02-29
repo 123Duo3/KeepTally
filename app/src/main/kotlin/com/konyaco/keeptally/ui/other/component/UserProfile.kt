@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudDone
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -24,6 +25,7 @@ import com.konyaco.keeptally.R
 import com.konyaco.keeptally.viewmodel.model.RecordSign
 import com.konyaco.keeptally.ui.theme.KeepTallyTheme
 import com.konyaco.keeptally.ui.theme.RobotoSlab
+import com.konyaco.keeptally.viewmodel.SharedViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,7 +36,7 @@ fun UserProfile(
     email: String,
     alipayBalance: String,
     wechatBalance: String,
-    isSyncing: Boolean,
+    syncState: SharedViewModel.SyncState,
     onLoginClick: () -> Unit
 ) {
     Surface(
@@ -61,9 +63,12 @@ fun UserProfile(
                         color = MaterialTheme.colorScheme.onSurface.copy(0.7f)
                     )
                 }
-                Crossfade(targetState = isSyncing, label = "Syncing") {
-                    if (it) CircularProgressIndicator(Modifier.size(24.dp))
-                    else Icon(imageVector = Icons.Default.CloudDone, contentDescription = "Backup")
+                Crossfade(targetState = syncState, label = "Syncing") {
+                    when (it) {
+                        SharedViewModel.SyncState.Synced -> Icon(imageVector = Icons.Default.CloudDone, contentDescription = "Synced")
+                        SharedViewModel.SyncState.Syncing -> CircularProgressIndicator(Modifier.size(24.dp))
+                        is SharedViewModel.SyncState.Failed -> Icon(imageVector = Icons.Default.Info, contentDescription = "Failed")
+                    }
                 }
                 Icon(
                     imageVector = Icons.Default.ChevronRight,

@@ -11,6 +11,9 @@ interface CookieDao {
     @Query("SELECT * FROM cookie WHERE url = :url")
     fun getByRequestUrl(url: String): List<Cookie>
 
+    @Query("SELECT * FROM cookie WHERE url = :url and name = :name")
+    fun getByRequestUrlAndName(url: String, name: String): List<Cookie>
+
     @Insert
     fun insertAll(vararg cookie: Cookie)
 

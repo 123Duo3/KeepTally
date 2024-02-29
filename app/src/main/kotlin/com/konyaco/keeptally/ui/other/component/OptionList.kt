@@ -18,30 +18,6 @@ import com.konyaco.keeptally.R
 import com.konyaco.keeptally.ui.theme.KeepTallyTheme
 
 @Composable
-fun OptionList(modifier: Modifier) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        OptionItem(
-            icon = painterResource(id = R.drawable.ic_label),
-            label = "自定义标签",
-            description = "更改记录内的标签类别",
-            onClick = {}
-        )
-        OptionItem(
-            icon = rememberVectorPainter(Icons.Default.FileUpload),
-            label = "导入数据",
-            description = "导入 JSON 数据",
-            onClick = {}
-        )
-        OptionItem(
-            icon = rememberVectorPainter(Icons.Default.FileDownload),
-            label = "导出数据",
-            description = "导出数据为 JSON 文件",
-            onClick = {}
-        )
-    }
-}
-
-@Composable
 fun OptionItem(
     icon: Painter,
     label: String,
@@ -78,7 +54,12 @@ fun OptionItem(
 private fun Preview() {
     KeepTallyTheme {
         Surface(color = MaterialTheme.colorScheme.inverseOnSurface) {
-            OptionList(Modifier.fillMaxSize())
+            OptionItem(
+                icon = rememberVectorPainter(Icons.Default.FileDownload),
+                label = "导出数据",
+                description = "导出数据为 JSON 文件",
+                onClick = {}
+            )
         }
     }
 }

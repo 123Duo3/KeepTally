@@ -1,35 +1,66 @@
 package com.konyaco.keeptally.viewmodel
 
-import androidx.compose.runtime.getValue
+import android.util.Log
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.konyaco.keeptally.service.KeepTallyService
 import com.konyaco.keeptally.storage.MyDataStore
 import com.konyaco.keeptally.storage.SnowFlakeIDGenerator
+import com.konyaco.keeptally.storage.database.AppDatabase
+import com.konyaco.keeptally.storage.entity.RecordType
+import com.konyaco.keeptally.ui.statistic.component.TabItem
+import com.konyaco.keeptally.viewmodel.model.DateRange
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import com.konyaco.keeptally.storage.database.AppDatabase
-import com.konyaco.keeptally.storage.entity.RecordType
-import com.konyaco.keeptally.viewmodel.model.DateRange
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.joinAll
+import kotlinx.serialization.descriptors.serialDescriptor
 import javax.inject.Inject
 import javax.inject.Singleton
+
+private const val TAG = "SharedViewModel"
 
 @Singleton
 class SharedViewModel @Inject constructor(
     private val database: AppDatabase,
-    private val myDataStore: MyDataStore
+    private val myDataStore: MyDataStore,
+    private val keepTallyService: KeepTallyService
 ) : ViewModel() {
-    val dateRange = mutableStateOf<DateRange>(DateRange.Month.now())
-    val colors = mutableStateOf<Map<Long, Int>>(emptyMap())
+    val dateRange = MutableStateFlow<DateRange>(DateRange.Month.now())
+    val colors = MutableStateFlow<Map<Long, Int>>(emptyMap())
     val isReady = MutableStateFlow(false)
-    val isSyncing = mutableStateOf(false)
+    val syncState = MutableStateFlow<SyncState>(SyncState.Synced)
+    val snackbarHostState = SnackbarHostState()
+    val loginState = MutableStateFlow(LoginState.Loading)
+
+    sealed class SyncState {
+        object Syncing: SyncState()
+        object Synced: SyncState()
+        data class Failed(
+            val message: String
+        ): SyncState()
+    }
+
+    sealed class LoginState {
+        object Loading: LoginState()
+        object NotLogin: LoginState()
+        data class LoggedIn(
+            val profile: UserProfile
+        ): LoginState()
+    }
+
+    data class UserProfile(
+        val username: String,
+        val avatarUrl: String,
+        val email: String,
+        val bio: String,
+    )
 
     private val lock = Mutex()
 
@@ -59,7 +90,6 @@ class SharedViewModel @Inject constructor(
     )
 
     private suspend fun loadLoginStatus() {
-
     }
 
     private suspend fun prepopulateData() {
@@ -104,11 +134,16 @@ class SharedViewModel @Inject constructor(
     }
 
     fun sync() = viewModelScope.launch(Dispatchers.IO) {
-        isSyncing.value = true
+        syncState.value = SyncState.Syncing
         try {
-            delay(3000)
-        } finally {
-            isSyncing.value = false
+            keepTallyService.sync()
+            syncState.value = SyncState.Synced
+        } catch (e: Exception) {
+            Log.e(TAG, "同步失败", e)
+            syncState.value = SyncState.Failed(e.message ?: "未知错误")
+            launch {
+                snackbarHostState.showSnackbar("同步失败：${e.message}")
+            }
         }
     }
 }

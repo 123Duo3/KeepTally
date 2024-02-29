@@ -6,6 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.konyaco.keeptally.api.KeepTallyApi
+import com.konyaco.keeptally.api.model.LoginRequest
+import com.konyaco.keeptally.api.model.RegisterRequest
 import com.konyaco.keeptally.service.SecretGenerator
 import com.konyaco.keeptally.storage.MyDataStore
 import com.konyaco.keeptally.storage.SnowFlakeIDGenerator
@@ -51,13 +53,17 @@ class OtherViewModel @Inject constructor(
     var registerName by mutableStateOf("")
     var registerResult by mutableStateOf<String?>(null)
 
-    var isSyncing  by sharedViewModel.isSyncing
+    var syncState
+        get() = sharedViewModel.syncState.value
+        set(value) {
+            sharedViewModel.syncState.value = value
+        }
 
     var showLogoutDialog by mutableStateOf(false)
 
     fun init() {
         viewModelScope.launch(Dispatchers.IO) {
-            suspendCoroutine<Unit> {cont ->
+            suspendCoroutine<Unit> { cont ->
                 launch {
                     myDataStore.userStatus.take(1).collectLatest {
                         if (it != null) {
@@ -68,11 +74,15 @@ class OtherViewModel @Inject constructor(
                         }
                         cont.resume(Unit)
                     }
-                    api.profile().data?.let {
-                        username = it.username
-                        email = it.email
-                        bio = it.bio
-                        image = it.image
+                    try {
+                        api.profile().data?.let {
+                            username = it.username
+                            email = it.email
+                            bio = it.bio
+                            image = it.image
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
             }
@@ -83,7 +93,7 @@ class OtherViewModel @Inject constructor(
     fun submitLogin() = viewModelScope.launch(Dispatchers.IO) {
         isLoggingIn = true
         try {
-            val resp = api.login(loginEmail, loginPassword)
+            val resp = api.login(LoginRequest(loginEmail, loginPassword))
             if (resp.code == 0) {
                 val clientId = resp.data!!.clientId
                 val profile = api.profile().data!!
@@ -133,7 +143,13 @@ class OtherViewModel @Inject constructor(
         }
         isRegistering = true
         try {
-            val resp = api.register(registerName, registerEmail, registerPassword)
+            val resp = api.register(
+                RegisterRequest(
+                    username = registerName,
+                    password = registerPassword,
+                    email = registerEmail
+                )
+            )
             if (resp.code == 0) {
                 registerResult = "注册成功"
             } else {

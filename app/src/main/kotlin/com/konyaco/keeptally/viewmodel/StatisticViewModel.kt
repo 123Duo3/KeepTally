@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.konyaco.keeptally.storage.database.AppDatabase
+import com.konyaco.keeptally.ui.statistic.component.TabItem
 import com.konyaco.keeptally.viewmodel.model.DateRange
 import com.konyaco.keeptally.viewmodel.model.Money
 import javax.inject.Inject
@@ -44,6 +45,7 @@ class StatisticViewModel @Inject constructor(
 
     private val defaultMoney = Money(0)
 
+    val tab = mutableStateOf(TabItem.TOTAL)
     val summary =
         mutableStateOf<Summary>(Summary(defaultMoney, defaultMoney, defaultMoney, defaultMoney))
     val expenditures = mutableStateOf<List<Expenditure>>(emptyList())
@@ -53,6 +55,10 @@ class StatisticViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             refresh(sharedViewModel.dateRange.value)
         }
+    }
+
+    fun changeTab(tab: TabItem) {
+        this.tab.value = tab
     }
 
     private suspend fun refresh(range: DateRange) {
