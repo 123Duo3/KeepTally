@@ -4,8 +4,8 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
-    kotlin("plugin.serialization") version "1.8.20"
-    id("com.google.devtools.ksp") version "1.8.20-1.0.11"
+    kotlin("plugin.serialization")
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
 }
 
@@ -45,7 +45,11 @@ android {
                 add(file("proguard-rules.pro"))
             }
             applicationIdSuffix = ".debug"
-            buildConfigField("String", "BASE_URL", """"${gradleLocalProperties(rootDir).getProperty("baseUrl")}"""")
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                """"${gradleLocalProperties(rootDir).getProperty("baseUrl")}""""
+            )
         }
     }
     buildFeatures {
@@ -53,7 +57,7 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.6"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
     packaging {
         resources {
@@ -74,11 +78,11 @@ kapt {
 
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-    val hiltVersion = "2.46.1"
+    val hiltVersion = "2.49"
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-compiler:$hiltVersion")
 
@@ -87,13 +91,13 @@ dependencies {
     kaptTest("com.google.dagger:hilt-compiler:$hiltVersion")
     kaptAndroidTest("com.google.dagger:hilt-compiler:$hiltVersion")
 
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.activity:activity-compose:1.8.2")
 
-    val composeBom = platform("androidx.compose:compose-bom:2023.06.01")
+    val composeBom = platform("androidx.compose:compose-bom:2024.02.01")
     implementation(composeBom)
     androidTestImplementation(composeBom)
     implementation("androidx.compose.material:material")
@@ -106,18 +110,18 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
-    implementation("androidx.navigation:navigation-compose:2.6.0")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
     val accompanistVersion = "0.27.0"
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
 
-    val roomVersion = "2.5.2"
+    val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
 
-    val ktorVersion = "2.3.2"
+    val ktorVersion = "2.3.8"
     implementation("io.ktor:ktor-client-android:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
