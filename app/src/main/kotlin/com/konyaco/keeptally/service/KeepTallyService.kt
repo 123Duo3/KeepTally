@@ -91,7 +91,7 @@ class KeepTallyService @Inject constructor(
                 recordTypeDao.getSubTypes(primary.id).firstOrNull { it.label == label } != null
 
             if (!exist) {
-                recordTypeDao.insertAll(RecordType(0, label, primary.id, isIncomeType))
+                recordTypeDao.insertAll(RecordType(SnowFlakeIDGenerator.nextId(), label, primary.id, isIncomeType))
             } else {
                 error("The label was existed")
             }
