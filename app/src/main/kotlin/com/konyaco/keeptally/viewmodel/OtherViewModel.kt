@@ -1,5 +1,8 @@
 package com.konyaco.keeptally.viewmodel
 
+import android.content.Context
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.konyaco.keeptally.api.KeepTallyApi
 import com.konyaco.keeptally.api.model.LoginRequest
 import com.konyaco.keeptally.api.model.RegisterRequest
+import com.konyaco.keeptally.service.KeepTallyService
 import com.konyaco.keeptally.service.SecretGenerator
 import com.konyaco.keeptally.storage.MyDataStore
 import com.konyaco.keeptally.storage.SnowFlakeIDGenerator
@@ -16,12 +20,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+private const val TAG = "OtherViewModel"
+
 @HiltViewModel
 class OtherViewModel @Inject constructor(
+    private val keepTallyService: KeepTallyService,
     private val api: KeepTallyApi,
     private val sharedViewModel: SharedViewModel,
     private val myDataStore: MyDataStore
@@ -183,4 +195,60 @@ class OtherViewModel @Inject constructor(
     fun closeLogoutDialog() {
         showLogoutDialog = false
     }
+
+    private var exportContent: String? = null
+    private var exportFileName: String? = null
+
+    fun continueExport(context: Context, uri: Uri) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                context.contentResolver.openOutputStream(uri).use {
+                    it?.bufferedWriter()?.use {
+                        it.write(exportContent ?: "")
+                    }
+                }
+            }
+            sharedViewModel.snackbarHostState.showSnackbar("导出完成", "确定")
+        }
+    }
+
+    suspend fun handleExportData() : String {
+        return withContext(Dispatchers.Default) {
+            val result = keepTallyService.exportToJSON()
+            val jsonContent = Json.encodeToString(result)
+            val time = DateTimeFormatter.ISO_DATE_TIME.format(ZonedDateTime.now())
+            exportContent = jsonContent
+            exportFileName = "KeepTally-export-${time}.json"
+            return@withContext exportFileName!!
+        }
+    }
+
+
+    fun importDataFromUri(context: Context, uri: Uri) {
+        viewModelScope.launch(Dispatchers.Default) {
+            val content = context.contentResolver.openInputStream(uri)?.use {
+                it.bufferedReader().readText()
+            }
+
+            if (content != null) {
+                try {
+                    // 发现多条重复记录，覆盖/添加？
+                    val data = Json.decodeFromString<KeepTallyService.ExportData>(content)
+                    keepTallyService.importData(data)
+                    sharedViewModel.snackbarHostState.showSnackbar("导入完成")
+                } catch (e: Exception) {
+                    Log.e(TAG, "导入数据失败，URI: $uri", e)
+                    sharedViewModel.snackbarHostState.showSnackbar("导入数据失败")
+                }
+            } else {
+                sharedViewModel.snackbarHostState.showSnackbar("导入数据失败")
+            }
+        }
+    }
+
+    fun cancelExport() {
+        exportContent = null
+        exportFileName = null
+    }
+
 }

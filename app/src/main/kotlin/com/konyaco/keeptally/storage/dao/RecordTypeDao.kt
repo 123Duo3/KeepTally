@@ -3,6 +3,7 @@ package com.konyaco.keeptally.storage.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.konyaco.keeptally.storage.entity.RecordType
@@ -50,4 +51,7 @@ interface RecordTypeDao {
 
     @Update
     suspend fun update(recordType: RecordType)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAndReplace(types: List<RecordType>)
 }

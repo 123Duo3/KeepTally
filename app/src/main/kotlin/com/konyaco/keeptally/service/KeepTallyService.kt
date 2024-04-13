@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.time.Instant
@@ -178,5 +179,22 @@ class KeepTallyService @Inject constructor(
 
     suspend fun getRecordsByLabels(labels: List<String>): List<RecordType> = withContext(Dispatchers.IO) {
         recordTypeDao.getAllByLabels(labels)
+    }
+
+    @Serializable
+    data class ExportData(
+        val types: List<RecordType>,
+        val records: List<Record>
+    )
+
+    suspend fun exportToJSON(): ExportData {
+        val types = recordTypeDao.getAll()
+        val records = recordDao.getAll()
+        return ExportData(types, records)
+    }
+
+    suspend fun importData(data: ExportData) {
+        recordTypeDao.insertAndReplace(data.types)
+        recordDao.insertAndReplace(data.records)
     }
 }

@@ -137,9 +137,9 @@ class SharedViewModel @Inject constructor(
         } catch (e: Exception) {
             Log.e(TAG, "同步失败", e)
             syncState.value = SyncState.Failed(e.message ?: "未知错误")
-            launch {
+            /*launch {
                 snackbarHostState.showSnackbar("同步失败：${e.message}")
-            }
+            }*/
         }
     }
 }

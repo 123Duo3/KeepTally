@@ -1,5 +1,7 @@
 package com.konyaco.keeptally.ui.other
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,10 +26,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -40,11 +44,15 @@ import com.konyaco.keeptally.ui.other.component.OptionItem
 import com.konyaco.keeptally.ui.other.component.UserProfile
 import com.konyaco.keeptally.ui.theme.KeepTallyTheme
 import com.konyaco.keeptally.viewmodel.OtherViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun OtherScreen(
     viewModel: OtherViewModel = hiltViewModel()
 ) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         viewModel.init()
     }
@@ -70,6 +78,16 @@ fun OtherScreen(
         )
         Spacer(Modifier.height(16.dp))
         // Option List
+        val exportChooser = rememberLauncherForActivityResult(contract = ActivityResultContracts.CreateDocument("application/json")) {
+            if (it != null) {
+                viewModel.continueExport(context, it)
+            } else {
+                viewModel.cancelExport()
+            }
+        }
+        val importChooser = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocument()) {
+            if (it != null) viewModel.importDataFromUri(context, it)
+        }
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             OptionItem(
                 icon = painterResource(id = R.drawable.ic_label),
@@ -81,13 +99,20 @@ fun OtherScreen(
                 icon = rememberVectorPainter(Icons.Default.FileUpload),
                 label = "导入数据",
                 description = "导入 JSON 数据",
-                onClick = {}
+                onClick = {
+                    importChooser.launch(arrayOf("application/json"))
+                }
             )
             OptionItem(
                 icon = rememberVectorPainter(Icons.Default.FileDownload),
                 label = "导出数据",
                 description = "导出数据为 JSON 文件",
-                onClick = {}
+                onClick = {
+                    scope.launch {
+                        val fileName = viewModel.handleExportData()
+                        exportChooser.launch(fileName)
+                    }
+                }
             )
         }
 
