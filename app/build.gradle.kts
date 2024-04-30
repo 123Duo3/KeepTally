@@ -88,14 +88,10 @@ kapt {
 }
 
 dependencies {
-    testImplementation(libs.junit.jupiter)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
-
-    implementation(libs.hilt.navigation.compose)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-
     testImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.hilt.android.testing)
     kaptTest(libs.hilt.compiler)
@@ -105,21 +101,22 @@ dependencies {
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
-    implementation(libs.activity.compose)
 
-    val composeBom = platform("androidx.compose:compose-bom:2024.04.01")
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
-    implementation("androidx.compose.material:material")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.compose.material3:material3-window-size-class")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation(libs.androidx.activity.compose)
+
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.material3)
+
+    testImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
     implementation(libs.androidx.constraintlayout.compose)
-
-    implementation(libs.navigation.compose)
+    implementation(libs.androidx.navigation.compose)
 
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.systemuicontroller)
@@ -127,21 +124,18 @@ dependencies {
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
 
-    implementation(libs.androidx.datastore.preferences)
-    testImplementation(libs.junit)
-
     implementation(libs.argon2kt)
-    // kotlinx-datetime
     implementation(libs.kotlinx.datetime)
-
-    // Profile Installer
     implementation(libs.androidx.profileinstaller)
 
+    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
