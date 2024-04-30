@@ -1,12 +1,16 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.android.SdkConstants
+import com.google.common.base.Charsets
+import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.util.Properties
 
 plugins {
-    id("com.android.application")
-    kotlin("android")
-    kotlin("kapt")
-    kotlin("plugin.serialization")
-    id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -45,11 +49,18 @@ android {
                 add(file("proguard-rules.pro"))
             }
             applicationIdSuffix = ".debug"
-            buildConfigField(
-                "String",
-                "BASE_URL",
-                """"${gradleLocalProperties(rootDir).getProperty("baseUrl")}""""
-            )
+//            val baseUrl = gradleLocalProperties(rootDir).getProperty("baseUrl")
+
+            val properties = Properties()
+            val localProperties = File(rootDir, SdkConstants.FN_LOCAL_PROPERTIES)
+
+            if (localProperties.isFile) {
+                InputStreamReader(FileInputStream(localProperties), Charsets.UTF_8).use { reader ->
+                    properties.load(reader)
+                }
+            }
+            val baseUrl = properties.getProperty("baseUrl")
+            buildConfigField("String", "BASE_URL", """"$baseUrl"""")
         }
     }
     buildFeatures {
@@ -77,65 +88,60 @@ kapt {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    testImplementation(libs.junit.jupiter)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.navigation.compose)
 
-    val hiltVersion = "2.49"
-    implementation("com.google.dagger:hilt-android:$hiltVersion")
-    kapt("com.google.dagger:hilt-compiler:$hiltVersion")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
-    testImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
-    androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
-    kaptTest("com.google.dagger:hilt-compiler:$hiltVersion")
-    kaptAndroidTest("com.google.dagger:hilt-compiler:$hiltVersion")
+    testImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptTest(libs.hilt.compiler)
+    kaptAndroidTest(libs.hilt.compiler)
 
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.navigation.compose)
 
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-compose:1.8.2")
+    implementation(libs.core.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.activity.compose)
 
-    val composeBom = platform("androidx.compose:compose-bom:2024.02.01")
+    val composeBom = platform("androidx.compose:compose-bom:2024.04.01")
     implementation(composeBom)
     androidTestImplementation(composeBom)
     implementation("androidx.compose.material:material")
     implementation("androidx.compose.material3:material3")
-
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material3:material3-window-size-class")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation(libs.androidx.constraintlayout.compose)
 
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation(libs.navigation.compose)
 
-    val accompanistVersion = "0.27.0"
-    implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.systemuicontroller)
 
-    val roomVersion = "2.6.1"
-    implementation("androidx.room:room-runtime:$roomVersion")
-    ksp("androidx.room:room-compiler:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+    implementation(libs.androidx.room.ktx)
 
-    val ktorVersion = "2.3.8"
-    implementation("io.ktor:ktor-client-android:$ktorVersion")
-    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
 
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
-    testImplementation("junit:junit:4.13.2")
+    implementation(libs.androidx.datastore.preferences)
+    testImplementation(libs.junit)
 
-    implementation("com.lambdapioneer.argon2kt:argon2kt:1.4.0")
+    implementation(libs.argon2kt)
     // kotlinx-datetime
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+    implementation(libs.kotlinx.datetime)
 
     // Profile Installer
-    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
+    implementation(libs.androidx.profileinstaller)
 
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
