@@ -108,7 +108,7 @@ fun App(
 
 @Composable
 private fun Content(viewModel: MainViewModel) {
-    ContentAnimatedContent(viewModel)
+    ContentPager(viewModel)
 }
 
 @Composable
