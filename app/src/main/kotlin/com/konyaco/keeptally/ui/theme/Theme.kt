@@ -14,7 +14,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val LightColorScheme = lightColorScheme(
     primary = KeepTallyColors.md_theme_light_primary,
@@ -125,15 +124,15 @@ fun KeepTallyTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
 
 @Composable
 fun AndroidKeepTallyTheme(content: @Composable () -> Unit) {
-    val systemUiController = rememberSystemUiController()
+//    val systemUiController = rememberSystemUiController()
     KeepTallyTheme {
         val surfaceColor = MaterialTheme.colorScheme.surfaceVariant
-        LaunchedEffect(systemUiController) {
-            systemUiController.setSystemBarsColor(
-                Color.Transparent,
-                surfaceColor.luminance() > 0.5f
-            )
-        }
+//        LaunchedEffect(systemUiController) {
+//            systemUiController.setSystemBarsColor(
+//                Color.Transparent,
+//                surfaceColor.luminance() > 0.5f
+//            )
+//        }
         content()
     }
 }

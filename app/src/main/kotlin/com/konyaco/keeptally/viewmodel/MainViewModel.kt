@@ -167,9 +167,9 @@ class MainViewModel @Inject constructor(
 
     companion object {
         sealed class State {
-            object Initializing : State()
-            object Loading : State()
-            object Done : State()
+            data object Initializing : State()
+            data object Loading : State()
+            data object Done : State()
         }
 
         data class DailyRecord(
@@ -237,12 +237,8 @@ class MainViewModel @Inject constructor(
             sharedViewModel: SharedViewModel
         ): RecordType {
             val parent = parentId?.let { keepTallyService.getTypesByIds(it).firstOrNull() }
-            return RecordType(
-                label,
-                parent?.label,
-                isIncome,
-                sharedViewModel.colors.value[parentId ?: id]!!
-            )
+            val color = sharedViewModel.getColor(parentId ?: id)
+            return RecordType(label, parent?.label, isIncome, color)
         }
 
         private val hhmFormatter = DateTimeFormatter.ofPattern("HH:mm")

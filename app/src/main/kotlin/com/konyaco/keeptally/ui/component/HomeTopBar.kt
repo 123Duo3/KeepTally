@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.sharp.Article
 import androidx.compose.material.icons.sharp.ArrowDropDown
 import androidx.compose.material.icons.sharp.Article
 import androidx.compose.material.icons.sharp.FilterAlt
@@ -39,6 +40,7 @@ import androidx.compose.material.icons.sharp.Widgets
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -63,6 +65,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import com.konyaco.keeptally.R
 import com.konyaco.keeptally.ui.theme.KeepTallyTheme
 import java.time.LocalDate
@@ -80,17 +83,13 @@ class HomeTopBarState(
         private set
 
     enum class TabItem(@StringRes val labelRes: Int, val icon: ImageVector) {
-        Detail(R.string.detail, Icons.Sharp.Article),
+        Detail(R.string.detail, Icons.AutoMirrored.Sharp.Article),
         Filter(R.string.filter, Icons.Sharp.FilterAlt),
         Statistics(R.string.statistics, Icons.Sharp.Leaderboard),
         Other(R.string.other, Icons.Sharp.Widgets);
 
         val label: String
             @Composable get() = stringResource(id = labelRes)
-
-        companion object {
-            val values = TabItem.values()
-        }
     }
 
     fun selectTab(tabItem: TabItem) {
@@ -130,7 +129,7 @@ fun HomeTopBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         DateChooser(state.dateChooser, onDateChosen)
-        Divider(Modifier.size(1.dp, 36.dp))
+        HorizontalDivider(Modifier.size(1.dp, 36.dp))
         Tabs(Modifier.weight(1f), state, onTabSelect)
     }
 }
@@ -151,7 +150,7 @@ private fun Tabs(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            HomeTopBarState.TabItem.values.forEach {
+            HomeTopBarState.TabItem.entries.fastForEach {
                 CustomTab(
                     selected = state.selectedTab == it,
                     icon = it.icon,
@@ -309,7 +308,7 @@ private fun RangeText(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun RangeTextPreview() {
     KeepTallyTheme {
@@ -371,7 +370,7 @@ private fun CustomTabPreview() {
     CustomTab(
         selected = selected,
         text = "详细",
-        icon = Icons.Sharp.Article,
+        icon = Icons.AutoMirrored.Sharp.Article,
         onClick = { selected = !selected },
         displayText = true
     )

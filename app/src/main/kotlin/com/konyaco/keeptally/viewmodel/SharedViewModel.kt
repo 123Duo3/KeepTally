@@ -36,8 +36,8 @@ class SharedViewModel @Inject constructor(
     val loginState = MutableStateFlow(LoginState.Loading)
 
     sealed class SyncState {
-        object Syncing: SyncState()
-        object Synced: SyncState()
+        data object Syncing: SyncState()
+        data object Synced: SyncState()
         data class Failed(
             val message: String
         ): SyncState()
@@ -58,7 +58,7 @@ class SharedViewModel @Inject constructor(
         val bio: String,
     )
 
-    private val lock = Mutex()
+    private val colorLock = Mutex()
 
     init {
         viewModelScope.launch(Dispatchers.Main) {
@@ -110,7 +110,7 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadColors() = lock.withLock {
+    private suspend fun loadColors() = colorLock.withLock {
         val map = mutableMapOf<Long, Int>()
         var incomeI = 0
         var expI = 0
@@ -127,6 +127,12 @@ class SharedViewModel @Inject constructor(
 
     suspend fun refresh() {
         loadColors()
+    }
+
+    suspend fun getColor(labelId: Long): Int {
+        return colorLock.withLock {
+            colors.value[labelId]!!
+        }
     }
 
     fun sync() = viewModelScope.launch(Dispatchers.IO) {

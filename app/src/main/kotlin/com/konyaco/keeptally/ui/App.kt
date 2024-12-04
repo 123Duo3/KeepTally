@@ -4,14 +4,16 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.End
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Start
 import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
@@ -36,9 +38,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import com.konyaco.keeptally.di.sharedViewModel
 import com.konyaco.keeptally.ui.component.HomeTopBar
 import com.konyaco.keeptally.ui.component.HomeTopBarState
@@ -54,7 +53,6 @@ import com.konyaco.keeptally.viewmodel.SharedViewModel
 import com.konyaco.keeptally.viewmodel.model.DateRange
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun App(
     viewModel: MainViewModel = hiltViewModel(),
@@ -108,19 +106,17 @@ fun App(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun Content(viewModel: MainViewModel) {
     ContentAnimatedContent(viewModel)
 }
 
 @Composable
-@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
 private fun ContentAnimatedContent(viewModel: MainViewModel) {
     Column(
         Modifier
             .fillMaxSize()
-            .statusBarsPadding()
+            .safeDrawingPadding()
     ) {
         HomeTopBar(
             Modifier.fillMaxWidth(),
@@ -164,18 +160,17 @@ private fun ContentAnimatedContent(viewModel: MainViewModel) {
 
 
 @Composable
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 private fun ContentPager(
     viewModel: MainViewModel
 ) {
     Column(
         Modifier
             .fillMaxSize()
-            .statusBarsPadding()
+            .safeDrawingPadding()
     ) {
         val scope = rememberCoroutineScope()
         val homeTopBarState = rememberHomeTopBarState()
-        val pagerState = rememberPagerState()
+        val pagerState = rememberPagerState(pageCount = { 4 })
         var isScrolling by remember { mutableStateOf(false) }
 
 
@@ -187,9 +182,9 @@ private fun ContentPager(
         }*/
 
         // Change tab state according to user scrolling.
-        LaunchedEffect(pagerState.currentPageOffset, pagerState.currentPage, isScrolling) {
+        LaunchedEffect(pagerState.currentPageOffsetFraction, pagerState.currentPage, isScrolling) {
             if (!isScrolling) {
-                val offset = pagerState.currentPageOffset
+                val offset = pagerState.currentPageOffsetFraction
                 val current = pagerState.currentPage
                 val index = if (offset > 0.50f) {
                     current + 1
@@ -198,7 +193,7 @@ private fun ContentPager(
                 } else {
                     current
                 }
-                val tab = HomeTopBarState.TabItem.values()[index]
+                val tab = HomeTopBarState.TabItem.entries[index]
                 homeTopBarState.selectTab(tab)
             }
         }
@@ -212,7 +207,7 @@ private fun ContentPager(
             onTabSelect = {
                 scope.launch {
                     homeTopBarState.selectTab(it)
-                    val index = HomeTopBarState.TabItem.values
+                    val index = HomeTopBarState.TabItem.entries
                         .indexOf(homeTopBarState.selectedTab)
                     isScrolling = true
                     pagerState.animateScrollToPage(index)
@@ -226,8 +221,8 @@ private fun ContentPager(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            count = remember { HomeTopBarState.TabItem.values.size },
-            state = pagerState
+            state = pagerState,
+            key = { it }
         ) {
             when (it) {
                 0 -> DetailScreen()
@@ -239,7 +234,6 @@ private fun ContentPager(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 val LocalSheetState = compositionLocalOf<ModalBottomSheetState> {
     error("No ModalBottomSheetState provided")
 }

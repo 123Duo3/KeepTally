@@ -1,29 +1,29 @@
 [versions]
-kotlin = "1.9.23"
-android = "8.3.2"
-ksp = "1.9.23-1.0.20"
+kotlin = "2.0.21"
+android = "8.7.3"
+ksp = "2.0.21-1.0.26"
 hilt = "2.49"
-composeBom = "2024.04.01"
-desugar_jdk_libs = "2.0.4"
-accompanist = "0.27.0"
-activityCompose = "1.9.0"
+composeBom = "2024.11.00"
+desugar_jdk_libs = "2.1.3"
+activityCompose = "1.9.3"
 argon2kt = "1.4.0"
-constraintlayoutCompose = "1.0.1"
-coreKtx = "1.13.0"
-datastorePreferences = "1.1.0"
-espresso = "3.5.1"
+constraintlayoutCompose = "1.1.0"
+coreKtx = "1.15.0"
+datastorePreferences = "1.1.1"
+espresso = "3.6.1"
 hiltNavigationCompose = "1.2.0"
-junit = "1.1.5"
+junit = "1.2.1"
 junitJupiter = "5.10.2"
 junitVersion = "4.13.2"
-lifecycleRuntimeKtx = "2.7.0"
-kotlinxDatetime = "0.4.0"
+lifecycleRuntimeKtx = "2.8.7"
+kotlinxDatetime = "0.6.1"
 ktor = "2.3.10"
-navigationCompose = "2.7.7"
+navigationCompose = "2.8.4"
 room = "2.6.1"
-profileinstallerVersion = "1.3.1"
+profileinstallerVersion = "1.4.1"
 
 [plugins]
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "android" }
 android-library = { id = "com.android.library", version.ref = "android" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
@@ -33,18 +33,21 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 
 [libraries]
-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
-accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-material = { group = "androidx.compose.material", name = "material" }
-androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
+androidx-compose-animation = { module = "androidx.compose.animation:animation" }
+androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
+androidx-compose-foundation-layout = { module = "androidx.compose.foundation:foundation-layout" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-material = { group = "androidx.compose.material", name = "material" }
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }

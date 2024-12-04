@@ -3,6 +3,7 @@ package com.konyaco.keeptally
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.core.view.WindowCompat
 import com.konyaco.keeptally.ui.App
 import dagger.hilt.android.AndroidEntryPoint
@@ -13,7 +14,7 @@ private const val TAG = "MainActivity"
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        WindowCompat.setDecorFitsSystemWindows(window, false);
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         setContent {
