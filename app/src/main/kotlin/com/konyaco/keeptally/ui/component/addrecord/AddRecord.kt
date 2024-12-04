@@ -166,11 +166,11 @@ fun AddRecord(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onCloseClick) {
+                /*IconButton(onClick = onCloseClick) {
                     Icon(Icons.Default.Close, contentDescription = "Close")
-                }
+                }*/
                 DateChooser(
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier = Modifier.padding(end = 16.dp, bottom = 16.dp),
                     dateState,
                     { dateState = it }
                 )
