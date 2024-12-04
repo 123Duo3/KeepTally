@@ -2,17 +2,12 @@ package com.konyaco.keeptally.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.Colors
-import androidx.compose.material.Typography
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 
 private val LightColorScheme = lightColorScheme(
@@ -80,59 +75,10 @@ fun KeepTallyTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-
-    val md2Color = Colors(
-        primary = colorScheme.primary,
-        primaryVariant = colorScheme.primary,
-        onPrimary = colorScheme.onPrimary,
-        secondary = colorScheme.secondary,
-        secondaryVariant = colorScheme.secondary,
-        onSecondary = colorScheme.onSecondary,
-        surface = colorScheme.surface,
-        onSurface = colorScheme.onSurface,
-        background = colorScheme.background,
-        onBackground = colorScheme.onBackground,
-        error = colorScheme.error,
-        onError = colorScheme.onError,
-        isLight = !darkTheme
-    )
-
     val typography = KeepTallyTypography
-
-    val md2Typo = Typography(
-        h1 = typography.displayLarge,
-        h2 = typography.displayMedium,
-        h3 = typography.displaySmall,
-        h4 = typography.headlineLarge,
-        h5 = typography.headlineMedium,
-        h6 = typography.headlineSmall,
-        subtitle1 = typography.titleLarge,
-        subtitle2 = typography.titleMedium,
-        body1 = typography.bodyMedium,
-        body2 = typography.bodySmall,
-        caption = typography.labelLarge
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = typography,
+        content = content
     )
-
-    androidx.compose.material.MaterialTheme(md2Color) {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            typography = typography,
-            content = content
-        )
-    }
-}
-
-@Composable
-fun AndroidKeepTallyTheme(content: @Composable () -> Unit) {
-//    val systemUiController = rememberSystemUiController()
-    KeepTallyTheme {
-        val surfaceColor = MaterialTheme.colorScheme.surfaceVariant
-//        LaunchedEffect(systemUiController) {
-//            systemUiController.setSystemBarsColor(
-//                Color.Transparent,
-//                surfaceColor.luminance() > 0.5f
-//            )
-//        }
-        content()
-    }
 }

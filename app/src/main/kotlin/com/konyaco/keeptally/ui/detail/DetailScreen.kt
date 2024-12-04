@@ -17,25 +17,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.konyaco.keeptally.R
-import com.konyaco.keeptally.ui.LocalSheetState
 import com.konyaco.keeptally.ui.detail.component.AddRecordButton
 import com.konyaco.keeptally.ui.detail.component.DailyRecord
 import com.konyaco.keeptally.ui.detail.component.LineChart
@@ -45,14 +43,9 @@ import com.konyaco.keeptally.viewmodel.MainViewModel
 import com.konyaco.keeptally.viewmodel.MainViewModel.Companion.State.Done
 import com.konyaco.keeptally.viewmodel.MainViewModel.Companion.State.Initializing
 import com.konyaco.keeptally.viewmodel.MainViewModel.Companion.State.Loading
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun DetailScreen(viewModel: MainViewModel = hiltViewModel()) {
-    val sheetState = LocalSheetState.current
-    val scope = rememberCoroutineScope()
-
+fun DetailScreen(viewModel: MainViewModel = hiltViewModel(), onAddClick: () -> Unit) {
     Box(Modifier.fillMaxSize()) {
         when (viewModel.state.value) {
             Initializing, Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -70,7 +63,7 @@ fun DetailScreen(viewModel: MainViewModel = hiltViewModel()) {
                         integer = statistics.expenditure.moneyStr.integer,
                         decimal = statistics.expenditure.moneyStr.decimal
                     )
-                    Divider(Modifier.padding(vertical = 8.dp))
+                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
                     MoreInfo(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -87,7 +80,8 @@ fun DetailScreen(viewModel: MainViewModel = hiltViewModel()) {
                 AddRecordButton(
                     modifier = Modifier.align(Alignment.BottomEnd),
                     onAddClick = {
-                        scope.launch { sheetState.show() }
+                        onAddClick()
+//                        scope.launch { sheetState.show() }
                     }
                 )
             }
@@ -164,7 +158,7 @@ private fun RecordsList(
                 .calculateBottomPadding()
         )
     ) {
-        records.forEachIndexed { index, item ->
+        records.fastForEachIndexed { index, item ->
             DailyRecord(
                 index == records.size - 1,
                 item.date,

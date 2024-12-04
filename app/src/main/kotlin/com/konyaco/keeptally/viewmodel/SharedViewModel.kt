@@ -1,7 +1,7 @@
 package com.konyaco.keeptally.viewmodel
 
 import android.util.Log
-import androidx.compose.material.SnackbarHostState
+import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.konyaco.keeptally.service.KeepTallyService
@@ -44,8 +44,8 @@ class SharedViewModel @Inject constructor(
     }
 
     sealed class LoginState {
-        object Loading: LoginState()
-        object NotLogin: LoginState()
+        data object Loading: LoginState()
+        data object NotLogin: LoginState()
         data class LoggedIn(
             val profile: UserProfile
         ): LoginState()
