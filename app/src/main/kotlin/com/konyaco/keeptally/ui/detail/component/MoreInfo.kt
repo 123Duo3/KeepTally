@@ -1,6 +1,8 @@
 package com.konyaco.keeptally.ui.detail.component
 
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,10 +44,14 @@ fun MoreInfo(modifier: Modifier, budget: String, income: String) {
 private fun TextRow(text: String, money: String, sign: String, color: Color) {
     Row(Modifier.fillMaxWidth()) {
         Text(text = text, style = MaterialTheme.typography.bodyLarge)
-        Crossfade(
+        AnimatedContent(
             modifier = Modifier.weight(1f),
             targetState = "$sign$money${RecordSign.RMB}",
-            label = "money"
+            label = "money",
+            transitionSpec = {
+                slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Down) togetherWith slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down)
+            }
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),

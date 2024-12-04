@@ -1,6 +1,14 @@
 package com.konyaco.keeptally.ui.detail
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -156,13 +164,28 @@ private fun RecordsList(
                 .weight(1f),
             color = MaterialTheme.colorScheme.surface
         ) {
-            Crossfade(modifier = modifier, targetState = records, label = "content") {
-                if (it.isEmpty()) {
+            AnimatedContent(
+                modifier = modifier,
+                targetState = records,
+                label = "records",
+                transitionSpec = {
+                    if (initialState.isEmpty()) {
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Down, animationSpec = tween(delayMillis = 20, durationMillis = 400)) togetherWith
+                                fadeOut()
+                    } else if (targetState.isEmpty()) {
+                        fadeIn(tween(delayMillis = 90)) togetherWith slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Down)
+                    } else {
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Down, animationSpec = tween(delayMillis = 20, durationMillis = 400)) togetherWith
+                                slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Down)
+                    }
+                }
+            ) { records ->
+                if (records.isEmpty()) {
                     EmptyContent(Modifier.fillMaxSize())
                 } else {
                     RecordsList(
                         modifier = Modifier.fillMaxSize(),
-                        records = it,
+                        records = records,
                         onDelete = { viewModel.deleteRecord(it.id) }
                     )
                 }

@@ -1,6 +1,8 @@
 package com.konyaco.keeptally.ui.detail.component
 
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,10 +28,13 @@ fun TotalExpenditure(modifier: Modifier, integer: String, decimal: String) {
             style = MaterialTheme.typography.displaySmall,
             fontFamily = FontFamily.RobotoSlab,
         )
-        Crossfade(
+        AnimatedContent(
             modifier = Modifier.weight(1f),
             targetState = integer to decimal,
-            label = "money"
+            label = "money",
+            transitionSpec = {
+                slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Down) togetherWith slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Down)
+            }
         ) { (integer, decimal) ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 Text(
