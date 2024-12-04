@@ -11,12 +11,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -185,7 +183,7 @@ fun AddRecord(
                 moneyStr = moneyStr,
                 onMoneyStrChange = { moneyStr = it }
             )
-            Divider(
+            HorizontalDivider(
                 Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .fillMaxWidth()
@@ -198,7 +196,7 @@ fun AddRecord(
                 labelColor = labelColor,
                 onAddLabelClick = { onAddLabelClick(isIncome, null) }
             )
-            Divider(
+            HorizontalDivider(
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -211,7 +209,7 @@ fun AddRecord(
                 labelColor = labelColor,
                 onAddLabelClick = { onAddLabelClick(isIncome, checkedPrimaryLabel) }
             )
-            Divider(
+            HorizontalDivider(
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)

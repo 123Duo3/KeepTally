@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -28,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -129,11 +129,10 @@ private fun PaymentButton(
             text = text,
             style = MaterialTheme.typography.labelLarge
         )
-        Divider(
+        VerticalDivider(
             Modifier
                 .padding(horizontal = 4.dp)
                 .height(12.dp)
-                .width(1.dp)
         )
         Text(
             modifier = Modifier.weight(1f),

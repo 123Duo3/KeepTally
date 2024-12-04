@@ -22,11 +22,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -67,7 +68,7 @@ fun FilterScreen(viewModel: FilterViewModel = hiltViewModel()) {
                     activeColor = labelColor
                 )
             }
-            Divider(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,16 +102,12 @@ fun FilterScreen(viewModel: FilterViewModel = hiltViewModel()) {
                         )
                     }
                 }
-                Divider(
-                    Modifier
-                        .height(48.dp)
-                        .width(1.dp)
-                )
+                VerticalDivider(Modifier.height(48.dp))
                 IconButton(onClick = { /*TODO*/ }) {
                     Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
                 }
             }
-            Divider(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
 
             Row(
                 modifier = Modifier
@@ -156,11 +153,7 @@ fun FilterScreen(viewModel: FilterViewModel = hiltViewModel()) {
                         )
                     }
                 }
-                Divider(
-                    Modifier
-                        .height(48.dp)
-                        .width(1.dp)
-                )
+                VerticalDivider(Modifier.height(48.dp))
                 IconButton(onClick = { /*TODO*/ }) {
                     Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
                 }

@@ -33,11 +33,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.sharp.Article
 import androidx.compose.material.icons.sharp.ArrowDropDown
-import androidx.compose.material.icons.sharp.Article
 import androidx.compose.material.icons.sharp.FilterAlt
 import androidx.compose.material.icons.sharp.Leaderboard
 import androidx.compose.material.icons.sharp.Widgets
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -69,10 +67,6 @@ import androidx.compose.ui.util.fastForEach
 import com.konyaco.keeptally.R
 import com.konyaco.keeptally.ui.theme.KeepTallyTheme
 import java.time.LocalDate
-import kotlin.collections.List
-import kotlin.collections.forEach
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 
 class HomeTopBarState(

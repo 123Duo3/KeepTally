@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -60,7 +60,7 @@ fun DetailCard(
                 onClick = {},
                 isIncome = true
             )
-            Divider(
+            HorizontalDivider(
                 Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
                 color = MaterialTheme.colorScheme.onSurface.copy(0.12f)
             )

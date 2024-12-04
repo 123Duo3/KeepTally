@@ -48,7 +48,8 @@ internal fun DateChooser(
     Box(modifier) {
         Crossfade(
             modifier = Modifier.fillMaxWidth(),
-            targetState = state
+            targetState = state,
+            label = "Text"
         ) { state ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
