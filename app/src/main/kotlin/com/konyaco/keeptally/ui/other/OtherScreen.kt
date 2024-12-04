@@ -63,7 +63,7 @@ fun OtherScreen(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp)
     ) {
-        UserProfile(
+        /*UserProfile(
             modifier = Modifier.fillMaxWidth(),
             userName = viewModel.username,
             email = viewModel.email,
@@ -76,7 +76,7 @@ fun OtherScreen(
             },
             syncState = viewModel.syncState
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))*/
         // Option List
         val exportChooser = rememberLauncherForActivityResult(contract = ActivityResultContracts.CreateDocument("application/json")) {
             if (it != null) {
