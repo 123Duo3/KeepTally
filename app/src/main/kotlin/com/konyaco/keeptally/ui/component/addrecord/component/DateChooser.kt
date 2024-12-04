@@ -144,7 +144,7 @@ internal fun DateChooser(
 }
 
 sealed class DateChooserState {
-    object Now : DateChooserState()
+    data object Now : DateChooserState()
     data class Custom(
         val year: Int,
         val month: Int,

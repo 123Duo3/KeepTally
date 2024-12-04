@@ -47,7 +47,7 @@ class StatisticViewModel @Inject constructor(
 
     val tab = mutableStateOf(TabItem.TOTAL)
     val summary =
-        mutableStateOf<Summary>(Summary(defaultMoney, defaultMoney, defaultMoney, defaultMoney))
+        mutableStateOf(Summary(defaultMoney, defaultMoney, defaultMoney, defaultMoney))
     val expenditures = mutableStateOf<List<Expenditure>>(emptyList())
     val incomes = mutableStateOf<List<Income>>(emptyList())
 

@@ -28,7 +28,8 @@ fun TotalExpenditure(modifier: Modifier, integer: String, decimal: String) {
         )
         Crossfade(
             modifier = Modifier.weight(1f),
-            targetState = integer to decimal
+            targetState = integer to decimal,
+            label = "money"
         ) { (integer, decimal) ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 Text(

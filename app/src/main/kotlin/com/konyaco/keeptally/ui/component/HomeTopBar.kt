@@ -241,7 +241,8 @@ private fun DateChooser(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight(),
-            targetState = state.currentRange
+            targetState = state.currentRange,
+            label = "range"
         ) {
             Box(Modifier.fillMaxSize(), Alignment.Center) {
                 RangeText(

@@ -271,7 +271,6 @@ private fun RegisterDialog(viewModel: OtherViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LoginButton(
     modifier: Modifier,

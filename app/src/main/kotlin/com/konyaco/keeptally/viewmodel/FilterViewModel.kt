@@ -60,9 +60,9 @@ class FilterViewModel @Inject constructor(
 
     fun selectSecondaryType(label: String, selected: Boolean) {
         if (selected) {
-            selectedSecondaryTypes.value = selectedSecondaryTypes.value + label
+            selectedSecondaryTypes.value += label
         } else {
-            selectedSecondaryTypes.value = selectedSecondaryTypes.value - label
+            selectedSecondaryTypes.value -= label
         }
         conditionContained()
         getRecords()

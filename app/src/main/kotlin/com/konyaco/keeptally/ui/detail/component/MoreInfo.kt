@@ -44,7 +44,9 @@ private fun TextRow(text: String, money: String, sign: String, color: Color) {
         Text(text = text, style = MaterialTheme.typography.bodyLarge)
         Crossfade(
             modifier = Modifier.weight(1f),
-            targetState = "$sign$money${RecordSign.RMB}") {
+            targetState = "$sign$money${RecordSign.RMB}",
+            label = "money"
+        ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = it,

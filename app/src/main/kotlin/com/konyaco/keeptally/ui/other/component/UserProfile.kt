@@ -43,7 +43,6 @@ import com.konyaco.keeptally.ui.theme.RobotoSlab
 import com.konyaco.keeptally.viewmodel.SharedViewModel
 import com.konyaco.keeptally.viewmodel.model.RecordSign
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfile(
     modifier: Modifier,

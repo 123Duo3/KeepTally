@@ -75,7 +75,7 @@ class OtherViewModel @Inject constructor(
 
     fun init() {
         viewModelScope.launch(Dispatchers.IO) {
-            suspendCoroutine<Unit> { cont ->
+            suspendCoroutine { cont ->
                 launch {
                     myDataStore.userStatus.take(1).collectLatest {
                         if (it != null) {

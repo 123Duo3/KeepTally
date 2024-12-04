@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,18 +49,18 @@ internal fun LabelList(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            itemsIndexed(labels) { index, item ->
+            itemsIndexed(labels, key = { _, item -> item }) { index, item ->
                 LabelItem(
-                    modifier = Modifier.animateItemPlacement(),
+                    modifier = Modifier.animateItem(),
                     selected = checkedLabel == index,
                     onSelectChange = { onLabelClick(index) },
                     text = item,
                     activeColor = labelColor
                 )
             }
-            item {
+            item(key = { "Add" }) {
                 LabelItem(
-                    modifier = Modifier.animateItemPlacement(),
+                    modifier = Modifier.animateItem(),
                     selected = false,
                     onSelectChange = { onAddLabelClick() },
                     text = "＋",
@@ -81,7 +82,7 @@ private fun PreviewLabelList() {
         val primaryLabels = remember {
             listOf("购物", "餐饮", "洗浴")
         }
-        var enabledLabel by remember { mutableStateOf(0) }
+        var enabledLabel by remember { mutableIntStateOf(0) }
         LabelList(
             modifier = Modifier.fillMaxWidth(),
             primaryLabels,

@@ -55,14 +55,14 @@ fun FilterScreen(viewModel: FilterViewModel = hiltViewModel()) {
         Column {
             Row(Modifier.padding(16.dp, 8.dp)) {
                 LabelItem(
-                    selected = viewModel.isIncome.value == false,
+                    selected = !viewModel.isIncome.value,
                     onSelectChange = { viewModel.changeType(false) },
                     text = "支出",
                     activeColor = labelColor
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 LabelItem(
-                    selected = viewModel.isIncome.value == true,
+                    selected = viewModel.isIncome.value,
                     onSelectChange = { viewModel.changeType(true) },
                     text = "收入",
                     activeColor = labelColor

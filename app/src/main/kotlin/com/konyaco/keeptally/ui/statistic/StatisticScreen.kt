@@ -21,7 +21,6 @@ import com.konyaco.keeptally.ui.statistic.summary.SummaryScreen
 import com.konyaco.keeptally.ui.theme.KeepTallyTheme
 import com.konyaco.keeptally.viewmodel.StatisticViewModel
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun StatisticScreen(viewModel: StatisticViewModel = hiltViewModel()) {
     LaunchedEffect(viewModel) {

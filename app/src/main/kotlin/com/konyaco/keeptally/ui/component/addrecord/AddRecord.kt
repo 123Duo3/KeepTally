@@ -20,6 +20,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,7 +60,7 @@ fun AddRecord(
 
     val labels = if (isIncome) incomeLabels else expenditureLabels
     val primaryLabels = remember(labels) { labels.keys.map { it.label } }
-    var selectedPrimaryLabel by remember(isIncome, primaryLabels) { mutableStateOf(0) }
+    var selectedPrimaryLabel by remember(isIncome, primaryLabels) { mutableIntStateOf(0) }
 
     val secondaryLabels = remember(labels, selectedPrimaryLabel) {
         labels.keys.elementAtOrNull(selectedPrimaryLabel)
@@ -169,8 +170,8 @@ fun AddRecord(
                 }*/
                 DateChooser(
                     modifier = Modifier.padding(end = 16.dp, bottom = 16.dp),
-                    dateState,
-                    { dateState = it }
+                    state = dateState,
+                    onStateChange = { dateState = it }
                 )
             }
 

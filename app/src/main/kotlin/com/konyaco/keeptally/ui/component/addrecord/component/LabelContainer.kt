@@ -31,7 +31,7 @@ internal fun LabelContainer(
     activeContentColor: Color = contentColorFor(activeColor),
     content: @Composable () -> Unit
 ) {
-    val borderWidth by animateDpAsState(if (selected) 0.dp else 1.dp)
+    val borderWidth by animateDpAsState(if (selected) 0.dp else 1.dp, label = "borderWidth")
     Surface(
         modifier = modifier
             .defaultMinSize(minWidth = 48.dp)
@@ -42,7 +42,7 @@ internal fun LabelContainer(
             ),
         color = animateColorAsState(
             if (selected) activeColor
-            else MaterialTheme.colorScheme.surface
+            else MaterialTheme.colorScheme.surface, label = "backgroundColor"
         ).value,
         border = if (borderWidth == 0.dp) null else BorderStroke(
             borderWidth,
@@ -53,7 +53,7 @@ internal fun LabelContainer(
         CompositionLocalProvider(
             LocalContentColor provides animateColorAsState(
                 if (selected) activeContentColor
-                else MaterialTheme.colorScheme.onSurfaceVariant
+                else MaterialTheme.colorScheme.onSurfaceVariant, label = "contentColor"
             ).value
         ) {
             content()

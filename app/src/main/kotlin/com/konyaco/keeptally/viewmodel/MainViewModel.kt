@@ -36,7 +36,7 @@ class MainViewModel @Inject constructor(
     val expenditureLabels = mutableStateOf<Map<RecordType, List<RecordType>>>(emptyMap())
     val incomeLabels = mutableStateOf<Map<RecordType, List<RecordType>>>(emptyMap())
     val dateRange = sharedViewModel.dateRange
-    val statistics = mutableStateOf<Statistics>(Statistics(Money(0), Money(0), Money(0)))
+    val statistics = mutableStateOf(Statistics(Money(0), Money(0), Money(0)))
     val homeTopBarState: HomeTopBarState = HomeTopBarState(HomeTopBarState.TabItem.Detail)
 
     init {
