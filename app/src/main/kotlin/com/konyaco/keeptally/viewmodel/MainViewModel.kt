@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
@@ -165,55 +166,57 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    sealed class State {
+        data object Initializing : State()
+        data object Loading : State()
+        data object Done : State()
+    }
+
+    data class DailyRecord(
+        val date: Date,
+        val expenditure: Money,
+        val income: Money,
+        val records: List<Record>,
+    )
+
+    data class Record(
+        val id: Long,
+        val isIncome: Boolean,
+        val money: Money,
+        val date: Date,
+        val time: String,
+        val type: RecordType,
+        val description: String?
+    )
+
+    data class Date(
+        val dateString: String,
+        val daysOffset: Int
+    )
+
+    @Serializable
+    data class RecordType(
+        val id: Long,
+        val label: String,
+        val parent: String?,
+        /**
+         * Income label or expenditure label
+         */
+        val income: Boolean,
+        val colorIndex: Int
+    )
+
+    data class Statistics(
+        val expenditure: Money,
+        val income: Money,
+        val budget: Money,
+    )
+
     companion object {
-        sealed class State {
-            data object Initializing : State()
-            data object Loading : State()
-            data object Done : State()
-        }
-
-        data class DailyRecord(
-            val date: Date,
-            val expenditure: Money,
-            val income: Money,
-            val records: List<Record>,
-        )
-
-        data class Record(
-            val id: Long,
-            val isIncome: Boolean,
-            val money: Money,
-            val date: Date,
-            val time: String,
-            val type: RecordType,
-            val description: String?
-        )
-
-        data class Date(
-            val dateString: String,
-            val daysOffset: Int
-        )
-
-        data class RecordType(
-            val label: String,
-            val parent: String?,
-            /**
-             * Income label or expenditure label
-             */
-            val income: Boolean,
-            val colorIndex: Int
-        )
-
-        data class Statistics(
-            val expenditure: Money,
-            val income: Money,
-            val budget: Money,
-        )
-
         fun groupToDailyRecord(records: List<Record>): List<DailyRecord> {
             return records.groupBy {
                 it.date.dateString
-            }.map { (date, records) ->
+            }.map { (_, records) ->
                 var expenditure = 0L
                 var income = 0L
                 records.forEach {
@@ -238,7 +241,7 @@ class MainViewModel @Inject constructor(
         ): RecordType {
             val parent = parentId?.let { keepTallyService.getTypesByIds(it).firstOrNull() }
             val color = sharedViewModel.getColor(parentId ?: id)
-            return RecordType(label, parent?.label, isIncome, color)
+            return RecordType(id, label, parent?.label, isIncome, color)
         }
 
         private val hhmFormatter = DateTimeFormatter.ofPattern("HH:mm")
@@ -281,8 +284,4 @@ class MainViewModel @Inject constructor(
             return offsetDay
         }
     }
-}
-
-private fun Pair<String, String>.joinToString(): Triple<String, String, String> {
-    return Triple(first, second, "$first.$second")
 }

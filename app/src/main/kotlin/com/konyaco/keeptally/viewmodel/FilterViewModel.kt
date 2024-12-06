@@ -17,14 +17,21 @@ class FilterViewModel @Inject constructor(
 ) : ViewModel() {
     val isIncome = mutableStateOf(false)
 
-    val primaryTypes = mutableStateOf(emptyList<String>())
-    val currentPrimaryType = mutableStateOf<String?>(null)
-    val containedPrimaryTypes = mutableStateOf(setOf<String>())
+    data class Label(
+        val id: Long,
+        val label: String,
+        val isIncome: Boolean
+    )
 
-    val secondaryTypes = mutableStateOf(emptyList<String>())
-    val selectedPrimaryTypes = mutableStateOf(setOf<String>())
-    val selectedSecondaryTypes = mutableStateOf(setOf<String>())
-    val records = mutableStateOf(emptyList<MainViewModel.Companion.DailyRecord>())
+    val primaryTypes = mutableStateOf(emptyList<Label>())
+    val currentPrimaryType = mutableStateOf<Label?>(null)
+    val containedPrimaryTypes = mutableStateOf(setOf<Label>())
+
+    val secondaryTypes = mutableStateOf(emptyList<Label>())
+    val selectedPrimaryTypes = mutableStateOf(setOf<Label>())
+    val selectedSecondaryTypes = mutableStateOf(setOf<Label>())
+
+    val records = mutableStateOf(emptyList<MainViewModel.DailyRecord>())
 
     private var mPrimaryTypes = emptyList<RecordType>()
 
@@ -47,18 +54,20 @@ class FilterViewModel @Inject constructor(
         getTypes()
     }
 
-    fun selectPrimaryType(label: String) {
+    fun selectPrimaryType(label: Label) {
         currentPrimaryType.value = label
         viewModelScope.launch {
             keepTallyService.getSecondaryTypesByPrimaryId(
-                mPrimaryTypes.find { it.label == label }!!.id
+                mPrimaryTypes.find { it.id == label.id }!!.id
             ).let {
-                secondaryTypes.value = it.map { it.label }
+                secondaryTypes.value = it.map {
+                    Label(id = it.id, label = it.label, isIncome = it.isIncome)
+                }
             }
         }
     }
 
-    fun selectSecondaryType(label: String, selected: Boolean) {
+    fun selectSecondaryType(label: Label, selected: Boolean) {
         if (selected) {
             selectedSecondaryTypes.value += label
         } else {
@@ -91,7 +100,9 @@ class FilterViewModel @Inject constructor(
                 mPrimaryTypes.filter { it.isIncome }
             } else {
                 mPrimaryTypes.filter { !it.isIncome }
-            }.map { it.label }
+            }.map {
+                Label(id = it.id, label = it.label, isIncome = it.isIncome)
+            }
         }
     }
 
@@ -123,7 +134,7 @@ class FilterViewModel @Inject constructor(
 
             // 将一级和二级类型合并后查询
             val types = selectedPrimaryTypes.value + selectedSecondaryTypes.value
-            val typeIds = keepTallyService.getRecordsByLabels(types.toList()).map { it.id }
+            val typeIds = keepTallyService.getRecordsByLabels(types.map { it.label }.toList()).map { it.id }
             val records = keepTallyService.getRecordsByDateRangeAndTypes(start, end, typeIds).map {
                 it.mapToRecord(keepTallyService, sharedViewModel).also {
                     if (it.money.money < 0) {

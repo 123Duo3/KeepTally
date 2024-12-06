@@ -35,6 +35,7 @@ import com.konyaco.keeptally.ui.component.addrecord.component.DateChooser
 import com.konyaco.keeptally.ui.component.addrecord.component.DateChooserState
 import com.konyaco.keeptally.ui.component.addrecord.component.EditArea
 import com.konyaco.keeptally.ui.component.addrecord.component.EditDescription
+import com.konyaco.keeptally.ui.component.addrecord.component.Label
 import com.konyaco.keeptally.ui.component.addrecord.component.LabelList
 import com.konyaco.keeptally.ui.parseMoneyToCent
 import com.konyaco.keeptally.ui.theme.KeepTallyTheme
@@ -59,17 +60,18 @@ fun AddRecord(
     val incomeLabels by viewModel.incomeLabels
 
     val labels = if (isIncome) incomeLabels else expenditureLabels
-    val primaryLabels = remember(labels) { labels.keys.map { it.label } }
+    val primaryLabels = remember(labels) { labels.keys.map {
+        Label(it.id, it.label)
+    } }
     var selectedPrimaryLabel by remember(isIncome, primaryLabels) { mutableIntStateOf(0) }
 
     val secondaryLabels = remember(labels, selectedPrimaryLabel) {
         labels.keys.elementAtOrNull(selectedPrimaryLabel)
             ?.let { primary ->
-                labels[primary]?.map { secondary ->
-                    secondary.label
+                labels[primary]?.map {
+                    Label(it.id, it.label)
                 }
-            }
-            ?: emptyList()
+            } ?: emptyList()
     }
 
     var selectedSecondaryLabel by remember(isIncome, selectedPrimaryLabel) {
@@ -103,11 +105,11 @@ fun AddRecord(
                 is DateChooserState.Custom -> {
                     val date =
                         LocalDateTime.of(date.year, date.month, date.day, date.hour, date.minute)
-                    viewModel.addRecord(income, money, primaryLabel, secondaryLabel, desc, date)
+                    viewModel.addRecord(income, money, primaryLabel.label, secondaryLabel?.label, desc, date)
                 }
 
                 DateChooserState.Now -> {
-                    viewModel.addRecord(income, money, primaryLabel, secondaryLabel, desc)
+                    viewModel.addRecord(income, money, primaryLabel.label, secondaryLabel?.label, desc)
                 }
             }
             onCloseRequest()
@@ -137,10 +139,10 @@ fun AddRecord(
     modifier: Modifier = Modifier,
     isIncome: Boolean,
     onIncomeChange: (Boolean) -> Unit,
-    primaryLabels: List<String>,
+    primaryLabels: List<Label>,
     checkedPrimaryLabel: Int,
     onPrimaryLabelSelect: (Int) -> Unit,
-    secondaryLabels: List<String>,
+    secondaryLabels: List<Label>,
     checkedSecondaryLabel: Int?,
     onSecondaryLabelSelect: (Int) -> Unit,
     onAddLabelClick: (isIncomeLabel: Boolean, parentLabel: Int?) -> Unit,
@@ -264,10 +266,14 @@ private fun AddRecordPreview() {
             onIncomeChange = {},
             onAddRecordClick = { _, _, _, _ -> },
             primaryLabels = remember {
-                listOf("购物", "餐饮", "洗浴")
+                listOf("购物", "餐饮", "洗浴").mapIndexed { index, s ->
+                    Label(index.toLong(), s)
+                }
             },
             secondaryLabels = remember {
-                listOf("早餐", "午餐", "晚餐")
+                listOf("早餐", "午餐", "晚餐").mapIndexed { index, s ->
+                    Label(index.toLong(), s)
+                }
             },
             checkedPrimaryLabel = 0,
             checkedSecondaryLabel = 0,

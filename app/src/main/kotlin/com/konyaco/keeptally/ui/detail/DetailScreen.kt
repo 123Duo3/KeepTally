@@ -2,9 +2,6 @@ package com.konyaco.keeptally.ui.detail
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -55,15 +52,15 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.konyaco.keeptally.R
 import com.konyaco.keeptally.ui.component.addrecord.AddRecord
-import com.konyaco.keeptally.ui.detail.component.AddRecordButton
+import com.konyaco.keeptally.ui.detail.component.AddRecordFAB
 import com.konyaco.keeptally.ui.detail.component.DailyRecord
 import com.konyaco.keeptally.ui.detail.component.LineChart
 import com.konyaco.keeptally.ui.detail.component.MoreInfo
 import com.konyaco.keeptally.ui.detail.component.TotalExpenditure
 import com.konyaco.keeptally.viewmodel.MainViewModel
-import com.konyaco.keeptally.viewmodel.MainViewModel.Companion.State.Done
-import com.konyaco.keeptally.viewmodel.MainViewModel.Companion.State.Initializing
-import com.konyaco.keeptally.viewmodel.MainViewModel.Companion.State.Loading
+import com.konyaco.keeptally.viewmodel.MainViewModel.State.Done
+import com.konyaco.keeptally.viewmodel.MainViewModel.State.Initializing
+import com.konyaco.keeptally.viewmodel.MainViewModel.State.Loading
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,7 +110,7 @@ fun DetailScreen(viewModel: MainViewModel = hiltViewModel()) {
                             .fillMaxWidth()
                             .weight(1f))
                 }
-                AddRecordButton(
+                AddRecordFAB(
                     modifier = Modifier.align(Alignment.BottomEnd),
                     onAddClick = {
                         openSheet = true
@@ -222,8 +219,8 @@ private fun EmptyContent(modifier: Modifier) {
 @Composable
 private fun RecordsList(
     modifier: Modifier,
-    records: List<MainViewModel.Companion.DailyRecord>,
-    onDelete: (MainViewModel.Companion.Record) -> Unit
+    records: List<MainViewModel.DailyRecord>,
+    onDelete: (MainViewModel.Record) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -235,13 +232,19 @@ private fun RecordsList(
     ) {
         records.fastForEachIndexed { index, item ->
             DailyRecord(
-                index == records.size - 1,
                 item.date,
                 item.expenditure.moneyStr.join,
                 item.income.moneyStr.join,
                 item.records,
                 onDelete
             )
+
+            if (index == records.lastIndex) {
+                // Divider
+                item(contentType = "divider") {
+                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                }
+            }
         }
 
         /*        itemsIndexed(
@@ -263,7 +266,7 @@ private fun RecordsList(
 }
 
 @Stable
-fun MainViewModel.Companion.Date.parseAsString(): String {
+fun MainViewModel.Date.parseAsString(): String {
     return when (daysOffset) {
         -2 -> "后天"
         -1 -> "明天"

@@ -1,6 +1,5 @@
 package com.konyaco.keeptally.ui.component.addrecord.component
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,7 +17,6 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -28,12 +26,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.konyaco.keeptally.ui.theme.KeepTallyTheme
 
-@OptIn(ExperimentalFoundationApi::class)
+data class Label(
+    val id: Long,
+    val label: String
+)
+
 @Composable
 internal fun LabelList(
     modifier: Modifier,
-    labels: List<String>,
-    checkedLabel: Int?,
+    labels: List<Label>,
+    checkedLabelIndex: Int?,
     onLabelClick: (Int) -> Unit,
     onAddLabelClick: () -> Unit,
     labelColor: Color
@@ -43,22 +45,25 @@ internal fun LabelList(
         verticalAlignment = Alignment.CenterVertically
     ) {
         LazyRow(
-            modifier = Modifier
-                .wrapContentHeight()
-                .weight(1f),
+            modifier = Modifier.wrapContentHeight().weight(1f),
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            itemsIndexed(labels, key = { _, item -> item }) { index, item ->
+            itemsIndexed(
+                items = labels,
+                key = { _, item -> item.id },
+                contentType = { _, _ -> "record" }
+            ) { index, item ->
                 LabelItem(
                     modifier = Modifier.animateItem(),
-                    selected = checkedLabel == index,
+                    selected = checkedLabelIndex == index,
                     onSelectChange = { onLabelClick(index) },
-                    text = item,
+                    text = item.label,
                     activeColor = labelColor
                 )
             }
-            item(key = { "Add" }) {
+
+            item(contentType = "add") {
                 LabelItem(
                     modifier = Modifier.animateItem(),
                     selected = false,
@@ -80,7 +85,11 @@ internal fun LabelList(
 private fun PreviewLabelList() {
     KeepTallyTheme {
         val primaryLabels = remember {
-            listOf("购物", "餐饮", "洗浴")
+            listOf(
+                Label(0, "餐饮"),
+                Label(1, "购物"),
+                Label(2, "投资")
+            )
         }
         var enabledLabel by remember { mutableIntStateOf(0) }
         LabelList(

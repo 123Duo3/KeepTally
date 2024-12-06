@@ -12,9 +12,9 @@ class DetailViewModel @Inject constructor(
     private val sharedViewModel: SharedViewModel,
     private val database: AppDatabase
 ) : ViewModel() {
-    val state = mutableStateOf<MainViewModel.Companion.State>(MainViewModel.Companion.State.Initializing)
-    val statistics = mutableStateOf<MainViewModel.Companion.Statistics>(
-        MainViewModel.Companion.Statistics(
+    val state = mutableStateOf<MainViewModel.State>(MainViewModel.State.Initializing)
+    val statistics = mutableStateOf<MainViewModel.Statistics>(
+        MainViewModel.Statistics(
             Money(0),
             Money(0),
             Money(0)

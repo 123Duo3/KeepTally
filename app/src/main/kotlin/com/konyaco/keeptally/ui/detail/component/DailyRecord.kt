@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,8 +39,8 @@ fun DailyRecord(
     date: String,
     expenditure: String,
     income: String,
-    records: List<MainViewModel.Companion.Record>,
-    onDeleteClick: (record: MainViewModel.Companion.Record) -> Unit
+    records: List<MainViewModel.Record>,
+    onDeleteClick: (record: MainViewModel.Record) -> Unit
 ) {
     Column(modifier) {
         val dark = isSystemInDarkTheme()
@@ -52,7 +51,7 @@ fun DailyRecord(
             date, expenditure, income
         )
         Spacer(Modifier.height(8.dp))
-        var dropdown by remember { mutableStateOf<MainViewModel.Companion.Record?>(null) }
+        var dropdown by remember { mutableStateOf<MainViewModel.Record?>(null) }
 
         Column(Modifier.fillMaxWidth()) {
             for (record in records) {
@@ -85,12 +84,11 @@ fun DailyRecord(
 }
 
 fun LazyListScope.DailyRecord(
-    isLast: Boolean,
-    date: MainViewModel.Companion.Date,
+    date: MainViewModel.Date,
     expenditure: String,
     income: String,
-    records: List<MainViewModel.Companion.Record>,
-    onDeleteClick: (record: MainViewModel.Companion.Record) -> Unit
+    records: List<MainViewModel.Record>,
+    onDeleteClick: (record: MainViewModel.Record) -> Unit
 ) {
     // Header
     item(contentType = "header") {
@@ -106,7 +104,8 @@ fun LazyListScope.DailyRecord(
     // Records
     items(
         items = records,
-        contentType = { "record" }
+        contentType = { "record" },
+        key = { it.id }
     ) { record ->
         var dropdown by remember { mutableStateOf(false) }
         val dark = isSystemInDarkTheme()
@@ -136,11 +135,6 @@ fun LazyListScope.DailyRecord(
                 })
             }
         }
-    }
-
-    // Divider
-    if (!isLast) item(contentType = "divider") {
-        HorizontalDivider(Modifier.padding(vertical = 8.dp))
     }
 }
 
@@ -190,20 +184,20 @@ private fun DailyRecordPreview() {
             expenditure = "6,000",
             income = "0",
             records = listOf(
-                MainViewModel.Companion.Record(
+                MainViewModel.Record(
                     time = "12:30",
-                    type = MainViewModel.Companion.RecordType("父分类", "分类", false, 0),
+                    type = MainViewModel.RecordType(0, "父分类", "分类", false, 0),
                     money = Money(1100),
-                    date = MainViewModel.Companion.Date("12-20", 0),
+                    date = MainViewModel.Date("12-20", 0),
                     id = 0,
                     isIncome = true,
                     description = null
                 ),
-                MainViewModel.Companion.Record(
+                MainViewModel.Record(
                     time = "12:30",
-                    type = MainViewModel.Companion.RecordType("父分类", "分类", false, 0),
+                    type = MainViewModel.RecordType(1, "父分类", "分类", false, 0),
                     money = Money(-1100),
-                    date = MainViewModel.Companion.Date("12-20", 0),
+                    date = MainViewModel.Date("12-20", 0),
                     id = 1,
                     isIncome = false,
                     description = "备注"

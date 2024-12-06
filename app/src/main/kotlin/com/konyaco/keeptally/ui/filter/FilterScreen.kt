@@ -88,7 +88,7 @@ fun FilterScreen(viewModel: FilterViewModel = hiltViewModel()) {
                         LabelItem(
                             selected = current.value == item,
                             onSelectChange = { viewModel.selectPrimaryType(item) },
-                            text = item,
+                            text = item.label,
                             activeColor = labelColor,
                             icon = if (contains) {
                                 {
@@ -139,7 +139,7 @@ fun FilterScreen(viewModel: FilterViewModel = hiltViewModel()) {
                         LabelItem(
                             selected = selected,
                             onSelectChange = { viewModel.selectSecondaryType(item, it) },
-                            text = item,
+                            text = item.label,
                             activeColor = labelColor,
                             icon = if (selected) {
                                 {
@@ -174,13 +174,18 @@ fun FilterScreen(viewModel: FilterViewModel = hiltViewModel()) {
                     val records = viewModel.records.value
                     records.forEachIndexed { index, item ->
                         DailyRecord(
-                            index == records.size - 1,
                             item.date,
                             item.expenditure.moneyStr.join,
                             item.income.moneyStr.join,
                             item.records,
                             onDeleteClick = {}
                         )
+                        if (index == records.lastIndex) {
+                            // Divider
+                            item(contentType = "divider") {
+                                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                            }
+                        }
                     }
                 }
             }
